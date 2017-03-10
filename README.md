@@ -28,3 +28,9 @@ A modification to the `control.lua` file.
 * If you make a new game, the soft-mod will be applied
 
 # Files
+```
+.
+├── control.lua <- Softmod entry
+└── DEFAULT_control.lua <- original backed up file
+
+```
