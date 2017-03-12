@@ -10,12 +10,12 @@ A modification to the `control.lua` file.
 
 ## control.lua
 * Factorio folder location: Factorio/data/base/scenarios/freeplay/
-* Purpose: Sets up the initial game and is downloaded onto all the cliens automatically in multiplayer. The originall vanilla file tells the game to give you items at the start of the game and gives you pistol + ammo apon respawn
+* Purpose: Sets up the initial game and is downloaded onto all the clients automatically in multiplayer. The original vanilla file tells the game to give you items at the start of the game and gives you pistol + ammo upon respawn
 
 # How to install?
 
 ## For muliplayer server / add to existing save game
-* Create a new map (if you havnt already you can apply to existing maps)
+* Create a new map (if you haven't already you can apply to existing maps)
 * Browse to the save file (.zip archive file) for your server
   * Local saves are in C:/Users/*[yourusername]*/AppData/Roaming/Factorio/saves/
 * Open the zip (typically `_autosave1.zip`)
@@ -31,6 +31,13 @@ A modification to the `control.lua` file.
 ```
 .
 ├── control.lua <- Softmod entry
-└── DEFAULT_control.lua <- original backed up file
+├── DEFAULT_control.lua <- original backed up file
+└──factorio-server.bat <- to spin up a local testing server on windows
 
 ```
+
+# References/Credits:
+* [https://github.com/Afforess/Factorio-Stdlib](https://github.com/Afforess/Factorio-Stdlib)
+* [https://github.com/3RaGaming/3Ra-Enhanced-Vanilla](https://github.com/3RaGaming/3Ra-Enhanced-Vanilla)
+* [Explosive Gaming Forums](https://explosivegaming.nl/topic/62/factorio-server-technical-query)
+* Thanks to CoolDude2606 from explosive gaming for getting me started.

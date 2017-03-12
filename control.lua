@@ -30,7 +30,7 @@ script.on_event(defines.events.on_player_created, function(event)
   end
 end)
 
--- After death respawn player with piston and ammo
+-- After death respawn player with pistol and ammo
 script.on_event(defines.events.on_player_respawned, function(event)
   local player = game.players[event.player_index]
   player.insert{name="pistol", count=1}
@@ -76,7 +76,7 @@ end)
 -- When player joins the game, show greeting
 script.on_event(defines.events.on_player_joined_game, function(event)
   local player = game.players[event.player_index]
-  player.print("Welcome!")
+  player.print("Welcome to Factorio freeplay")
   clearPlayerGUI(player)
   drawMenuButtons()
   drawPlayerList()
@@ -88,7 +88,7 @@ script.on_event(defines.events.on_player_left_game, function(event)
   drawPlayerList()
 end)
 
--- Manages out custom GUI clicks
+-- Manages our custom GUI clicks
 script.on_event(defines.events.on_gui_click, function(event)
   local player = game.players[event.player_index]
 
@@ -150,9 +150,10 @@ end
 
 -- Add a player to the GUI list
 function addPlayerToGUIList(player, p_online, color, tag, label)
+  local time_str = tostring(tickToHour(p_online.online_time))
   player.gui.left.PlayerList.add{
     type = "label", style = "caption_label_style", name = p_online.name,
-    caption = {"", tickToHour(p_online.online_time), " hr - ", p_online.name, " ", label}
+    caption = {"", time_str, " hr - ", p_online.name, " ", label}
   }
   player.gui.left.PlayerList[p_online.name].style.font_color = color
   p_online.tag = tag
@@ -163,8 +164,7 @@ function drawMenuButtons()
   for i, player in pairs(game.players) do
     local menu = player.gui.top
     clearGuiElement(menu)
-    menu.add{type = "button", name = "btn_menu_player_list",  caption = "Player List",  tooltip = "Shows who played on the server"}
-    -- menu.add{type = "button", name = "btn_menu_serve_info",   caption = "Readme",       tooltip = "Server rules, communication, and more"}
+    menu.add{type = "button", name = "btn_menu_player_list",  caption = "Player List",  tooltip = "Shows who is on the server"}
   end
 end
 
@@ -184,12 +184,12 @@ end
 
 -- Returns hours converted from game ticks
 function tickToHour(t)
-  return tostring(math.floor(t * 1 / (60 * game.speed) / 3600))
+  return math.floor(t * 1 / (60 * game.speed) / 3600)
 end
 
 -- Returns hours converted from game ticks
 function tickToMin(t)
-  return tostring(math.floor(t * 1 / (60 * game.speed) / 60))
+  return math.floor(t * 1 / (60 * game.speed) / 60)
 end
 
 -- Displays a message only to Admin Player(s)
