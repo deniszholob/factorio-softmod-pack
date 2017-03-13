@@ -1,3 +1,9 @@
+-- Player List Soft Mod
+-- Simple soft mod to add player list sidebar
+-- @author Denis Zholob (DDDGamer)
+-- github: https://github.com/DDDGamer/factorio-dz-softmod
+-- ======================================================= --
+
 -- Constants --
 OWNER = "DDDGamer"
 HERO_TIME = 150
@@ -134,9 +140,9 @@ function drawPlayerList()
       -- Admins
       if p_online.admin == true then
         if p_online.name == OWNER then
-          addPlayerToGUIList(player, p_online, COLOR_OVERLORD, "[Owner]", "(Owner)")
+          addPlayerToGUIList(player, p_online, COLOR_OVERLORD, "[Owner]", "[Owner]")
         else
-          addPlayerToGUIList(player, p_online, COLOR_GUARDIAN, "[Admin]", "(Admin)")
+          addPlayerToGUIList(player, p_online, COLOR_GUARDIAN, "[Admin]", "[Admin]")
         end
       -- Players
       elseif tickToMin(p_online.online_time) >= HERO_TIME then
