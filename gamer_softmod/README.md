@@ -1,7 +1,8 @@
 # DDDGamer's Factorio Soft Mod Collection
 Collection of various softmods that apply to Factorio server without having the user to download mods.
 
-The different mods are located in the `dz-softmod-modules` folder, they are enabled by requiring them in the `control.lua` file.
+My custom mods are located in the `softmod-modules-dz` folder, they are enabled by requiring them in the `control.lua` file.
+I also have some mods from 3ra gaming.
 
 # How to install?
 
@@ -39,9 +40,9 @@ Furthermore no subfolders in local either thus the *softmod-module-[name]* folde
 |   |
 |   ├── softmod-modules-dz/     <- Various mods you want to apply (playerlist, readme, rocket-score, etc...)
 |   |   ├── announcements.lua   <- (Remix from 3Ra Gaming)
+|   |   ├── game-info.lua       <- (Heavily referenced from from ExplosiveGaming.nl, but my original code)
 |   |   ├── player.lua          <- Add more items to player at start (Remix from Vanilla)
 |   |   ├── playerlist.lua      <- (Heavily referenced from ExplosiveGaming.nl, but original code)
-|   |   ├── readme.lua          <- (Heavily referenced from from ExplosiveGaming.nl, but my original code)
 |   |   └── tasks.lua           <- My creation - Players can create tasks to do
 |   |
 |   ├── softmod-modules-stdlib/ <- Libraries from [Afforess/Factorio-Stdlib](https://github.com/Afforess/Factorio-Stdlib)

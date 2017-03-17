@@ -14,9 +14,10 @@ require "config"
 local TASK_LIMIT = 10 
 local TASK_LEN_MIN = 3
 local TASK_LEN_MAX = 100
+local REGULAR_TIME = 60 -- min
 
 -- stores tasks here, init with defaults.
-local task_list = {
+local DEFAULT_TASKS = {
   "Get Power",
   "Build simple belt production",
   "Build simple red science automation",
@@ -43,9 +44,47 @@ local MASTER_FRAME = { name = "frame_task" }
 -- Draw the task gui for new player
 -- @param event on_player_joined_game
 function on_player_join(event)
+  setup_tasks()
   local player = game.players[event.player_index]
   draw_master_task_btn(player)
+
+  -- Force a gui refresh in case there where updates
+  player.gui.center[MASTER_FRAME.name].destroy()
+
   draw_task_frame(player)
+end
+
+
+-- On Player Leave
+-- Clean up the GUI in case this mod gets removed next time
+-- @param event on_player_left_game
+function on_player_leave(event)
+  local player = game.players[event.player_index]
+  if player.gui.center[MASTER_FRAME.name] ~= nil then
+    player.gui.center[MASTER_FRAME.name].destroy()
+  end
+  if player.gui.top[MASTER_BTN.name] ~= nil then
+    player.gui.top[MASTER_BTN.name].destroy()
+  end
+end
+
+
+-- Creates a global var to read tasks from if it hasnt been created already
+function setup_tasks()
+  if global.scenario == nil then
+    global.scenario = {}
+  end
+  if global.scenario.config == nil then
+    global.scenario.config = {}
+  end
+  if global.scenario.config.task_list == nil then
+    -- Populate with defaults if the game is fresh
+    if Time.tick_to_min(game.tick) < REGULAR_TIME then
+      global.scenario.config.task_list = DEFAULT_TASKS
+    else
+      global.scenario.config.task_list = {}
+    end
+  end
 end
 
 
@@ -71,13 +110,13 @@ function on_gui_click(event)
   elseif el_name == "btn_task_close" then
     GUI.toggle_element(player.gui.center[MASTER_FRAME.name])
   end
-  -- One of the tasks done?
-  for i, task in pairs(task_list) do
-    if el_name == ('btn_'..i) then
-      delete_task(player, i)
-      update_tasks_gui_all()
+    -- One of the tasks done?
+    for i, task in pairs(global.scenario.config.task_list) do
+      if el_name == ('btn_'..i) then
+        delete_task(player, i)
+        update_tasks_gui_all()
+      end
     end
-  end
 end
 
 
@@ -93,23 +132,25 @@ end
 -- Draws the main task container window
 -- @param player
 function draw_task_frame(player)
-  local frame = player.gui.center.add { type = "frame", name = MASTER_FRAME.name, direction = "vertical" }
-  -- make a container for adding new task and add button and textfield
-  frame.add { type = "label", name = "lbl_title", caption = "TASK LIST" }
-  frame.add { type = "flow", name = "flow_task_ctrl", direction = "horizontal" }
-  frame["flow_task_ctrl"].add { type = "button",    name = "btn_new_task", caption = "Add Task" }
-  frame["flow_task_ctrl"].add { type = "textfield", name = "txt_new_task" }
-  frame["flow_task_ctrl"].add { type = "button",    name = "btn_task_close", caption = "Close" }
-  frame.add { type = "label", name = "lbl_error", caption = "" }
-  -- make a tab content container
-  frame.add { type = "scroll-pane", name = "scroll_content", direction = "vertical", vertical_scroll_policy = "always", horizontal_scroll_policy = "auto" }
-  -- Style config for content
-  frame.scroll_content.style.maximal_height = 400;
-  frame.scroll_content.style.minimal_height = 400;
-  frame.scroll_content.style.maximal_width  = 500;
-  frame.scroll_content.style.minimal_width  = 500;
-  -- Make frame invisible upon startup
-  frame.style.visible = false
+  if(player.gui.center[MASTER_FRAME.name] == nil) then
+    local frame = player.gui.center.add { type = "frame", name = MASTER_FRAME.name, direction = "vertical" }
+    -- make a container for adding new task and add button and textfield
+    frame.add { type = "label", name = "lbl_title", caption = "=== TASK LIST ===" }
+    frame.add { type = "flow", name = "flow_task_ctrl", direction = "horizontal" }
+    frame["flow_task_ctrl"].add { type = "button",    name = "btn_new_task", caption = "Add Task" }
+    frame["flow_task_ctrl"].add { type = "textfield", name = "txt_new_task" }
+    frame["flow_task_ctrl"].add { type = "button",    name = "btn_task_close", caption = "Close" }
+    frame.add { type = "label", name = "lbl_error", caption = "" }
+    -- make a tab content container
+    frame.add { type = "scroll-pane", name = "scroll_content", direction = "vertical", vertical_scroll_policy = "always", horizontal_scroll_policy = "auto" }
+    -- Style config for content
+    frame.scroll_content.style.maximal_height = 400;
+    frame.scroll_content.style.minimal_height = 400;
+    frame.scroll_content.style.maximal_width  = 500;
+    frame.scroll_content.style.minimal_width  = 500;
+    -- Make frame invisible upon startup
+    frame.style.visible = false
+  end
 end
 
 
@@ -139,7 +180,7 @@ end
 function update_tasks_gui_player(player)
   local task_frame = player.gui.center[MASTER_FRAME.name]["scroll_content"]
   GUI.clear_element(task_frame)
-  for i, task in pairs(task_list) do
+  for i, task in pairs(global.scenario.config.task_list) do
     draw_task(player, task_frame, i, task)
   end
 end
@@ -159,11 +200,11 @@ end
 -- @param player
 function create_new_task(player)
   local frame = player.gui.center[MASTER_FRAME.name]
-  if table.maxn(task_list) < TASK_LIMIT then
+  if table.maxn(global.scenario.config.task_list) < TASK_LIMIT then
     hide_error(player)
     local task_text = frame.flow_task_ctrl.txt_new_task.text
     if string.len(task_text) >= TASK_LEN_MIN and string.len(task_text) <= TASK_LEN_MAX then
-      table.insert( task_list, task_text )
+      table.insert( global.scenario.config.task_list, task_text )
       frame.flow_task_ctrl.txt_new_task.text =  ""
       hide_error(player)
       game.print(player.name .. " created a new task: " .. task_text)
@@ -179,8 +220,8 @@ end
 -- Delete task
 -- @param task name
 function delete_task(player, task_idx)
-  game.print(player.name .. " removed a task: " .. task_list[task_idx])
-  table.remove( task_list, task_idx )
+  game.print(player.name .. " removed a task: " .. global.scenario.config.task_list[task_idx])
+  table.remove( global.scenario.config.task_list, task_idx )
 end
 
 
@@ -202,3 +243,9 @@ end
 -- Event Handlers
 Event.register(defines.events.on_gui_click, on_gui_click)
 Event.register(defines.events.on_player_joined_game, on_player_join)
+Event.register(defines.events.on_player_left_game, on_player_leave)
+
+-- Put in the default task at the start of a new game
+Event.register(-1, function()
+    global.scenario.config.task_list = DEFAULT_TASKS
+end)

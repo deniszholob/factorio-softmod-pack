@@ -7,22 +7,32 @@
 -- Dependencies
 require "locale/softmod-modules-util/GUI"
 require "locale/softmod-modules-util/Time"
-require "config"
+
+local OWNER = "DDDGamer"
 
 -- Colors
-local colors = {
-  red =    { r=210, g=40,  b=0   },
-  orange = { r=230, g=140, b=0   },
-  blue =   { r=0  , g=100, b=200 },
-  green =  { r=80,  g=210, b=80  }
+local COLORS = {
+  red =    { r=242, g=13,  b=13  },
+  orange = { r=242, g=70,  b=13  },
+  purple = { r=90,  g=32,  b=233 },
+  cyan =   { r=19,  g=182, b=236 },
+  blue =   { r=0,   g=100, b=200 },
+  green =  { r=80,  g=210, b=80  },
+  white =  { r=255, g=255, b=255 },
 }
 
 -- Roles
-local roles = {
-  owner =   { tag = "Owner",  color = colors.red    }, -- server owner
-  admin =   { tag = "Admin",  color = colors.orange }, -- server admin
-  regular = { tag = "Hero",   color = colors.purple }, -- player played more than REGULAR_TIME
-  new =     { tag = "Minion", color = colors.green  }, -- player hasnt reached REGURLAR_TIME
+local ROLES = {
+  owner =   { tag = "Owner",  color = COLORS.red    }, -- server owner
+  admin =   { tag = "Admin",  color = COLORS.orange }, -- server admin
+}
+
+-- Regurlar player ranks (time in hrs)
+local RANKS = {
+  lvl1 = { time = 0,  color = COLORS.green,  tag = "Commoner" },
+  lvl2 = { time = 1,  color = COLORS.cyan,   tag = "Minion",  },
+  lvl3 = { time = 5,  color = COLORS.blue,   tag = "Hero",    },
+  lvl4 = { time = 20, color = COLORS.purple, tag = "Elite",   },
 }
 
 
@@ -36,9 +46,18 @@ function on_player_join(event)
 end
 
 
--- When a player list, redraw the playerlist fram to update
+-- On Player Leave
+-- Clean up the GUI in case this mod gets removed next time
+-- Redraw the playerlist frame to update
 -- @param event on_player_left_game
 function on_player_leave(event)
+  local player = game.players[event.player_index]
+  if player.gui.left["frame_playerlist"] ~= nil then
+    player.gui.left["frame_playerlist"].destroy()
+  end
+  if player.gui.top["btn_menu_playerlist"] ~= nil then
+    player.gui.top["btn_menu_playerlist"].destroy()
+  end
   draw_playerlist_frame()
 end
 
@@ -77,15 +96,21 @@ function draw_playerlist_frame()
       -- Admins
       if p_online.admin == true then
         if p_online.name == OWNER then
-          add_player_to_list(player, p_online, roles.owner.color, roles.owner.tag)
+          add_player_to_list(player, p_online, ROLES.owner.color, ROLES.owner.tag)
         else
-          add_player_to_list(player, p_online, roles.admin.color, roles.admin.tag)
+          add_player_to_list(player, p_online, ROLES.admin.color, ROLES.admin.tag)
         end
       -- Players
-      elseif Time.tick_to_min(p_online.online_time) >= REGULAR_TIME then
-          add_player_to_list(player, p_online, roles.regular.color, roles.regular.tag)
+      elseif Time.tick_to_hour(p_online.online_time) < RANKS.lvl2 then
+          add_player_to_list(player, p_online, RANKS.lvl1.color, RANKS.lvl1.tag)
+      elseif Time.tick_to_hour(p_online.online_time) >= RANKS.lvl2 then
+          add_player_to_list(player, p_online, RANKS.lvl2.color, RANKS.lvl2.tag)
+      elseif Time.tick_to_hour(p_online.online_time) >= RANKS.lvl3 then
+          add_player_to_list(player, p_online, RANKS.lvl3.color, RANKS.lvl3.tag)
+      elseif Time.tick_to_hour(p_online.online_time) >= RANKS.lvl4 then
+          add_player_to_list(player, p_online, RANKS.lvl4.color, RANKS.lvl4.tag)
       else
-          add_player_to_list(player, p_online, roles.new.color, roles.new.tag)
+          add_player_to_list(player, p_online, COLORS.white, "")
       end
     end
   end
