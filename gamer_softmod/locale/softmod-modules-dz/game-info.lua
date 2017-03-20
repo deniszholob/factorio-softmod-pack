@@ -7,6 +7,7 @@
 -- Dependencies
 require "locale/softmod-modules-util/GUI"
 require "locale/softmod-modules-util/Time"
+require "locale/softmod-modules-util/Time_Rank"
 
 -- Master button controlls the visibility of the readme window
 local MASTER_BTN =   { name = "btn_readme", caption = "Read Me", tooltip = "Server rules, communication, and more" }
@@ -41,6 +42,7 @@ local FRAME_TABS = {
 local CONTENT = {
   rules = {
     "=== GUIDELINES ===",
+    "* Griefing is not tolorated - instant ban",
     "* Do your best to build cleanly: avoid spaghetti factories (except temp builds)",
     "* Do not spam: chat spam, item/chest spam, concrete/brick spam, etc...",
     "* Use brick/concrete for roads, don't spam whole base (increases pollution)",
@@ -79,11 +81,13 @@ function on_player_join(event)
   draw_master_readme_btn(player)
 
   -- Force a gui refresh in case there where updates
-  player.gui.center[MASTER_FRAME.name].destroy()
+  if player.gui.center[MASTER_FRAME.name] ~= nil then
+    player.gui.center[MASTER_FRAME.name].destroy()
+  end
   
   -- Show readme window (rules) when player (not admin) first joins, but not at later times
   if not player.admin and Time.tick_to_min(player.online_time) < 1 then
-    draw_master_readme_frame(player, FRAME_TABS.rules.win.name) 
+    draw_master_readme_frame(player, FRAME_TABS.rules.win.name)
   end
 end
 
@@ -208,12 +212,13 @@ function draw_players(container)
   GUI.clear_element(container) -- Clear the current info before adding new
 
   local table_name = "tbl_readme_players"
-  container.add { type = "label", name = "lbl_player_tile", caption = "=== ALL TIME PLAYERS ===" }
-  container.add { type = "table", name = table_name, colspan = 2 }
+  container.add { type = "label", name = "lbl_player_tile", caption = "=== ALL TIME PLAYERS (" .. #game.players .. ") ===" }
+  container.add { type = "table", name = table_name, colspan = 3 }
   container[table_name].style.minimal_width = 500;
   container[table_name].style.maximal_width = 500;
-  container[table_name].add { type = "label", name = "lbl_hours",  caption = "Time(h:m)" }
   container[table_name].add { type = "label", name = "lbl_name",   caption = "Name"      }
+  container[table_name].add { type = "label", name = "lbl_hours",  caption = "Time" }
+  container[table_name].add { type = "label", name = "lbl_rank",   caption = "Rank"      }
 
   -- Copy player list into local list
   local player_list = {}
@@ -229,9 +234,14 @@ function draw_players(container)
   -- Add in gui list
   for i, player in pairs(player_list) do
     local total_min = Time.tick_to_min(player.online_time)
-    local time_str = math.floor(total_min/60) .. ":" .. math.floor(total_min%60)
-    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_time",  caption = time_str }
+    local time_str = math.floor(total_min/60) .. "hr " .. math.floor(total_min%60) .. "min"
+    local player_rank = Time_Rank.get_rank(player)
     container[table_name].add { type = "label", name = "lbl_"..player.name .. "_name",  caption = player.name }
+    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_time",  caption = time_str }
+    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_rank",  caption = player_rank.tag }
+    container[table_name]["lbl_"..player.name .. "_name"].style.font_color = player_rank.color
+    container[table_name]["lbl_"..player.name .. "_time"].style.font_color = player_rank.color
+    container[table_name]["lbl_"..player.name .. "_rank"].style.font_color = player_rank.color
   end
 end
 

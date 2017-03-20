@@ -7,6 +7,7 @@
 GUI = {}
 
 -- Destroyes the children of a GUI element
+-- @param el <- element to toggle destroy childen of
 function GUI.clear_element( el )
   if el ~= nil then
     for i, child in pairs(el.children_names) do
@@ -16,6 +17,7 @@ function GUI.clear_element( el )
 end
 
 -- Toggles element on off (visibility)
+-- @param el <- element to toggle visibility
 function GUI.toggle_element( el )
   if el ~= nil then
     if el.style.visible == false then

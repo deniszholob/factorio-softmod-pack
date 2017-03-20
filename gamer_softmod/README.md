@@ -1,5 +1,6 @@
 # DDDGamer's Factorio Soft Mod Collection
 Collection of various softmods that apply to Factorio server without having the user to download mods.
+Written for Factorio v0.14.22 (latest 0.14 stable)
 
 My custom mods are located in the `softmod-modules-dz` folder, they are enabled by requiring them in the `control.lua` file.
 I also have some mods from 3ra gaming.
@@ -35,14 +36,16 @@ Furthermore no subfolders in local either thus the *softmod-module-[name]* folde
 ├── locale/
 |   ├── softmod-modules-3ra/    <- [3RaGaming](https://github.com/3RaGaming/3Ra-Enhanced-Vanilla) Copied Modules
 |   |   ├── gravestone.lua
-|   |   ├── showhealth.lua
 |   |   └── undecorator.lua
 |   |
 |   ├── softmod-modules-dz/     <- Various mods you want to apply (playerlist, readme, rocket-score, etc...)
 |   |   ├── announcements.lua   <- (Remix from 3Ra Gaming)
-|   |   ├── game-info.lua       <- (Heavily referenced from from ExplosiveGaming.nl, but my original code)
+|   |   ├── anti-griefing.lua   <- (Original code, references from ExplosiveGaming.nl)
+|   |   ├── game-info.lua       <- (Original code, references from ExplosiveGaming.nl)
+|   |   ├── player-list.lua     <- (Original code, references from ExplosiveGaming.nl)
+|   |   ├── player-logging.lua  <- Show players joining/leaving in the log
 |   |   ├── player.lua          <- Add more items to player at start (Remix from Vanilla)
-|   |   ├── playerlist.lua      <- (Heavily referenced from ExplosiveGaming.nl, but original code)
+|   |   ├── show-health.lua     <- (Remix from 3Ra Gaming)
 |   |   └── tasks.lua           <- My creation - Players can create tasks to do
 |   |
 |   ├── softmod-modules-stdlib/ <- Libraries from [Afforess/Factorio-Stdlib](https://github.com/Afforess/Factorio-Stdlib)
@@ -50,8 +53,11 @@ Furthermore no subfolders in local either thus the *softmod-module-[name]* folde
 |   |   └── Game.lua
 |   |
 |   ├── softmod-modules-util/   <- My common helper utilities
-|   |   ├── GUI.lua             <- common gui operations
-|   |   └── Time.lua            <- time conversions
+|   |   ├── color-test.lua      <- Shows the color pallete
+|   |   ├── Colors.lua          <- Color table
+|   |   ├── GUI.lua             <- Common GUI operations
+|   |   ├── Time_Rank.lua       <- Rank table based on time played
+|   |   └── Time.lua            <- Time conversions
 |   |
 |   └── softmod-modules-vanilla/<- Vanilla modules
 |       ├── player-vanilla.lua  <- players spawn/reset items

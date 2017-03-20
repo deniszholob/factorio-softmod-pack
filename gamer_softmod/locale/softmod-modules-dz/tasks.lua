@@ -49,7 +49,9 @@ function on_player_join(event)
   draw_master_task_btn(player)
 
   -- Force a gui refresh in case there where updates
-  player.gui.center[MASTER_FRAME.name].destroy()
+  if player.gui.center[MASTER_FRAME.name] ~= nil then
+    player.gui.center[MASTER_FRAME.name].destroy()
+  end
 
   draw_task_frame(player)
 end

@@ -7,32 +7,15 @@
 -- Dependencies
 require "locale/softmod-modules-util/GUI"
 require "locale/softmod-modules-util/Time"
+require "locale/softmod-modules-util/Time_Rank"
+require "locale/softmod-modules-util/Colors"
 
 local OWNER = "DDDGamer"
 
--- Colors
-local COLORS = {
-  red =    { r=242, g=13,  b=13  },
-  orange = { r=242, g=70,  b=13  },
-  purple = { r=90,  g=32,  b=233 },
-  cyan =   { r=19,  g=182, b=236 },
-  blue =   { r=0,   g=100, b=200 },
-  green =  { r=80,  g=210, b=80  },
-  white =  { r=255, g=255, b=255 },
-}
-
 -- Roles
 local ROLES = {
-  owner =   { tag = "Owner",  color = COLORS.red    }, -- server owner
-  admin =   { tag = "Admin",  color = COLORS.orange }, -- server admin
-}
-
--- Regurlar player ranks (time in hrs)
-local RANKS = {
-  lvl1 = { time = 0,  color = COLORS.green,  tag = "Commoner" },
-  lvl2 = { time = 1,  color = COLORS.cyan,   tag = "Minion",  },
-  lvl3 = { time = 5,  color = COLORS.blue,   tag = "Hero",    },
-  lvl4 = { time = 20, color = COLORS.purple, tag = "Elite",   },
+  owner =   { tag = "Owner",  color = Colors.red    }, -- server owner
+  admin =   { tag = "Admin",  color = Colors.orange }, -- server admin
 }
 
 
@@ -101,16 +84,9 @@ function draw_playerlist_frame()
           add_player_to_list(player, p_online, ROLES.admin.color, ROLES.admin.tag)
         end
       -- Players
-      elseif Time.tick_to_hour(p_online.online_time) < RANKS.lvl2 then
-          add_player_to_list(player, p_online, RANKS.lvl1.color, RANKS.lvl1.tag)
-      elseif Time.tick_to_hour(p_online.online_time) >= RANKS.lvl2 then
-          add_player_to_list(player, p_online, RANKS.lvl2.color, RANKS.lvl2.tag)
-      elseif Time.tick_to_hour(p_online.online_time) >= RANKS.lvl3 then
-          add_player_to_list(player, p_online, RANKS.lvl3.color, RANKS.lvl3.tag)
-      elseif Time.tick_to_hour(p_online.online_time) >= RANKS.lvl4 then
-          add_player_to_list(player, p_online, RANKS.lvl4.color, RANKS.lvl4.tag)
       else
-          add_player_to_list(player, p_online, COLORS.white, "")
+        local player_rank = Time_Rank.get_rank(p_online)
+        add_player_to_list(player, p_online, player_rank.color, player_rank.tag)
       end
     end
   end
