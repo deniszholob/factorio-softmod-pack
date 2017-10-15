@@ -1,16 +1,17 @@
 # Factorio Soft Mod
 
-My custom factorio soft mod
+My custom factorio soft/server side mod that includes QOL features, like playerlist, readme, tasks, and more.
 
-* Player list sidebar to show who is playing, how long have they played, and assigns vidual rank based on gametime
-
-
-# What is a soft mod?
+**What is a soft mod?**
 A modification to the `control.lua` file.
 
-## control.lua
+**control.lua**
 * Factorio folder location: Factorio/data/base/scenarios/freeplay/
-* Purpose: Sets up the initial game and is downloaded onto all the clients automatically in multiplayer. The original vanilla file tells the game to give you items at the start of the game and gives you pistol + ammo upon respawn
+* Purpose: The file sets up the initial game and is downloaded onto all the clients automatically in multiplayer. The original vanilla file tells the game to give you items at the start of the game and gives you pistol + ammo upon respawn. Extension of this functionality brings "limitless possibilities". The Wave defence Scenario is one example of a softmod already packaged with the game.
+
+## Support Me
+[![button](https://c5.patreon.com/external/logo/downloads_wordmark_white_on_coral.png)](https://www.patreon.com/deniszholob)
+
 
 # How to install?
 
