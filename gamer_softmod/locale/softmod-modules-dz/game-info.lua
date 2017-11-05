@@ -42,7 +42,7 @@ local FRAME_TABS = {
 local CONTENT = {
   rules = {
     "=== GUIDELINES ===",
-    "* Griefing is not tolorated - instant ban",
+    "* Griefing is not tolerated - instant ban",
     "* Do your best to build cleanly: avoid spaghetti factories (except temp builds)",
     "* Do not spam: chat spam, item/chest spam, concrete/brick spam, etc...",
     "* Use brick/concrete for roads, don't spam whole base (increases pollution)",
