@@ -14,11 +14,17 @@ local REVEAL_AREA_RADIUS = 200
 -- @param event on_player_created event
 function player_created(event)
   local player = game.players[event.player_index]
-  
+
   -- Always start a new player with these
   player.insert { name = "iron-plate",          count = 10 }
   player.insert { name = "pistol",              count = 1  }
   player.insert { name = "firearm-magazine",    count = 10 }
+
+  -- To mark the spawn location get some brick and concrete
+  if(player.name=="DDDGamer") then
+    player.insert { name = "stone-brick",       count = 16 }
+    player.insert { name = "hazard-concrete",   count = 20 }
+  end
 
   -- Less than 20min into the game
   if Time.tick_to_min(game.tick) < 20 then
@@ -60,7 +66,7 @@ function player_respawned(event)
 end
 
 -- Reveal area around the player
--- @param player 
+-- @param player
 function reveal_area(player)
   player.force.chart(player.surface, {
     {player.position.x - REVEAL_AREA_RADIUS, player.position.y - REVEAL_AREA_RADIUS},

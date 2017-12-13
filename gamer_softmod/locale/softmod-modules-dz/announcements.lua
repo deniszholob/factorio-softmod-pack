@@ -42,14 +42,14 @@ local function show_announcement(event)
   if (Time.tick_to_min(game.tick) % announcement_delay == 0) then
   -- Loop though announcements
     for i,message in pairs(announcements) do
-      -- game.print(message)
-      Roles.send_msg(message, Roles.DEFAULT)
-      Roles.send_msg(message, Roles.ADMIN)
+      game.print(message)
+      -- Roles.send_msg(message, Roles.DEFAULT)
+      -- Roles.send_msg(message, Roles.ADMIN)
     end
   end
 end
 
 
 -- Event handlers
-Event.register(defines.events.on_tick, show_announcement)
+-- Event.register(defines.events.on_tick, show_announcement)
 Event.register(defines.events.on_player_created, show_intro)

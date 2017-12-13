@@ -10,6 +10,7 @@ require "locale/softmod-modules-util/Math"
 require "locale/softmod-modules-util/Time"
 require "locale/softmod-modules-util/Time_Rank"
 require "locale/softmod-modules-util/Roles"
+require "locale/softmod-modules-util/Colors"
 
 -- Master button controlls the visibility of the readme window
 local MASTER_BTN =   { name = "btn_readme", caption = "Read Me", tooltip = "Server rules, communication, and more" }
@@ -43,7 +44,7 @@ local FRAME_TABS = {
 -- Static Content
 local CONTENT = {
   rules = {
-    "=== GUIDELINES ===",
+    "=== General Guidelines ===",
     "* Trolling/Griefing/Hacking/Cheating is not tolerated -> instant ban",
     "* Communicate! See the SOCIAL menu for more info",
     "* Ask before changing something you didnt make",
@@ -51,10 +52,18 @@ local CONTENT = {
     "* Do your best to build cleanly: avoid spaghetti factories (except temp builds)",
     "* Do not spam: chat spam, item/chest spam, concrete/brick spam, etc...",
     "* Use brick/concrete for roads, don't spam whole base (increases pollution)",
-    "* Limit the chests!!!",
+    "* Limit the chests (hard limit early game, logistical limit later)",
+    "* Don't spam fluid tanks, use 3 buffer tanks per fluid wagon.",
+    "* Late Game bot builds/mines only, remove belts.",
+    "=== Train/Mine Guidelines ===",
     "* Trains are RHD (Right Hand Drive)",
-    "* Do not make train roundabouts, junctions only",
-    "* Don't spam fluid tanks (1 of each is enough)",
+    "* Do not make train roundabouts/loops(inefficient), junctions/end point only",
+    "* General Train size is 2-4-2 with exceptions for uranium and oil",
+    "* Color the trains/stations appropriately",
+    "* Achieve 100% miner coverage on mines",
+    "* Max 2 trains per mine",
+    "* Fortify Outposts",
+    "=== Misc ===",
     "* Use Lights",
     "* Do not walk in a random direction for no reason (to save map size)",
   },
@@ -70,19 +79,26 @@ local CONTENT = {
     "",
     "* Visit Twitch for live streams",
     "https://www.twitch.tv/dddgamerlp",
+    "",
+    "* Follow on twitter for updates",
+    "https://twitter.com/DDDGamerLP",
+    "",
+    "* Check out tools/blueprints on the website",
+    "http://deniszholob.com/factorio/",
   },
   resources = {
     "=== RESOURCES ===",
+    "* Cheat Sheet:",
+    "https://dddgamer.github.io/factorio-cheat-sheet/",
+    "* Blueprints:",
+    "http://deniszholob.com/factorio/#Blueprints",
     "* Ratio Calculator:",
     "http://doomeer.com/factorio/",
-    "* Cheat Sheet (v0.14):",
-    "https://goo.gl/kkEVDA",
-    "* Recipies Reference:",
-    "http://factorio.rotol.me/pack/base-f15-normal/",
-    "* Factorio Releases:",
-    "https://forums.factorio.com/viewforum.php?f=3",
+    "* More Tools:",
+    "http://deniszholob.com/factorio/#Tools",
   },
 }
+
 
 -- On Player Join
 -- Display the master button, and show rules if new player
@@ -213,10 +229,16 @@ end
 function draw_static_content(container, content)
   GUI.clear_element(container) -- Clear the current info before adding new
   for i, text in pairs(content) do
+    -- Regular text
     if(string.find(text, "http", 1) == nil) then
-      container.add { type = "label", name = i, caption = text }
+      local txt = container.add { type = "label", name = i, caption = text }
+      if(string.find(text, "===", 1) ~= nil) then
+        txt.style.font_color = Colors.green
+      end
+    -- Links go into textfields
     else
-      container.add { type = "textfield", name = i, text = text }.style.minimal_width=500
+      local txt = container.add { type = "textfield", name = i, text = text }
+      txt.style.minimal_width = 500;
     end
   end
 end
@@ -243,7 +265,7 @@ function draw_players(container)
 
   -- Create Table
   local table_name = "tbl_readme_players"
-  container.add { type = "label", name = "lbl_player_tile", caption = "=== ALL TIME PLAYERS (" .. #game.players .. ") ===" }
+  container.add { type = "label", name = "lbl_player_tile", caption = "=== ALL TIME PLAYERS (" .. #game.players .. ") ===" }.style.font_color = Colors.green
   container.add { type = "label", name = "lbl_man_hrs",     caption = "Total man hours: " .. Math.round(Time.tick_to_hour(tot_player_ticks), 2) .. "" }
   container.add { type = "table", name = table_name, colspan = 4 }
   container[table_name].style.minimal_width = 500;

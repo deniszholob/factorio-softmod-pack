@@ -5,7 +5,7 @@
 -- github: https://github.com/DDDGamer/factorio-dz-softmod
 -- ======================================================= --
 
--- Notes: 
+-- Notes:
 --       * Carfull with notifications as its very spammy in admin chat.
 --       * A lot of the code is commented out because of the following rotation bug. Antigriefing for building only notifies at this stage.
 --       * TODO:/FIXME: - Add "on_build event" to prevent building over other peoples structures (inserter/belt bug with rotations)
@@ -25,7 +25,7 @@ function on_built_entity(event)
   local player = game.players[event.player_index]
   local entity = event.created_entity
 
-  if (not player.admin and 
+  if (not player.admin and
      Time.tick_to_hour(player.online_time) < time_regular_player) then
      if (entity.type == "tile-ghost") then
       local entity_name = entity.ghost_name
@@ -94,7 +94,7 @@ function on_preplayer_mined_item(event)
     --     fast_replace=true,
     --     spill=false
     --   }
-      
+
     --   -- Creation of new entity is successfull
     --   if replacement_entity ~= nil then
     --     -- Preserve the original entity creator when making the copy
@@ -163,8 +163,8 @@ function on_marked_for_deconstruction(event)
   end
 
   -- Check for allowed entities or admins and exit
-  if (player.admin or 
-      entity.type == "tree" or 
+  if (player.admin or
+      entity.type == "tree" or
       entity.type == "simple-entity") then
       -- game.print(entity.name .. "(" .. entity.type .. ") was marked for deconstruction")
     return
@@ -191,7 +191,7 @@ function on_player_rotated_entity(event)
     return
   end
 
-  if (not player.admin and 
+  if (not player.admin and
       Time.tick_to_hour(player.online_time) < time_regular_player and
       entity.last_user.name ~= player.name) then
       -- How to rotate back?
@@ -205,15 +205,15 @@ end
 -- Print a message to all admins
 -- @param message - string to print
 function notify_admins(message)
-  for i, player in pairs(game.connected_players) do
-    if player.admin then
-      player.print("Warning: " .. message)
-      -- Carefull of logging here as the game will log for every item, 
-      -- thus can slow down the game considerably if player is trying 
+--   for i, player in pairs(game.connected_players) do
+--     if player.admin then
+--       player.print("Warning: " .. message)
+      -- Carefull of logging here as the game will log for every item,
+      -- thus can slow down the game considerably if player is trying
       -- to deconstruct lots of items at once.
       -- log("Warning: " .. message)
-    end
-  end
+--     end
+--   end
 end
 
 

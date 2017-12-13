@@ -138,7 +138,7 @@ function draw_task_frame(player)
   if(player.gui.center[MASTER_FRAME.name] == nil) then
     local frame = player.gui.center.add { type = "frame", name = MASTER_FRAME.name, direction = "vertical" }
     -- make a container for adding new task and add button and textfield
-    frame.add { type = "label", name = "lbl_title", caption = "=== TASK LIST ===" }
+    frame.add { type = "label", name = "lbl_title", caption = "=== TASK LIST ===" }.style.font_color = Colors.green
     frame.add { type = "flow", name = "flow_task_ctrl", direction = "horizontal" }
     frame["flow_task_ctrl"].add { type = "button",    name = "btn_new_task", caption = "Add Task" }
     frame["flow_task_ctrl"].add { type = "textfield", name = "txt_new_task" }

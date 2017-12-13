@@ -1,6 +1,11 @@
 # Custom
 /ref
-/build
+/screenshots
+/gamer_softmod/dist
+/gamer_softmod/dist-simple
+/gamer_softmod/legacy
+/gamer_softmod/TEST
+/gamer_softmod/locale/softmod-modules-dev
 
 /softmod-build-tool
 
