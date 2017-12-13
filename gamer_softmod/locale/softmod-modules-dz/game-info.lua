@@ -6,8 +6,10 @@
 
 -- Dependencies
 require "locale/softmod-modules-util/GUI"
+require "locale/softmod-modules-util/Math"
 require "locale/softmod-modules-util/Time"
 require "locale/softmod-modules-util/Time_Rank"
+require "locale/softmod-modules-util/Roles"
 
 -- Master button controlls the visibility of the readme window
 local MASTER_BTN =   { name = "btn_readme", caption = "Read Me", tooltip = "Server rules, communication, and more" }
@@ -42,34 +44,43 @@ local FRAME_TABS = {
 local CONTENT = {
   rules = {
     "=== GUIDELINES ===",
-    "* Griefing is not tolerated - instant ban",
+    "* Trolling/Griefing/Hacking/Cheating is not tolerated -> instant ban",
+    "* Communicate! See the SOCIAL menu for more info",
+    "* Ask before changing something you didnt make",
+    "* Check the TASKS for things that need doing, update as needed",
     "* Do your best to build cleanly: avoid spaghetti factories (except temp builds)",
     "* Do not spam: chat spam, item/chest spam, concrete/brick spam, etc...",
     "* Use brick/concrete for roads, don't spam whole base (increases pollution)",
-    "* Use Lights",
-    "* Barrel the oil",
-    "* Don't spam fluid tanks (1 of each is enough)",
     "* Limit the chests!!!",
+    "* Trains are RHD (Right Hand Drive)",
     "* Do not make train roundabouts, junctions only",
-    "* RHD (Right Hand Drive)",
+    "* Don't spam fluid tanks (1 of each is enough)",
+    "* Use Lights",
     "* Do not walk in a random direction for no reason (to save map size)",
-    "* Check the tasklist for things that need doing, update as needed",
   },
   comm = {
     "=== SOCIAL/COMMUNICATION ===",
     "* Chat using the lua console (toggle with TILDE (~) key under the ESC key)",
     "",
     "* Join discord for discussion, voice chat and admin support:",
-    "  https://discord.gg/hmwb3dB",
+    "https://discord.gg/hmwb3dB",
     "",
     "* Visit the youtube page for tutorials and letsplays:",
-    "  https://www.youtube.com/channel/UCUrxnam98XPOY6xpP7WBKXg",
-    "  or search 'DDDGamer Lp'",
+    "https://www.youtube.com/c/DDDGamerLP",
+    "",
+    "* Visit Twitch for live streams",
+    "https://www.twitch.tv/dddgamerlp",
   },
   resources = {
     "=== RESOURCES ===",
-    "* Ratio Calculator: http://doomeer.com/factorio/",
-    "* Cheat Sheet: https://docs.google.com/presentation/d/1wIexilsTFKRbMIWc1MOY5XaAOPwNEU0AGMbSTAwqa3Q/",
+    "* Ratio Calculator:",
+    "http://doomeer.com/factorio/",
+    "* Cheat Sheet (v0.14):",
+    "https://goo.gl/kkEVDA",
+    "* Recipies Reference:",
+    "http://factorio.rotol.me/pack/base-f15-normal/",
+    "* Factorio Releases:",
+    "https://forums.factorio.com/viewforum.php?f=3",
   },
 }
 
@@ -185,7 +196,7 @@ end
 
 -- Draws the nav buttons for readme frame
 -- @param nav_container GUI element to add the buttons to
-  function draw_frame_nav(nav_container)
+function draw_frame_nav(nav_container)
   for i, frame_tab in pairs(FRAME_TABS) do
     nav_container.add {
       type = "button",
@@ -202,7 +213,11 @@ end
 function draw_static_content(container, content)
   GUI.clear_element(container) -- Clear the current info before adding new
   for i, text in pairs(content) do
-    container.add { type = "label", name = i, caption = text }
+    if(string.find(text, "http", 1) == nil) then
+      container.add { type = "label", name = i, caption = text }
+    else
+      container.add { type = "textfield", name = i, text = text }.style.minimal_width=500
+    end
   end
 end
 
@@ -211,37 +226,48 @@ end
 function draw_players(container)
   GUI.clear_element(container) -- Clear the current info before adding new
 
-  local table_name = "tbl_readme_players"
-  container.add { type = "label", name = "lbl_player_tile", caption = "=== ALL TIME PLAYERS (" .. #game.players .. ") ===" }
-  container.add { type = "table", name = table_name, colspan = 3 }
-  container[table_name].style.minimal_width = 500;
-  container[table_name].style.maximal_width = 500;
-  container[table_name].add { type = "label", name = "lbl_name",   caption = "Name"      }
-  container[table_name].add { type = "label", name = "lbl_hours",  caption = "Time" }
-  container[table_name].add { type = "label", name = "lbl_rank",   caption = "Rank"      }
-
-  -- Copy player list into local list
   local player_list = {}
+  local tot_player_ticks = 0;
+
+  -- Tally up man hours
+  -- Copy player list into local list
   for i, player in pairs(game.players) do
-    table.insert(player_list, {name = player.name, online_time = player.online_time})
+    tot_player_ticks = tot_player_ticks + player.online_time
+    table.insert(player_list, {name = player.name, online_time = player.online_time, admin = player.admin})
   end
 
   -- Sort players based on time played
   table.sort(player_list, function (a, b)
     return a.online_time > b.online_time
   end)
-  
+
+  -- Create Table
+  local table_name = "tbl_readme_players"
+  container.add { type = "label", name = "lbl_player_tile", caption = "=== ALL TIME PLAYERS (" .. #game.players .. ") ===" }
+  container.add { type = "label", name = "lbl_man_hrs",     caption = "Total man hours: " .. Math.round(Time.tick_to_hour(tot_player_ticks), 2) .. "" }
+  container.add { type = "table", name = table_name, colspan = 4 }
+  container[table_name].style.minimal_width = 500;
+  container[table_name].style.maximal_width = 500;
+  container[table_name].add { type = "label", name = "lbl_name",   caption = "Name" }
+  container[table_name].add { type = "label", name = "lbl_hours",  caption = "Time" }
+  container[table_name].add { type = "label", name = "lbl_rank",   caption = "Rank" }
+  container[table_name].add { type = "label", name = "lbl_role",   caption = "Role" }
+
   -- Add in gui list
   for i, player in pairs(player_list) do
-    local total_min = Time.tick_to_min(player.online_time)
-    local time_str = math.floor(total_min/60) .. "hr " .. math.floor(total_min%60) .. "min"
+    local hms = Time.tick_to_time_hms(player.online_time)
+
+    local time_str = "" .. hms.s .. " sec" --string.format( "%dhr %dmin %dsec ", h, m, s)
+    if(hms.m > 0)then time_str = "" .. hms.m .. " min " .. time_str end
+    if(hms.h > 0)then time_str = "" .. hms.h .. " hr " .. time_str end
+    
     local player_rank = Time_Rank.get_rank(player)
-    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_name",  caption = player.name }
-    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_time",  caption = time_str }
-    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_rank",  caption = player_rank.tag }
-    container[table_name]["lbl_"..player.name .. "_name"].style.font_color = player_rank.color
-    container[table_name]["lbl_"..player.name .. "_time"].style.font_color = player_rank.color
-    container[table_name]["lbl_"..player.name .. "_rank"].style.font_color = player_rank.color
+    local player_role = Roles.get_role(player)
+
+    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_name",  caption = player.name     }.style.font_color = player_rank.color
+    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_time",  caption = time_str        }.style.font_color = player_rank.color
+    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_rank",  caption = player_rank.tag }.style.font_color = player_rank.color
+    container[table_name].add { type = "label", name = "lbl_"..player.name .. "_role",  caption = player_role.tag }.style.font_color = player_role.color
   end
 end
 

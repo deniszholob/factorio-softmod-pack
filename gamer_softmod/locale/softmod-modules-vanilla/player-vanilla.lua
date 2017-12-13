@@ -1,4 +1,5 @@
 -- Vanilla general player config
+-- Only modified to use Events, but vanilla in terms of items and counts and whatnot
 
 -- Give player starting items.
 -- @param event on_player_joined event
@@ -22,7 +23,7 @@ function player_respawned(event)
 end
 
 -- Reveal area around the player
--- @param player 
+-- @param player LuaPlayer
 function reveal_area(player)
   player.force.chart(player.surface, {
     {player.position.x - 200, player.position.y - 200},
@@ -32,7 +33,7 @@ end
 
 
 -- Shows vanilla game goal
--- @param player 
+-- @param player LuaPlayer
 function showScenarioMsg(player)
   if (#game.players <= 1) then
     game.show_message_dialog{text = {"msg-intro"}}

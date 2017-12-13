@@ -1,2 +1,8 @@
 # Custom
 /ref
+/build
+
+/softmod-build-tool
+
+.vscode
+notes.md

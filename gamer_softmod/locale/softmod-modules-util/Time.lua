@@ -6,21 +6,37 @@
 
 Time = {}
 
--- Rounding helper function
-function round(number, precision)
-   return math.floor(number*math.pow(10,precision)+0.5) / math.pow(10,precision)
-end
-
 -- Returns hours converted from game ticks
+-- @param t - Factorio game tick
 function Time.tick_to_hour(t)
-  local time = game.speed * (t / 60) / 3600
-  return round(time, 1)
+  return Time.tick_to_sec(t) / 3600
 end
 
--- Returns hours converted from game ticks
+
+-- Returns minutes converted from game ticks
+-- @param t - Factorio game tick
 function Time.tick_to_min(t)
-  local time = game.speed * (t / 60) / 60
-  return round(time, 1)
+  return Time.tick_to_sec(t) / 60
+end
+
+
+-- Returns seconds converted from game ticks
+-- @param t - Factorio game tick
+function Time.tick_to_sec(t)
+  return game.speed * (t / 60)
+end
+
+
+-- Returns a time string in h:m:s format
+-- @param t - Factorio game tick
+-- @return hms object
+function Time.tick_to_time_hms(t, format_str)
+  local total_sec = Time.tick_to_sec(t)
+  return {
+    h = math.floor(total_sec/3600), 
+    m = math.floor(total_sec%3600/60), 
+    s = math.floor(total_sec%60)
+  }
 end
 
 return Time

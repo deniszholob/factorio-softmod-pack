@@ -6,8 +6,10 @@
 
 -- Dependencies
 require "locale/softmod-modules-util/GUI"
+require "locale/softmod-modules-util/Math"
 require "locale/softmod-modules-util/Time"
 require "locale/softmod-modules-util/Time_Rank"
+require "locale/softmod-modules-util/Roles"
 require "locale/softmod-modules-util/Colors"
 
 local OWNER = "DDDGamer"
@@ -22,7 +24,7 @@ local ROLES = {
 -- When new player joins add the playerlist btn to their GUI
 -- Redraw the playerlist frame to update with the new player
 -- @param event on_player_joined_game
-function on_player_join(event)
+function on_player_joined(event)
   local player = game.players[event.player_index]
   draw_playerlist_btn(player)
   draw_playerlist_frame()
@@ -76,18 +78,9 @@ function draw_playerlist_frame()
     -- Clear and repopulate player list
     GUI.clear_element(player.gui.left["frame_playerlist"])
     for j, p_online in pairs(game.connected_players) do
-      -- Admins
-      if p_online.admin == true then
-        if p_online.name == OWNER then
-          add_player_to_list(player, p_online, ROLES.owner.color, ROLES.owner.tag)
-        else
-          add_player_to_list(player, p_online, ROLES.admin.color, ROLES.admin.tag)
-        end
-      -- Players
-      else
-        local player_rank = Time_Rank.get_rank(p_online)
-        add_player_to_list(player, p_online, player_rank.color, player_rank.tag)
-      end
+      local player_rank = Time_Rank.get_rank(p_online)
+      local player_role = Roles.get_role(p_online)
+      add_player_to_list(player, p_online, player_rank, player_role)
     end
   end
 end
@@ -98,33 +91,42 @@ end
 -- @param p_online
 -- @param color
 -- @param tag
-function add_player_to_list(player, p_online, color, tag)
-  local played_hrs = tostring(Time.tick_to_hour(p_online.online_time))
+function add_player_to_list(player, p_online, rank, role)
+  local played_hrs = Time.tick_to_hour(p_online.online_time)
+  played_hrs = tostring(Math.round(played_hrs, 1))
+  -- Player list entry
+  local caption_str = string.format( "%s hr - %s [%s]", played_hrs, p_online.name, rank.tag)
+  local color = rank.color
+  --Also set the player tag above their head and on map
+  p_online.tag = "[" .. rank.tag .. "]"
+
+  -- If player has a role add it in
+  if(role.tag and #role.tag > 0) then 
+    caption_str = caption_str .. " <" .. role.tag .. ">"
+    p_online.tag = p_online.tag .. " <" .. role.tag .. ">"
+    color = role.color
+  end
+
+  -- Add in the entry to the player list
   player.gui.left["frame_playerlist"].add {
     type = "label", style = "caption_label_style", name = p_online.name,
-    caption = { "", played_hrs, " hr - ", p_online.name, " ", "[" .. tag .. "]" }
-  }
-  player.gui.left["frame_playerlist"][p_online.name].style.font_color = color
-  p_online.tag = "[" .. tag .. "]"
+    caption = caption_str
+  }.style.font_color = color
 end
 
 
 -- Refresh the playerlist after 10 min
 -- @param event on_tick
 function on_tick(event)
-  global.last_refresh = global.last_refresh or 0
-  local cur_time = game.tick / 60
-  local refresh_period = 10 -- 600 seconds (10 min)
-  local refresh_time_passed = cur_time - global.last_refresh
-  if refresh_time_passed > refresh_period then
+  local refresh_period = 1 --(min)
+  if (Time.tick_to_min(game.tick) % refresh_period == 0) then
     draw_playerlist_frame()
-    global.last_refresh = cur_time
   end
 end
 
 
 -- Event Handlers
 Event.register(defines.events.on_gui_click, on_gui_click)
-Event.register(defines.events.on_player_joined_game, on_player_join)
+Event.register(defines.events.on_player_joined_game, on_player_joined)
 Event.register(defines.events.on_player_left_game, on_player_leave)
 Event.register(defines.events.on_tick, on_tick)

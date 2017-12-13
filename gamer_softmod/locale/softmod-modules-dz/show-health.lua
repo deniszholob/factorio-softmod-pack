@@ -7,6 +7,10 @@
 -- Dependencies
 require "locale/softmod-modules-util/Colors"
 
+-- Max player Health is 250 as of v0.15 (changed from 100 in v0.14)
+local MAX_PLAYER_HP = 250
+
+
 -- On tick go through all the players and see if need to display health text
 -- @param event on_tick
 local function on_tick (event)
@@ -36,12 +40,12 @@ end
 -- @param player
 -- @param health
 function show_player_health(player, health)
-  if health <= 30 then
-    draw_flying_text(player, Colors.red,    health)
-  elseif health <= 50 then
-    draw_flying_text(player, Colors.yellow, health)
-  elseif health <= 80 then
-    draw_flying_text(player, Colors.green,  health)
+  if health <= percent_to_hp(30) then
+    draw_flying_text(player, Colors.red,    hp_to_percent(health) .. "%")
+  elseif health <= percent_to_hp(50) then
+    draw_flying_text(player, Colors.yellow, hp_to_percent(health) .. "%")
+  elseif health <= percent_to_hp(80) then
+    draw_flying_text(player, Colors.green,  hp_to_percent(health) .. "%")
   end
 end
 
@@ -58,6 +62,21 @@ function draw_flying_text(player, t_color, t_text)
     position = {player.position.x, player.position.y - 2}
   }
 end
+
+
+-- Returns an HP value from apercentage
+-- @param val - HP number to convert to Percentage
+function hp_to_percent(val)
+  return math.ceil(100 / MAX_PLAYER_HP * val)
+end
+
+
+-- Returns HP as a percentage instead of raw number
+-- @param val - Percentage number to convert to HP
+function percent_to_hp(val)
+  return math.ceil(MAX_PLAYER_HP / 100 * val)
+end
+
 
 -- Event Registraion
 Event.register(defines.events.on_tick, on_tick)

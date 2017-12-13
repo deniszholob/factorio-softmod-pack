@@ -8,4 +8,5 @@
 Event.register(-1, function()
     global.scenario = {}
     global.scenario.config = {}
+    global.scenario.players = {}
 end)

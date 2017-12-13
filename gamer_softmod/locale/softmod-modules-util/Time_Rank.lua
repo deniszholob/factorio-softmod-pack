@@ -4,6 +4,8 @@
 -- github: https://github.com/DDDGamer/factorio-dz-softmod
 -- ======================================================= --
 
+--TODO: Update all to Time_Rank.LVL1 format
+
 -- Dependencies
 require "locale/softmod-modules-util/Time"
 require "locale/softmod-modules-util/Colors"

@@ -8,6 +8,7 @@
 -- Dependencies
 require "locale/softmod-modules-util/GUI"
 require "locale/softmod-modules-util/Time"
+require "locale/softmod-modules-util/Colors"
 require "config"
 
 -- Constants
@@ -142,7 +143,7 @@ function draw_task_frame(player)
     frame["flow_task_ctrl"].add { type = "button",    name = "btn_new_task", caption = "Add Task" }
     frame["flow_task_ctrl"].add { type = "textfield", name = "txt_new_task" }
     frame["flow_task_ctrl"].add { type = "button",    name = "btn_task_close", caption = "Close" }
-    frame.add { type = "label", name = "lbl_error", caption = "" }
+    frame.add { type = "label", name = "lbl_error", caption = "" }.style.font_color = Colors.red
     -- make a tab content container
     frame.add { type = "scroll-pane", name = "scroll_content", direction = "vertical", vertical_scroll_policy = "always", horizontal_scroll_policy = "auto" }
     -- Style config for content

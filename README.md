@@ -17,13 +17,15 @@ A modification to the `control.lua` file.
 
 ## For multiplayer server / add to existing save game
 * Create a new map (if you haven't already you can apply to existing maps)
+  * You can use the factorio-gen-save-file.bat
+  * You can use the game to find your map, copy seed into the map-gen-settings.json wich is used to generate the save file.
 * Browse to the save file (.zip archive file) for your server
   * Local saves are in C:/Users/*[yourusername]*/AppData/Roaming/Factorio/saves/
 * Open the zip (typically `_autosave1.zip`)
 * Replace the original `control.lua` with the one in this repo
 
-## For development
-* Browse to Factorio freeplay scenarios folder Factorio/data/base/scenarios/freeplay/
+## For local single player games
+* Browse to Factorio freeplay scenarios folder **Factorio/data/base/scenarios/freeplay/**
 * Backup the original `control.lua`
 * Replace the original `control.lua` with the one in this repo
 * If you make a new game, the soft-mod will be applied
@@ -31,11 +33,10 @@ A modification to the `control.lua` file.
 # Files
 ```
 .
-├── gamer_softmod/      <- my current soft mod for my server.
-├── player_list_mod/    <- Simple Player list soft mod
-├── simple-soft-mod/    <- The simplest mod to the vanilla control.lua. Beginners start here.
-├── vanilla_control/    <- Backup of the vanilla control.lua
-└── factorio-server.bat <- to spin up a local testing server on windows
+├── gamer_softmod/             <- My current soft mod for my server.
+├── simple-soft-mod/           <- The simplest mod to the vanilla control.lua. ***Beginners start here.***
+├── vanilla_control/           <- Backup of the vanilla control.lua
+└── win-server/                <- Contains windows server starter files
 
 ```
 

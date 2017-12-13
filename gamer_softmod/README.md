@@ -9,6 +9,8 @@ I also have some mods from 3ra gaming.
 
 ## For multiplayer server / add to existing save game
 * Create a new map (if you haven't already you can apply to existing maps)
+  * You can use the factorio-gen-save-file.bat
+  * You can use the game to find your map, copy seed into the map-gen-settings.json wich is used to generate the save file.
 * Browse to the save file (.zip archive file) for your server
   * Typicaly **Factorio/saves/**
 * Open the zip (typically `_autosave1.zip`)
@@ -16,11 +18,15 @@ I also have some mods from 3ra gaming.
 * Copy the `locale` folder there and merge it with the existing one
 
 ## For development
-* Browse to Factorio freeplay scenarios folder **Factorio/data/base/scenarios/freeplay/**
-* Backup the original `control.lua`
+* Using the win-server folder structure...
+* Make sure you have a save file in the saves folder (generate of copy existing map)
+  * You can use the factorio-gen-save-file.bat
+  * You can use the game to find your map, copy seed into the map-gen-settings.json wich is used to generate the save file.
+* Browse to the save file in the saves folder
+* Open the zip (typically `_autosave1.zip`)
 * Replace the original `control.lua` with the one in this repo
 * Copy the `locale` folder there and merge it with the existing one
-* If you make a new game, the soft-mod will be applied
+
 
 
 # Files

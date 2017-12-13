@@ -1,13 +1,20 @@
 -- Anti-Griefing Soft Mod
 -- Prevents new players from destroing stuff and spamming pavements
+-- Ignores the early game
 -- @author Denis Zholob (DDDGamer)
 -- github: https://github.com/DDDGamer/factorio-dz-softmod
 -- ======================================================= --
+
+-- Notes: 
+--       * Carfull with notifications as its very spammy in admin chat.
+--       * A lot of the code is commented out because of the following rotation bug. Antigriefing for building only notifies at this stage.
+--       * TODO:/FIXME: - Add "on_build event" to prevent building over other peoples structures (inserter/belt bug with rotations)
 
 -- Dependencies
 require "locale/softmod-modules-util/Time"
 require "locale/softmod-modules-util/Time_Rank"
 
+local early_game_range = 60 --(min)
 local time_regular_player = Time_Rank.RANKS.lvl2.time -- hours
 local item_to_remove = nil
 
@@ -41,9 +48,14 @@ function on_preplayer_mined_item(event)
   local entity_name = ""
   local is_entity_ghost = entity.name == "entity-ghost"
 
+  -- Check if its the beginning of the game, and skip if it is
+  if is_early_game() then
+    return
+  end
+
   -- Check for allowed entities or admins and exit
-  if (player.admin and
-      entity.force.name == "neutral"
+  if (player.admin
+      or entity.force.name == "neutral"
       -- Dont care about cars, robots or tile-ghosts
       or entity.name == "tile-ghost"
       or entity.type == "car"
@@ -51,6 +63,7 @@ function on_preplayer_mined_item(event)
       -- From testing Trains cant be replaced as of 2017-03-20 (v0.14)
       or entity.type == "locomotive"
       or entity.type == "cargo-wagon"
+      or entity.last_user == nil
       ) then
     return
   end
@@ -59,58 +72,58 @@ function on_preplayer_mined_item(event)
   if (Time.tick_to_hour(player.online_time) < time_regular_player
       and entity.last_user.name ~= player.name
       ) then
-    -- ghost entity (re-create the ghost entity)
+    -- -- ghost entity (re-create the ghost entity)
     if is_entity_ghost then
       entity_name = entity.ghost_name
-      local ghost = entity.surface.create_entity{
-        name=entity.name,
-        force=entity.force,
-        inner_name=entity.ghost_name,
-        position=entity.position,
-        direction=entity.direction
-      }
-      ghost.last_user = entity.last_user
-    else -- Regular entity (try to re-create the ghost entity)
+    --   local ghost = entity.surface.create_entity{
+    --     name=entity.name,
+    --     force=entity.force,
+    --     inner_name=entity.ghost_name,
+    --     position=entity.position,
+    --     direction=entity.direction
+    --   }
+    --   ghost.last_user = entity.last_user
+    else -- Regular entity (try to re-create the entity)
       entity_name = entity.name
-      entity_player_name = entity.last_user.name
-      local replacement_entity = entity.surface.create_entity{
-        name=entity.name,
-        force=entity.force.name,
-        position=entity.position,
-        direction=entity.direction,
-        fast_replace=true,
-        spill=false
-      }
+    --   entity_player_name = entity.last_user.name
+    --   local replacement_entity = entity.surface.create_entity{
+    --     name=entity.name,
+    --     force=entity.force.name,
+    --     position=entity.position,
+    --     direction=entity.direction,
+    --     fast_replace=true,
+    --     spill=false
+    --   }
       
-      -- Creation of new entity is successfull
-      if replacement_entity ~= nil then
-        -- Preserve the original entity creator when making the copy
-        replacement_entity.last_user = game.players[entity_player_name]
-        -- If the source entity is valid then coppy settings the the re-created copy (assembler/oil recipies, logic, etc...)
-        if entity ~= nil and entity.valid then
-          replacement_entity.copy_settings(entity)
-          -- Prevent infinite items, set to remove the item from inventory on mined event.
-          item_to_remove = {name=entity.name, count=1}
-        end
-      else
-      -- Creation of the entity was unccessesfull (usually with rails)
-        if entity ~= nil and entity.valid then
-          -- Regular replacement failed, resorting to ghost replacement
-          local ghost = entity.surface.create_entity{
-            name="entity-ghost",
-            force=entity.force,
-            inner_name=entity_name,
-            position=entity.position,
-            direction=entity.direction
-          }
-          ghost.last_user = game.players[entity_player_name]
-        end
-      end
+    --   -- Creation of new entity is successfull
+    --   if replacement_entity ~= nil then
+    --     -- Preserve the original entity creator when making the copy
+    --     replacement_entity.last_user = game.players[entity_player_name]
+    --     -- If the source entity is valid then coppy settings the the re-created copy (assembler/oil recipies, logic, etc...)
+    --     if entity ~= nil and entity.valid then
+    --       replacement_entity.copy_settings(entity)
+    --       -- Prevent infinite items, set to remove the item from inventory on mined event.
+    --       item_to_remove = {name=entity.name, count=1}
+    --     end
+    --   else
+    --   -- Creation of the entity was unccessesfull (usually with rails)
+    --     if entity ~= nil and entity.valid then
+    --       -- Regular replacement failed, resorting to ghost replacement
+    --       local ghost = entity.surface.create_entity{
+    --         name="entity-ghost",
+    --         force=entity.force,
+    --         inner_name=entity_name,
+    --         position=entity.position,
+    --         direction=entity.direction
+    --       }
+    --       ghost.last_user = game.players[entity_player_name]
+    --     end
+    --   end
 
     end
 
     -- Notifications
-    player.print("Play more to unlock mining structures created by others.")
+    -- player.print("Play more to unlock mining structures created by others.")
     if is_entity_ghost then
       notify_admins(player.name .. " tried to mine ghost " .. entity_name)
       log("Warning: " .. player.name .. " tried to mine ghost" .. entity_name)
@@ -144,11 +157,16 @@ function on_marked_for_deconstruction(event)
   local player = game.players[event.player_index]
   local entity = event.entity
 
-   -- Check for allowed entities or admins and exit
-  if (player.admin and 
-      entity.type == "tree" and 
+  -- Check if its the beginning of the game, and skip if it is
+  if is_early_game() then
+    return
+  end
+
+  -- Check for allowed entities or admins and exit
+  if (player.admin or 
+      entity.type == "tree" or 
       entity.type == "simple-entity") then
-      game.print(entity.name .. "(" .. entity.type .. ") was marked for deconstruction")
+      -- game.print(entity.name .. "(" .. entity.type .. ") was marked for deconstruction")
     return
   end
 
@@ -168,9 +186,16 @@ function on_player_rotated_entity(event)
   local player = game.players[event.player_index]
   local entity = event.entity
 
-  if (Time.tick_to_hour(player.online_time) < time_regular_player and
+  -- Check if its the beginning of the game, and skip if it is
+  if is_early_game() then
+    return
+  end
+
+  if (not player.admin and 
+      Time.tick_to_hour(player.online_time) < time_regular_player and
       entity.last_user.name ~= player.name) then
       -- How to rotate back?
+      -- TODO: keep ownership
       -- player.print("Play more to unlock rotating structures built by others.")
       notify_admins(player.name .. " tried to rotate " .. entity.name)
   end
@@ -180,7 +205,7 @@ end
 -- Print a message to all admins
 -- @param message - string to print
 function notify_admins(message)
-  for i, player in pairs(game.players) do
+  for i, player in pairs(game.connected_players) do
     if player.admin then
       player.print("Warning: " .. message)
       -- Carefull of logging here as the game will log for every item, 
@@ -190,6 +215,13 @@ function notify_admins(message)
     end
   end
 end
+
+
+-- Returns true is game time is less thatn the early_game_range
+function is_early_game()
+  return ((Time.tick_to_min(game.tick) < early_game_range))
+end
+
 
 -- Event Handlers
 Event.register(defines.events.on_built_entity, on_built_entity)

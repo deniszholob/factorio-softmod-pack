@@ -2,12 +2,12 @@
 ::============================================================================================================== 
 ::	Replace the appropriate entries below to suit your installation (Default install example shown) 
 ::============================================================================================================== 
-set FactorioRoot=C:\Users\Denis\Desktop\Factorio_0.14.22\
+set FactorioRoot=Factorio\
 set FactorioExeLocation=%FactorioRoot%bin\x64\
-set SaveFileName=Lua-Test.zip
-set SaveLocation=%FactorioRoot%save\
+set SaveFileName=_autosave1.zip
+set SaveLocation=saves\
 set ServerSettingsFileName=server-settings.json
-set ServerSettingsLocation=%FactorioRoot%data\
+set ServerSettingsLocation=config\
 ::============================================================================================================== 
 echo ======================================
 echo PREPARING TO LAUNCH FACTORIO SERVER...
