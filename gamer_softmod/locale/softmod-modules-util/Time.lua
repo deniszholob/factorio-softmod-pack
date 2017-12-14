@@ -8,6 +8,12 @@ Time = {}
 
 -- Returns hours converted from game ticks
 -- @param t - Factorio game tick
+function Time.tick_to_day(t)
+  return Time.tick_to_hour(t) / 24
+end
+
+-- Returns hours converted from game ticks
+-- @param t - Factorio game tick
 function Time.tick_to_hour(t)
   return Time.tick_to_sec(t) / 3600
 end
@@ -23,7 +29,8 @@ end
 -- Returns seconds converted from game ticks
 -- @param t - Factorio game tick
 function Time.tick_to_sec(t)
-  return game.speed * (t / 60)
+  -- return game.speed * (t / 60)
+  return (t / 60)
 end
 
 
@@ -33,10 +40,16 @@ end
 function Time.tick_to_time_hms(t, format_str)
   local total_sec = Time.tick_to_sec(t)
   return {
-    h = math.floor(total_sec/3600), 
-    m = math.floor(total_sec%3600/60), 
-    s = math.floor(total_sec%60)
+    h = math.floor(total_sec / 3600),
+    m = math.floor(total_sec % 3600 / 60),
+    s = math.floor(total_sec % 60)
   }
+end
+
+-- Returns a time object representing time passed in game
+-- @return hms object
+function Time.game_time_pased()
+  return Time.tick_to_time_obj(game.tick)
 end
 
 return Time

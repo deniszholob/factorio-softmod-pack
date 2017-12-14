@@ -111,7 +111,7 @@ function on_player_join(event)
   if player.gui.center[MASTER_FRAME.name] ~= nil then
     player.gui.center[MASTER_FRAME.name].destroy()
   end
-  
+
   -- Show readme window (rules) when player (not admin) first joins, but not at later times
   if not player.admin and Time.tick_to_min(player.online_time) < 1 then
     draw_master_readme_frame(player, FRAME_TABS.rules.win.name)
@@ -214,12 +214,15 @@ end
 -- @param nav_container GUI element to add the buttons to
 function draw_frame_nav(nav_container)
   for i, frame_tab in pairs(FRAME_TABS) do
-    nav_container.add {
+    local btn = nav_container.add {
       type = "button",
       name = frame_tab.btn.name,
       caption = frame_tab.btn.caption,
       tooltip = frame_tab.btn.tooltip
     }
+    if(frame_tab.btn.name == "btn_readme_close") then
+      btn.style.font_color = Colors.red
+    end
   end
 end
 
@@ -282,7 +285,7 @@ function draw_players(container)
     local time_str = "" .. hms.s .. " sec" --string.format( "%dhr %dmin %dsec ", h, m, s)
     if(hms.m > 0)then time_str = "" .. hms.m .. " min " .. time_str end
     if(hms.h > 0)then time_str = "" .. hms.h .. " hr " .. time_str end
-    
+
     local player_rank = Time_Rank.get_rank(player)
     local player_role = Roles.get_role(player)
 

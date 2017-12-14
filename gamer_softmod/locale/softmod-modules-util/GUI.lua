@@ -24,8 +24,8 @@ function GUI.toggle_element(el)
     if el.style.visible == false then
       el.style.visible = true
     else
-      el.style.visible = false 
-    end 
+      el.style.visible = false
+    end
   end
 end
 

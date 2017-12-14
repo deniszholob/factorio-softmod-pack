@@ -31,7 +31,7 @@ Colors = {
   darkred =     { r=160, g=0,   b=0   },
   red =         { r=255, g=0,   b=25  },
   lightred =    { r=255, g=130, b=120 },
-  
+
   darkorange =  { r=242, g=70,  b=13  },
   orange =      { r=255, g=140, b=25  },
   yellow =      { r=255, g=255, b=0   },

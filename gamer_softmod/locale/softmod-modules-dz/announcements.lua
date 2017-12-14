@@ -10,8 +10,8 @@ require "locale/softmod-modules-util/Roles"
 
 -- Intro Messages
 local intros = {
-  -- "Welcome to Factorio freeplay",
-  "Welcome to Factorio Train World!",
+  "Welcome to Factorio Freeplay",
+  -- "Welcome to Factorio Train World!",
   "Join discord for voice chat, discussion and support: https://discord.gg/hmwb3dB",
 }
 

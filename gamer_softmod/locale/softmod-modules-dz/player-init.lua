@@ -1,13 +1,19 @@
 -- Player Soft Mod
--- Changes spawn items from vanilla version
+-- Changes spawn and respawn items from vanilla version
 -- @author Denis Zholob (DDDGamer)
 -- github: https://github.com/DDDGamer/factorio-dz-softmod
 -- ======================================================= --
 
 -- Dependencies
 require "locale/softmod-modules-util/Time"
-require "locale/softmod-modules-util/Time_Rank"
+require "locale/softmod-modules-util/Roles"
 
+-- Time in Minutes
+local AGE = {
+    NOMAD = 20,
+    IRON = 60,
+    STEEL = 120
+}
 local REVEAL_AREA_RADIUS = 200
 
 -- Give player starting items.
@@ -21,22 +27,21 @@ function player_created(event)
   player.insert { name = "firearm-magazine",    count = 10 }
 
   -- To mark the spawn location get some brick and concrete
-  if(player.name=="DDDGamer") then
-    player.insert { name = "stone-brick",       count = 16 }
-    player.insert { name = "hazard-concrete",   count = 20 }
+  if (Roles.is_player_in_role(player, Roles.OWNER)) then
+    player.insert { name = "stone-brick", count = 16 }
+    player.insert { name = "hazard-concrete", count = 20 }
   end
 
-  -- Less than 20min into the game
-  if Time.tick_to_min(game.tick) < 20 then
+  -- Give different items depending on game time
+  -- Ex: No need for burner miners late game
+  if Time.tick_to_min(game.tick) < AGE.NOMAD then
     player.insert { name = "iron-axe",            count = 1  }
     player.insert { name = "stone-furnace",       count = 1  }
     player.insert { name = "burner-mining-drill", count = 3  }
     player.insert { name = "wooden-chest",        count = 1  }
-  -- Less than 60min into the game
-  elseif Time.tick_to_min(game.tick) < 60 then
+  elseif Time.tick_to_min(game.tick) < AGE.IRON then
     player.insert { name = "iron-axe",            count = 1  }
-  -- After 2hrs into the game
-  elseif Time.tick_to_min(game.tick) > 120 then
+  elseif Time.tick_to_min(game.tick) >= AGE.STEEL then
     player.insert { name = "steel-axe",           count = 1  }
   end
   reveal_area(player)
@@ -47,18 +52,16 @@ end
 function player_respawned(event)
   local player = game.players[event.player_index]
 
-  -- Less than 20min into the game
-  if Time.tick_to_min(game.tick) < 20 then
+  -- Give different items depending on game time
+  if Time.tick_to_min(game.tick) < AGE.NOMAD then
     player.insert { name = "iron-axe",         count = 1  }
     player.insert { name = "pistol",           count = 1  }
     player.insert { name = "firearm-magazine", count = 10 }
-  -- Less than 60min into the game
-  elseif Time.tick_to_min(game.tick) < 60 then
+  elseif Time.tick_to_min(game.tick) < AGE.IRON then
     player.insert { name = "iron-axe",         count = 1  }
     player.insert { name = "submachine-gun",   count = 1  }
     player.insert { name = "firearm-magazine", count = 10 }
-  -- After 2hrs into the game
-  elseif Time.tick_to_min(game.tick) > 120 then
+  elseif Time.tick_to_min(game.tick) >= AGE.STEEL then
     player.insert { name = "steel-axe",                count = 1  }
     player.insert { name = "submachine-gun",           count = 1  }
     player.insert { name = "piercing-rounds-magazine", count = 10 }

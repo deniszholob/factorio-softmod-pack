@@ -4,7 +4,7 @@
 -- github: https://github.com/DDDGamer/factorio-dz-softmod
 -- ======================================================= --
 
---TODO: Update all to Time_Rank.LVL1 format
+--TODO: Update all to Time_Rank.LVL1 format (capitalize)
 
 -- Dependencies
 require "locale/softmod-modules-util/Time"
@@ -22,26 +22,23 @@ Time_Rank.RANKS = {
   lvl6 = { time = 60,  color = Colors.purple,      tag = "All-Star", },
 }
 
-
 -- Return a rank obj based on the players time on the server
 -- @param player
--- @return Rank obj (time, color, tag)
+-- @return Rank obj
 function Time_Rank.get_rank(player)
-  if Time.tick_to_hour(player.online_time) >= Time_Rank.RANKS.lvl6.time then
-      return Time_Rank.RANKS.lvl6
-  elseif Time.tick_to_hour(player.online_time) >= Time_Rank.RANKS.lvl5.time then
-      return Time_Rank.RANKS.lvl5
-  elseif Time.tick_to_hour(player.online_time) >= Time_Rank.RANKS.lvl4.time then
-      return Time_Rank.RANKS.lvl4
-  elseif Time.tick_to_hour(player.online_time) >= Time_Rank.RANKS.lvl3.time then
-      return Time_Rank.RANKS.lvl3
-  elseif Time.tick_to_hour(player.online_time) >= Time_Rank.RANKS.lvl2.time then
-      return Time_Rank.RANKS.lvl2
-  elseif Time.tick_to_hour(player.online_time) < Time_Rank.RANKS.lvl2.time then
-      return Time_Rank.RANKS.lvl1
+  -- local online_time = Time.tick_to_hour(player.online_time)
+  local online_time = Time.tick_to_hour(player.online_time)
+  local time_rank = Time_Rank.RANKS.lvl1
+
+  -- Loop through rank table to check what rank player is
+  for key, rank in pairs(Time_Rank.RANKS) do
+    -- Lua tables not ordered, can't return immediately in the loop
+    if(rank.time > time_rank.time and online_time >= rank.time) then
+      time_rank = rank
+    end
   end
-  -- Default return
-  return Time_Rank.RANKS.lvl1
+
+  return time_rank
 end
 
 return Time_Rank

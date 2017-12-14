@@ -12,14 +12,6 @@ require "locale/softmod-modules-util/Time_Rank"
 require "locale/softmod-modules-util/Roles"
 require "locale/softmod-modules-util/Colors"
 
-local OWNER = "DDDGamer"
-
--- Roles
-local ROLES = {
-  owner =   { tag = "Owner",  color = Colors.red    }, -- server owner
-  admin =   { tag = "Admin",  color = Colors.orange }, -- server admin
-}
-
 
 -- When new player joins add the playerlist btn to their GUI
 -- Redraw the playerlist frame to update with the new player
@@ -101,7 +93,7 @@ function add_player_to_list(player, p_online, rank, role)
   p_online.tag = "[" .. rank.tag .. "]"
 
   -- If player has a role add it in
-  if(role.tag and #role.tag > 0) then 
+  if(role.tag and #role.tag > 0) then
     caption_str = caption_str .. " <" .. role.tag .. ">"
     p_online.tag = p_online.tag .. " <" .. role.tag .. ">"
     color = role.color

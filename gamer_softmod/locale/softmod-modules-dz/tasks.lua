@@ -12,7 +12,7 @@ require "locale/softmod-modules-util/Colors"
 require "config"
 
 -- Constants
-local TASK_LIMIT = 10 
+local TASK_LIMIT = 10
 local TASK_LEN_MIN = 3
 local TASK_LEN_MAX = 100
 local REGULAR_TIME = 60 -- min
@@ -142,7 +142,7 @@ function draw_task_frame(player)
     frame.add { type = "flow", name = "flow_task_ctrl", direction = "horizontal" }
     frame["flow_task_ctrl"].add { type = "button",    name = "btn_new_task", caption = "Add Task" }
     frame["flow_task_ctrl"].add { type = "textfield", name = "txt_new_task" }
-    frame["flow_task_ctrl"].add { type = "button",    name = "btn_task_close", caption = "Close" }
+    frame["flow_task_ctrl"].add { type = "button",    name = "btn_task_close", caption = "Close" }.style.font_color = Colors.red
     frame.add { type = "label", name = "lbl_error", caption = "" }.style.font_color = Colors.red
     -- make a tab content container
     frame.add { type = "scroll-pane", name = "scroll_content", direction = "vertical", vertical_scroll_policy = "always", horizontal_scroll_policy = "auto" }
