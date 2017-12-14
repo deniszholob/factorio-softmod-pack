@@ -101,7 +101,7 @@ function add_player_to_list(player, p_online, rank, role)
 
   -- Add in the entry to the player list
   player.gui.left["frame_playerlist"].add {
-    type = "label", style = "caption_label_style", name = p_online.name,
+    type = "label", name = p_online.name,
     caption = caption_str
   }.style.font_color = color
 end

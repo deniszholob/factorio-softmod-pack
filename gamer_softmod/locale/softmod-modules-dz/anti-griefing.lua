@@ -41,8 +41,8 @@ end
 -- Note: Factorio API curretely does not allow for cancelling mining operations.
 -- https://forums.factorio.com/viewtopic.php?f=7&t=27630#p175589
 -- Replace mined item with identical copy, save the item that was mined for removal in on_player_mined_item event
--- @param event on_preplayer_mined_item
-function on_preplayer_mined_item(event)
+-- @param event on_pre_player_mined_item
+function on_pre_player_mined_item(event)
   local player = game.players[event.player_index]
   local entity = event.entity
   local entity_name = ""
@@ -137,7 +137,7 @@ end
 
 
 -- When a player finishes mining an item...
--- Continuation from on_preplayer_mined_item event
+-- Continuation from on_pre_player_mined_item event
 -- Remove the item that the player mined from their inventory (b/c we re-created a copy already and dont want infinite items.)
 -- @param event on_player_rotated_entity
 function on_player_mined_item(event)
@@ -226,6 +226,6 @@ end
 -- Event Handlers
 Event.register(defines.events.on_built_entity, on_built_entity)
 Event.register(defines.events.on_player_mined_item, on_player_mined_item)
-Event.register(defines.events.on_preplayer_mined_item, on_preplayer_mined_item)
+Event.register(defines.events.on_pre_player_mined_item, on_pre_player_mined_item)
 Event.register(defines.events.on_player_rotated_entity, on_player_rotated_entity)
 Event.register(defines.events.on_marked_for_deconstruction, on_marked_for_deconstruction)

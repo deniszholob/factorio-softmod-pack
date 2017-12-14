@@ -191,6 +191,7 @@ function draw_master_readme_frame(player, window_name)
     end
   else -- create the master frame and call function again to draw specific tab
     local frame = player.gui.center.add { type = "frame", direction = "vertical", name = MASTER_FRAME.name }
+    frame.style.scaleable = true
     -- make a nav container and add nav buttons
     frame.add { type = "flow", name = "readme_nav", direction = "horizontal" }
     draw_frame_nav(frame.readme_nav)
@@ -200,6 +201,7 @@ function draw_master_readme_frame(player, window_name)
     frame.readme_nav.style.maximal_width = 600;
     frame.readme_nav.style.minimal_width = 600;
     -- Style config for content
+    frame.scroll_content.style.scaleable = true
     frame.scroll_content.style.maximal_height = 400;
     frame.scroll_content.style.minimal_height = 400;
     frame.scroll_content.style.maximal_width  = 600;
@@ -241,7 +243,7 @@ function draw_static_content(container, content)
     -- Links go into textfields
     else
       local txt = container.add { type = "textfield", name = i, text = text }
-      txt.style.minimal_width = 500;
+      txt.style.width = 500;
     end
   end
 end
@@ -270,7 +272,7 @@ function draw_players(container)
   local table_name = "tbl_readme_players"
   container.add { type = "label", name = "lbl_player_tile", caption = "=== ALL TIME PLAYERS (" .. #game.players .. ") ===" }.style.font_color = Colors.green
   container.add { type = "label", name = "lbl_man_hrs",     caption = "Total man hours: " .. Math.round(Time.tick_to_hour(tot_player_ticks), 2) .. "" }
-  container.add { type = "table", name = table_name, colspan = 4 }
+  container.add { type = "table", name = table_name, column_count = 4 }
   container[table_name].style.minimal_width = 500;
   container[table_name].style.maximal_width = 500;
   container[table_name].add { type = "label", name = "lbl_name",   caption = "Name" }

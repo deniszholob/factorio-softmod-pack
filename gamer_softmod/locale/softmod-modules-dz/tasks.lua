@@ -153,6 +153,8 @@ function draw_task_frame(player)
     frame.scroll_content.style.minimal_width  = 500;
     -- Make frame invisible upon startup
     frame.style.visible = false
+    frame.style.scaleable = true
+    frame.scroll_content.style.scaleable = true
   end
 end
 

@@ -1,14 +1,13 @@
--- Vanilla 0.15 Rocket code
+-- Vanilla 0.16 Rocket code
 
 -- Dependencies
-require("silo-script")
+local silo_script = require("silo-script")
 
 local version = 1
 
 
 script.on_event(defines.events.on_player_created, function(event)
-  local player = game.players[event.player_index]
-  silo_script.gui_init(player)
+  silo_script.on_player_created(event)
 end)
 
 script.on_event(defines.events.on_gui_click, function(event)
@@ -17,7 +16,7 @@ end)
 
 script.on_init(function()
   global.version = version
-  silo_script.init()
+  silo_script.on_init()
 end)
 
 script.on_event(defines.events.on_rocket_launched, function(event)
@@ -32,3 +31,4 @@ script.on_configuration_changed(function(event)
 end)
 
 silo_script.add_remote_interface()
+silo_script.add_commands()

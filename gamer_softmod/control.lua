@@ -5,8 +5,9 @@
 -- github: https://github.com/DDDGamer/factorio-dz-softmod
 -- ======================================================= --
 
--- Notes: 
---       * FIXME: If rocket-vanilla imported after everything else, clicking on buttons does not show the GUI
+-- Notes:
+--       * FIXME: If rocket-vanilla imported after everything else, clicking on buttons does not show the GUI,
+--                also last time i checked rocket button doesnt work with the softmod :/
 --       * Gravestones not needed in Multiplayer v0.15
 
 --=========== Import dependency modules ===========--
