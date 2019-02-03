@@ -12,6 +12,7 @@ A modification to the `control.lua` file.
 
 ## Support Me
 If you found the pack or the source code useful, consider supporting me on Patreon.
+
 [![button](https://c5.patreon.com/external/logo/downloads_wordmark_white_on_coral.png)](https://www.patreon.com/deniszholob)
 
 ## Installation
@@ -69,3 +70,10 @@ Dev files will be removed from the release build, see the [github repository](ht
 * [RedMew](https://github.com/Refactorio/RedMew)
 * [Lua Doc](https://www.lua.org/manual/5.3/)
 * [Lua tutspoint](https://www.tutorialspoint.com/lua/index.htm)
+
+## Screenshots
+![Game Start with softmod pack](.screenshots/dddgamer-softmod.jpg)
+![Auto Research](.screenshots/dddgamer-softmod_auto-research.jpg)
+![Task List](.screenshots/dddgamer-softmod_task-list.jpg)
+![Game Info](.screenshots/dddgamer-softmod_game-info.jpg)
+![Player List](.screenshots/dddgamer-softmod_player-list.jpg)
