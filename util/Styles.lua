@@ -20,10 +20,10 @@ Styles = {
     -- Match label size, etc.. the style of sprite buttons
     lbl_menu = {
         font = 'default-bold',
-        top_padding = 4,
-        bottom_padding = 0,
-        left_padding = 4,
-        right_padding = 4,
+        top_padding = 1,
+        -- bottom_padding = 0,
+        -- left_padding = 4,
+        -- right_padding = 4,
     },
     frm_menu = {
         -- top_padding = 0,
@@ -51,8 +51,27 @@ Styles = {
         right_padding = 0,
         bottom_padding = 0,
         left_padding = 0,
-        font = 'default-listbox'
+        font = 'default-listbox',
     },
+    txt_clr_yellow = {
+        font_color = Colors.yellow,
+    },
+    txt_clr_orange = {
+        font_color = Colors.orange,
+    },
+    txt_clr_blue = {
+        font_color = Colors.lightblue,
+    },
+    txt_clr_red = {
+        font_color = Colors.red,
+    },
+    txt_clr_green = {
+        font_color = Colors.green,
+    },
+    txt_clr_disabled = {
+        font_color = Colors.darkgrey,
+    },
+
 }
 
 return Styles

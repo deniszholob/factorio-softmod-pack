@@ -11,6 +11,7 @@
 -- ======================================================= --
 local GUI = require("stdlib/GUI")
 local Styles = require("util/Styles")
+local Sprites = require('util/Sprites')
 
 -- Constants --
 -- ======================================================= --
@@ -20,20 +21,24 @@ Tasks = {
     MASTER_FRAME_LOCATION = GUI.MASTER_FRAME_LOCATIONS.left,
     -- Check Factorio prototype definitions in \Factorio\data\core and \Factorio\data\base
     SPRITE_NAMES = {
-        menu = "utility/slot_icon_robot_material",
-        add = "utility/add",
-        edit = "utility/rename_icon_normal",
-        -- delete = 'utility/remove'
-        delete = "utility/set_bar_slot",
-        confirm = "utility/confirm_slot",
-        up = 'utility/fluid_indication_arrow',
-        down = 'utility/hint_arrow_down',
+        menu = Sprites.slot_icon_robot_material,
+        add = Sprites.add,
+        edit = Sprites.rename_icon_normal,
+        -- delete = Sprites.remove
+        delete = Sprites.set_bar_slot,
+        confirm = Sprites.confirm_slot,
+        up = Sprites.hint_arrow_up,
+        down = Sprites.hint_arrow_down,
     },
     -- Utf shapes https://www.w3schools.com/charsets/ref_utf_geometric.asp
     -- Utf symbols https://www.w3schools.com/charsets/ref_utf_symbols.asp
     TEXT_SYMBOLS = {
-        up = "▲",
-        down = "▼"
+        up = '▲',
+        down = '▼',
+        add = '✚',
+        delete = '✖',
+        edit = '✒',
+        confirm = '✔',
     },
     get_menu_button = function(player)
         return GUI.menu_bar_el(player)[Tasks.MENU_BTN_NAME]
@@ -170,7 +175,8 @@ function Tasks.fill_master_frame(container, player, edit_task)
                 {
                     type = "sprite-button",
                     name = "btn_confirm_task_" .. task.id,
-                    sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.confirm),
+                    caption = Tasks.TEXT_SYMBOLS.confirm,
+                    -- sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.confirm),
                     tooltip = "Confirm"
                 },
                 -- On Click callback function
@@ -183,6 +189,7 @@ function Tasks.fill_master_frame(container, player, edit_task)
                 end
             )
             GUI.element_apply_style(btn_confirm_task, Styles.small_button)
+            GUI.element_apply_style(btn_confirm_task, Styles.txt_clr_green)
             local lbl_test = task_flow.add({type = "textfield", name = "textfield_" .. task.id, text = task.text})
         else
             -- Edit button
@@ -192,7 +199,8 @@ function Tasks.fill_master_frame(container, player, edit_task)
                 {
                     type = "sprite-button",
                     name = "btn_edit_task_" .. task.id,
-                    sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.edit),
+                    caption = Tasks.TEXT_SYMBOLS.edit,
+                    -- sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.edit),
                     tooltip = "Edit"
                 },
                 -- On Click callback function
@@ -201,6 +209,7 @@ function Tasks.fill_master_frame(container, player, edit_task)
                 end
             )
             GUI.element_apply_style(btn_edit_task_, Styles.small_button)
+            GUI.element_apply_style(btn_edit_task_, Styles.txt_clr_yellow)
 
             -- Delete button
             local btn_delete_task_ =
@@ -209,7 +218,8 @@ function Tasks.fill_master_frame(container, player, edit_task)
                 {
                     type = "sprite-button",
                     name = "btn_delete_task_" .. task.id,
-                    sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.delete),
+                    caption = Tasks.TEXT_SYMBOLS.delete,
+                    -- sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.delete),
                     tooltip = "Delete"
                 },
                 -- On Click callback function
@@ -219,6 +229,7 @@ function Tasks.fill_master_frame(container, player, edit_task)
                 end
             )
             GUI.element_apply_style(btn_delete_task_, Styles.small_button)
+            GUI.element_apply_style(btn_delete_task_, Styles.txt_clr_red)
 
             -- Up button
             local btn_up_task =
@@ -228,8 +239,8 @@ function Tasks.fill_master_frame(container, player, edit_task)
                     -- type = "button",
                     type = "sprite-button",
                     name = "btn_up_task" .. task.id,
-                    -- caption = Tasks.TEXT_SYMBOLS.up,
-                    sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.up),
+                    caption = Tasks.TEXT_SYMBOLS.up,
+                    -- sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.up),
                     tooltip = "Increse Priority"
                 },
                 -- On Click callback function
@@ -240,6 +251,7 @@ function Tasks.fill_master_frame(container, player, edit_task)
             )
             -- GUI.element_apply_style(btn_up_task, Styles.small_symbol_button)
             GUI.element_apply_style(btn_up_task, Styles.small_button)
+            GUI.element_apply_style(btn_up_task, Styles.txt_clr_blue)
             if (key <= 1) then
                 btn_up_task.enabled = false
             else
@@ -254,8 +266,8 @@ function Tasks.fill_master_frame(container, player, edit_task)
                     -- type = "button",
                     type = "sprite-button",
                     name = "btn_down_task" .. task.id,
-                    -- caption = Tasks.TEXT_SYMBOLS.down,
-                    sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.down),
+                    caption = Tasks.TEXT_SYMBOLS.down,
+                    -- sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.down),
                     tooltip = "Decrease Priority"
                 },
                 -- On Click callback function
@@ -266,6 +278,7 @@ function Tasks.fill_master_frame(container, player, edit_task)
             )
             -- GUI.element_apply_style(btn_down_task, Styles.small_symbol_button)
             GUI.element_apply_style(btn_down_task, Styles.small_button)
+            GUI.element_apply_style(btn_down_task, Styles.txt_clr_blue)
             if (key >= table.maxn(config.tasks)) then
                 btn_down_task.enabled = false
             else
@@ -293,7 +306,8 @@ function Tasks.fill_master_frame(container, player, edit_task)
             {
                 type = "sprite-button",
                 name = "btn_add_task",
-                sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.add),
+                caption = Tasks.TEXT_SYMBOLS.add,
+                -- sprite = GUI.get_safe_sprite_name(player, Tasks.SPRITE_NAMES.add),
                 tooltip = "Add new task"
             },
             -- On Click callback function
@@ -305,6 +319,7 @@ function Tasks.fill_master_frame(container, player, edit_task)
     end
     -- GUI.element_apply_style(btn_add_task, Styles.small_button)
     GUI.element_apply_style(btn_add_task, Styles.small_symbol_button)
+    GUI.element_apply_style(btn_add_task, Styles.txt_clr_green)
     if (edit_task) then
         btn_add_task.enabled = false
     else

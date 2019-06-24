@@ -29,7 +29,9 @@ local DISABLED_RECIPE_LIST = {
 
 -- Tech to begin researched with
 local RESEARCH_TECH = {
-    'toolbelt'
+    'toolbelt',
+    'steel-axe',
+    'optics',
 }
 
 local PRINT_DISABLED_TECH = false

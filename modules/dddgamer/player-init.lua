@@ -58,16 +58,9 @@ Event.register(defines.events.on_player_respawned, on_player_respawned)
 -- Helper Functions --
 -- ======================================================= --
 
--- Give player basic items appropriate with research: axe, gun, ammo
+-- Give player basic items appropriate with research: gun, ammo
 -- @param player LuaPlayer
 function addBasicItems(player)
-    -- No need for iron axes anymore
-    if (is_steel_researched(player)) then
-        player.insert {name = 'steel-axe', count = 1}
-    else
-        player.insert {name = 'iron-axe', count = 1}
-    end
-
     -- Lets avoid hoarding pistols...
     if (is_military_1_researched(player)) then
         player.insert {name = 'submachine-gun', count = 1}
@@ -90,7 +83,6 @@ function addStartingItems(player)
     player.insert {name = 'iron-plate', count = 10}
     player.insert {name = 'pistol', count = 1}
     player.insert {name = 'firearm-magazine', count = 10}
-    player.insert {name = 'iron-axe', count = 1}
 
     -- Give different items depending on game time
     -- Ex: No need for burner miners late game

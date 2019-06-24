@@ -9,7 +9,7 @@ Game = {}
 -- @tparam[opt="missing value"] string msg message
 function Game.fail_if_missing(var, msg)
     if not var then
-        error(msg or "Missing value", 3)
+        error(msg .. var or "Missing value", 3)
     end
     return false
 end

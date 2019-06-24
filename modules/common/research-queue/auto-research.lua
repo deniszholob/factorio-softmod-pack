@@ -23,17 +23,21 @@ Auto_Research = {
     MASTER_FRAME_LOCATION = GUI.MASTER_FRAME_LOCATIONS.left,
     -- Check Factorio prototype definitions in \Factorio\data\core and \Factorio\data\base
     SPRITE_NAMES = {
-        menu = 'item/lab',
-        up = 'utility/fluid_indication_arrow',
-        down = 'utility/hint_arrow_down',
-        blacklist = 'utility/clear',
-        remove = 'utility/set_bar_slot',
+        menu = Sprites.lab,
+        up = Sprites.hint_arrow_up,
+        down = Sprites.hint_arrow_down,
+        blacklist = Sprites.clear,
+        remove = Sprites.set_bar_slot,
+        tech_prefix = 'technology/',
+        item_prefix = 'item/',
     },
     -- Utf shapes https://www.w3schools.com/charsets/ref_utf_geometric.asp
     -- Utf symbols https://www.w3schools.com/charsets/ref_utf_symbols.asp
     TEXT_SYMBOLS = {
-        up = "▲",
-        down = "▼"
+        up = '▲',
+        down = '▼',
+        blacklist = '⊘',
+        remove = '✖',
     },
     get_menu_button = function(player)
         return GUI.menu_bar_el(player)[Auto_Research.MENU_BTN_NAME]
@@ -45,16 +49,15 @@ Auto_Research = {
     end,
     default_queued_techs = {
         'automation',
+        'military-1',
         'logistics',
-        'automation-2',
+        'turrets',
     },
     default_blacklisted_techs = {
-        'shotgun',
-        'shotgun-shell-damage-1',
-        'shotgun-shell-speed-1',
+        'combat-robotics',
     },
     default_allowed_research_ingredients = {
-        ['science-pack-1'] = true
+        ['automation-science-pack'] = true
     }
 }
 
@@ -66,6 +69,7 @@ Auto_Research = {
 -- @param event on_player_joined_game
 function Auto_Research.on_player_joined_game(event)
     local player = game.players[event.player_index]
+    Auto_Research.disableDefaultGameQueue(player.force)
     Auto_Research.setDefaultConfig(player.force)
     Auto_Research.draw_menu_btn(player)
     -- Auto_Research.draw_master_frame(player) -- Will appear on load, cooment out to load later on button click
@@ -137,7 +141,6 @@ function Auto_Research.GUI_onClick(event)
     local config = Auto_Research.getConfig(force)
     local name = event.element.name
     if name == "auto_research_enabled" then
-        game.print(serpent.block(event.element.state))
         Auto_Research.setAutoResearch(force, event.element.state)
     elseif name == "auto_research_queued_only" then
         Auto_Research.setQueuedOnly(force, event.element.state)
@@ -592,31 +595,46 @@ function Auto_Research.GUI_updateTechnologyList(scrollpane, technologies, player
                         entryflow.add {
                         type = "sprite-button",
                         name = "auto_research_queue_top-" .. techname,
-                        sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.up),
+                        caption = Auto_Research.TEXT_SYMBOLS.up,
+                        -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.up),
                         tooltip = 'Move to beginning of Queue'
                     }
                     GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                    GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_blue)
                     temp_var_for_el_style =
                         entryflow.add {
                         type = "sprite-button",
                         name = "auto_research_queue_bottom-" .. techname,
-                        sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.down),
+                        caption = Auto_Research.TEXT_SYMBOLS.down,
+                        -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.down),
                         tooltip = 'Move to end of Queue'
                     }
                     GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                    GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_blue)
                 end
                 temp_var_for_el_style =
                     entryflow.add {
                     type = "sprite-button",
                     name = "auto_research_delete-" .. techname,
-                    sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.remove),
+                    caption = Auto_Research.TEXT_SYMBOLS.remove,
+                    -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.remove),
                     tooltip = 'Remove'
                 }
                 GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_red)
+
+                -- Tech icon
+                local sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.tech_prefix .. techname)
+                temp_var_for_el_style = entryflow.add {type = "sprite", sprite = sprite}
+                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite)
+
+                -- Research text name
                 temp_var_for_el_style = entryflow.add {type = "label", caption = tech.localised_name}
                 GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_tech_label)
+
+                -- Research science req (pots)
                 for _, ingredient in pairs(tech.research_unit_ingredients) do
-                    local sprite = GUI.get_safe_sprite_name(player, "item/" .. ingredient.name)
+                    local sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.item_prefix .. ingredient.name)
                     temp_var_for_el_style = entryflow.add {type = "sprite", sprite = sprite}
                     GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite)
                 end
@@ -748,28 +766,43 @@ function Auto_Research.GUI_updateSearchResult(player, text)
                     entryflow.add {
                     type = "sprite-button",
                     name = "auto_research_queue_top-" .. name,
-                    sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.up),
+                    caption = Auto_Research.TEXT_SYMBOLS.up,
+                    -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.up),
                     tooltip = 'Move to beginning of Queue'
                 }
                 GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_blue)
                 temp_var_for_el_style =
                     entryflow.add {
                     type = "sprite-button",
                     name = "auto_research_queue_bottom-" .. name,
-                    sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.down),
+                    caption = Auto_Research.TEXT_SYMBOLS.down,
+                    -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.down),
                     tooltip = 'Move to end of Queue'
                 }
                 GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_blue)
                 temp_var_for_el_style =
                     entryflow.add {
                     type = "sprite-button",
                     name = "auto_research_blacklist-" .. name,
-                    sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.blacklist),
+                    caption = Auto_Research.TEXT_SYMBOLS.blacklist,
+                    -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.blacklist),
                     tooltip = 'Blacklist'
                 }
                 GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_red)
+
+                -- Tech icon
+                local sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.tech_prefix .. name)
+                temp_var_for_el_style = entryflow.add {type = "sprite", sprite = sprite}
+                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite)
+
+                -- Research text name
                 temp_var_for_el_style = entryflow.add {type = "label", name = name, caption = tech.localised_name}
                 GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_tech_label)
+
+                -- Research science req (pots)
                 for _, ingredient in pairs(tech.research_unit_ingredients) do
                     local sprite = GUI.get_safe_sprite_name(player, "item/" .. ingredient.name)
                     temp_var_for_el_style = entryflow.add({type = "sprite", sprite = sprite})
@@ -1042,5 +1075,20 @@ function Auto_Research.startNextResearch(force, override_spam_detection)
         end
     end
 
-    force.current_research = next_research
+    -- v0.16 Intention
+    -- force.current_research = next_research
+
+    -- v0.17 Adaptation of the above
+    -- We overwrite what ever the game has in the queue with the next tech from this custom queue
+    if(next_research) then
+        force.research_queue = nil;
+        -- force.cancel_current_research();
+        force.add_research(next_research);
+    end
+end
+
+
+-- Disable the default recearch qeue that ships with the game and use ours instead
+function Auto_Research.disableDefaultGameQueue(force)
+    force.research_queue_enabled = false;
 end

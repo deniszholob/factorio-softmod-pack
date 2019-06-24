@@ -10,12 +10,16 @@
 -- ======================================================= --
 local Time = require('util/Time')
 
+-- Constants --
+-- ======================================================= --
+local DeathMarker = {}
+
 -- Event Functions --
 -- ======================================================= --
 
 -- When a player dies, place a marker on the map of death location
 -- @param event - on_pre_player_died
-function on_player_death(event)
+function DeathMarker.on_player_death(event)
     local player = game.players[event.player_index]
     local death_hms = Time.tick_to_time_hms(game.tick)
     local map_tag = {
@@ -29,7 +33,7 @@ end
 -- Event Registration --
 -- ======================================================= --
 if(Event) then
-    Event.register(defines.events.on_pre_player_died, on_player_death)
+    Event.register(defines.events.on_pre_player_died, DeathMarker.on_player_death)
 else
-    script.on_event(defines.events.on_pre_player_died, on_player_death)
+    script.on_event(defines.events.on_pre_player_died, DeathMarker.on_player_death)
 end

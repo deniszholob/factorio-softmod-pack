@@ -21,7 +21,8 @@ local SECTION_CONTENT = {
     {
         title = 'Game Info',
         content = {
-            '* Gameplay: Vanilla with Disabled Handcrafting and QOL Mods',
+            '* Gameplay: Vanilla with QOL Mods',
+            -- '* Handcrafting is Disabled',
             '* Join discord for discussion, voice chat and admin support:',
             'https://discord.gg/hmwb3dB',
             '* Check the factorio cheatsheet for help:',
@@ -43,7 +44,7 @@ local SECTION_CONTENT = {
     {
         title = 'Station Naming Guidelines',
         content = {
-            '* Exclude "[" and "]" L = Load, U = Unload, S = Stacker',
+            '* L = Load, U = Unload, Q = Queue/Stacker (Exclude "[" and "]" for the following examples):',
             '* Resource Trains: [Location]_[L/U]_[Resource-Name]_[ID]',
             '* Taxi Trains: #PAX_[Location]_[Resource-Name]_[ID]',
             '* Example Ore: "Mine_L_Iron-Ore_1"',
@@ -177,14 +178,13 @@ function draw_gameinfo_frame(player)
         -- Flow
         local button_flow = master_frame.add({type = 'flow', direction = 'horizontal'})
         button_flow.style.horizontally_stretchable = true -- Needed for align to work
-        button_flow.style.align = 'right'
+        button_flow.style.horizontal_align = 'right'
 
         -- Close Button
         local close_button =
             button_flow.add(
             {type = 'button', name = 'btn_gameinfo_close', caption = 'Close', tooltip = 'Hide this window'}
         )
-        close_button.style.font_color = Colors.orange
     end
 end
 
@@ -196,19 +196,18 @@ function draw_static_content(container, content)
     for i, text in pairs(content) do
         -- Regular text
         if (string.find(text, 'http', 1) == nil) then
-            -- Links go into textfields
+            -- Links go into textfields, rest as text
             local txt = container.add({type = 'label', name = i, caption = text})
             if (string.find(text, '===', 1) ~= nil) then
                 txt.style.font_color = Colors.orange
                 txt.style.font = 'default-bold'
-                txt.style.align = 'center'
+                txt.style.horizontal_align = 'center'
             end
         else
             local txt = container.add({type = 'textfield', name = i, text = text})
             txt.style.horizontally_stretchable = true
             -- txt.read_only = true
             txt.style.width = 500
-            txt.style.selection_background_color = Colors.orange
             -- txt.style.color = Colors.grey
         end
     end
@@ -223,7 +222,7 @@ function draw_section(container, section_content_data)
     -- Header flow
     local header_flow = section.add({type = 'flow', direction = 'horizontal'})
     header_flow.style.horizontally_stretchable = true -- Needed for align to work
-    header_flow.style.align = 'center'
+    header_flow.style.horizontal_align = 'center'
 
     -- Section Header Text
     local header = header_flow.add({type = 'label', caption = '=== ' .. section_content_data.title .. ' ==='})

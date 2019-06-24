@@ -296,7 +296,9 @@ Sprites = {
     nuclear_reactor = 'item/nuclear-reactor',
     lab = 'item/lab',
     --
-    player = 'entity/player'
+    character = 'entity/character',
+    --
+    advanced_electronics = 'technology/advanced-electronics',
 }
 
 return Sprites

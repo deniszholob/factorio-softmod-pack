@@ -37,7 +37,8 @@ Research_Queue_Styles = {
         bottom_padding = 0,
         left_padding = 0,
         horizontally_squashable = true,
-        vertically_squashable = true
+        vertically_squashable = true,
+        stretch_image_to_widget_size = true,
     },
     auto_research_sprite_button = {
         width = 24,

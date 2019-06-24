@@ -107,7 +107,7 @@ function draw_rocket_score_frame(player)
 
     -- Hide if no rockets launched yet
     if (player.force.rockets_launched <= 0) then
-        frame.style.visible = false
+        frame.visible = false
     end
 end
 
@@ -121,5 +121,5 @@ function update_score(player)
     label.caption = {'silo.rocket_score', rocket_score}
 
     -- Show the score on first rocket launch
-    if(rocket_score == 1) then frame.style.visible = true end
+    if(rocket_score == 1) then frame.visible = true end
 end

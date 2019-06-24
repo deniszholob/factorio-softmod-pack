@@ -73,7 +73,7 @@ Dev files will be removed from the release build, see the [github repository](ht
 
 ## Screenshots
 ![Game Start with softmod pack](.screenshots/dddgamer-softmod.jpg)
-![Auto Research](.screenshots/dddgamer-softmod_auto-research.jpg)
-![Task List](.screenshots/dddgamer-softmod_task-list.jpg)
+![Auto Research](.screenshots/dddgamer-softmod_auto-research.png)
+![Task List](.screenshots/dddgamer-softmod_task-list.png)
 ![Game Info](.screenshots/dddgamer-softmod_game-info.jpg)
 ![Player List](.screenshots/dddgamer-softmod_player-list.jpg)

@@ -25,11 +25,11 @@ require('config')
 -- ======================================================= --
 -- require('modules/dev/for-testing')
 
--- Import Vanilla Modules if needed
+-- == Import Vanilla Modules if needed == --
 -- require('modules/vanilla/silo')
 -- require('modules/vanilla/player-init')
 
--- Import Soft Mod Modules
+-- == Import Soft Mod Modules == --
 require('modules/common/spawn-marker')
 require('modules/common/death-marker')
 require('modules/common/autodeconstruct')

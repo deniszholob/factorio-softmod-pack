@@ -172,9 +172,9 @@ function autodeconstruct.check_drill(drill)
 end
 
 -- Handle cancelled deconstruction
-function autodeconstruct.on_canceled_deconstruction(event)
+function autodeconstruct.on_cancelled_deconstruction(event)
     if event.player_index ~= nil or event.entity.type ~= 'mining-drill' then return end
-    if global.debug then msg_all({"autodeconstruct-debug", "on_canceled_deconstruction", util.positiontostr(event.entity.position) .. " deconstruction timed out, checking again"}) end
+    if global.debug then msg_all({"autodeconstruct-debug", "on_cancelled_deconstruction", util.positiontostr(event.entity.position) .. " deconstruction timed out, checking again"}) end
     autodeconstruct.check_drill(event.entity)
 end
 
@@ -283,9 +283,9 @@ Event.register(defines.events.on_player_created, function()
     if err then msg_all({"autodeconstruct-err-generic", err}) end
 end)
 
-Event.register(defines.events.on_canceled_deconstruction, function(event)
-    local _, err = pcall(autodeconstruct.on_canceled_deconstruction, event)
-    if err then msg_all({"autodeconstruct-err-specific", "on_canceled_deconstruction", err}) end
+Event.register(defines.events.on_cancelled_deconstruction, function(event)
+    local _, err = pcall(autodeconstruct.on_cancelled_deconstruction, event)
+    if err then msg_all({"autodeconstruct-err-specific", "on_cancelled_deconstruction", err}) end
 end)
 
 Event.register(defines.events.on_resource_depleted, function(event)

@@ -11,7 +11,7 @@
 -- ======================================================= --
 local mod_gui = require('mod-gui') -- From `Factorio\data\core\lualib`
 local GUI = require('stdlib/GUI')
-local Colors = require('util/Colors')
+local Sprites = require('util/Sprites')
 local Math = require('util/Math')
 local Time = require('util/Time')
 
@@ -22,7 +22,7 @@ local Player_List = {
     MASTER_FRAME_NAME = 'frame_playerlist',
     CHECKBOX_OFFLINE_PLAYERS = 'chbx_playerlist_players',
     SPRITE_NAMES = {
-        menu = 'entity/player',
+        menu = Sprites.character,
         -- inventory = 'utility/grey_rail_signal_placement_indicator'
         -- inventory = 'utility/item_editor_icon'
         inventory = 'utility/slot_icon_armor'
@@ -137,6 +137,7 @@ function Player_List.draw_playerlist_frame()
 
         -- Flow
         local flow_header = master_frame.add({type = 'flow', direction = 'horizontal'})
+        flow_header.style.horizontal_spacing = 20
 
         -- Draw checkbox
         flow_header.add(

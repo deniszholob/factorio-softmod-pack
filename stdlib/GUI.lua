@@ -39,10 +39,10 @@ end
 -- @tparam LuaGuiElement el Element to toggle visibility of
 function GUI.toggle_element(el)
     if el ~= nil then
-        if (el.style.visible == nil) then -- game treats nil as true
-            el.style.visible = true
+        if (el.visible == nil) then -- game treats nil as true
+            el.visible = true
         end
-        el.style.visible = not el.style.visible or false
+        el.visible = not el.visible or false
     end
 end
 
