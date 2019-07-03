@@ -243,8 +243,10 @@ function Auto_Research.draw_menu_btn(player)
                 -- caption = 'Auto_Research.menu_btn_caption',
                 tooltip = {"auto_research_gui.menu_btn_tooltip"}
             },
-            -- On Click callback function
-            Auto_Research.on_gui_click_btn_menu
+            function(event)
+                -- On Click callback function
+                Auto_Research.on_gui_click_btn_menu(event)
+            end
         )
     end
 end

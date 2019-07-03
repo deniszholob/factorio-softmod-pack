@@ -15,7 +15,13 @@
 
 Styles = {
     btn_menu = {
-
+        padding = 0,
+        margin = 0,
+        height = 38,
+    },
+    btn_menu_lbl = {
+        font = 'default-bold',
+        padding = 5,
     },
     -- Match label size, etc.. the style of sprite buttons
     lbl_menu = {
@@ -31,6 +37,10 @@ Styles = {
         -- left_padding = 0,
         -- right_padding = 0,
         -- height = 24,
+    },
+    clear_padding_margin = {
+        padding = 0,
+        margin = 0,
     },
     frm_window = {
         maximal_height = 650,

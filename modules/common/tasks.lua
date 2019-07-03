@@ -119,8 +119,10 @@ function Tasks.draw_menu_btn(player)
                 -- caption = 'Tasks.menu_btn_caption',
                 tooltip = 'Show Task List'
             },
-            -- On Click callback function
-            Tasks.on_gui_click_btn_menu
+            function(event)
+                -- On Click callback function
+                Tasks.on_gui_click_btn_menu(event)
+            end
         )
     end
 end

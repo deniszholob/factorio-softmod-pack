@@ -1,5 +1,10 @@
 -- Sprites Soft Module
 -- Holds a list of some sprite names provided in factorio
+--
+-- Check Factorio prototype definitions in:
+-- * \Factorio\data\core
+-- * \Factorio\data\base
+--
 -- @usage local Sprites = require('util/Sprites')
 -- ------------------------------------------------------- --
 -- @author Denis Zholob (DDDGamer)
@@ -298,7 +303,42 @@ Sprites = {
     --
     character = 'entity/character',
     --
+    small_biter = 'entity/small-biter',
+    medium_biter = 'entity/medium-biter',
+    big_biter = 'entity/big-biter',
+    behemoth_biter = 'entity/behemoth-biter',
+    --
+    small_spitter = 'entity/small-spitter',
+    medium_spitter = 'entity/medium-spitter',
+    big_spitter = 'entity/big-spitter',
+    behemoth_spitter = 'entity/behemoth-spitter',
+    --
+    small_biter_corpse = 'entity/small-biter-corpse',
+    medium_biter_corpse = 'entity/medium-biter-corpse',
+    big_biter_corpse = 'entity/big-biter-corpse',
+    behemoth_biter_corpse = 'entity/behemoth-biter-corpse',
+    --
+    small_spitter_corpse = 'entity/small-spitter-corpse',
+    medium_spitter_corpse = 'entity/medium-spitter-corpse',
+    big_spitter_corpse = 'entity/big-spitter-corpse',
+    behemoth_spitter_corpse = 'entity/behemoth-spitter-corpse',
+    --
+    small_worm = 'entity/small-worm',
+    medium_worm = 'entity/medium-worm',
+    big_worm = 'entity/big-worm',
+    behemoth_worm = 'entity/behemoth-worm',
+    --
+    biter_spawner = 'entity/biter-spawner',
+    spitter_spawner = 'entity/spitter-spawner',
+    biter_spawner_corpse  = 'entity/biter-spawner-corpse',
+    spitter_spawner_corpse  = 'entity/spitter-spawner-corpse',
+    --
     advanced_electronics = 'technology/advanced-electronics',
+    --
 }
+
+function Sprites.getSpriteRichText(name)
+    return "[" .. string.gsub(name, "/", "=") .. "]"
+end
 
 return Sprites

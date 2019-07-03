@@ -53,7 +53,7 @@ local function on_gui_click(event)
     end
 end
 
--- Refresh the game time ease second
+-- Refresh the game time each second
 -- @param event on_tick
 function on_tick(event)
     local refresh_period = 1 -- (sec)

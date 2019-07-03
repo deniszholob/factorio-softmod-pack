@@ -44,10 +44,11 @@ require('modules/dddgamer/game-info')
 
 require('modules/common/online-player-list')
 require('modules/common/research-queue/auto-research')
-require('modules/common/tasks')
+-- require('modules/common/tasks') -- Has desync problems
 
 require('modules/common/game-time')
 require('modules/common/silo')
+require('modules/common/evolution')
 
 -- ==== Testing === --
 -- require('modules/dev/__MODULE_NAME__')

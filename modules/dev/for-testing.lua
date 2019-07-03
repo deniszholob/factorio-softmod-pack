@@ -27,13 +27,11 @@ function on_player_created(event)
     -- giveRoboItems(player)
     -- giveMiningItems(player)
     -- giveLogisticItems(player)
-    giveSpeedItems(player)
+    -- giveSpeedItems(player)
     -- giveTrainItems(player)
     -- giveTileItems(player)
-    -- giveMilitaryItems(player)
+    giveMilitaryItems(player)
     -- giveDefenceItems(player)
-
-    game.print('/o DDDGamer')
 end
 
 -- Event Registration --
@@ -50,12 +48,10 @@ end
 
 
 function giveArmorMK2(player)
-    player.get_inventory(defines.inventory.player_armor).insert({name='power-armor-mk2', count=1})
-    armor = player.get_inventory(defines.inventory.player_armor).find_item_stack('power-armor-mk2')
+    player.get_inventory(defines.inventory.character_armor).insert({name='power-armor-mk2', count=1})
+    armor = player.get_inventory(defines.inventory.character_armor).find_item_stack('power-armor-mk2')
     armor.grid.put{name='fusion-reactor-equipment'}
     armor.grid.put{name='fusion-reactor-equipment'}
-    -- armor.grid.put{name='energy-shield-mk2-equipment'}
-    -- armor.grid.put{name='energy-shield-mk2-equipment'}
     armor.grid.put{name='battery-mk2-equipment'}
     armor.grid.put{name='battery-mk2-equipment'}
     armor.grid.put{name='exoskeleton-equipment'}
@@ -63,8 +59,9 @@ function giveArmorMK2(player)
     armor.grid.put{name='exoskeleton-equipment'}
     armor.grid.put{name='exoskeleton-equipment'}
     armor.grid.put{name='exoskeleton-equipment'}
-    armor.grid.put{name='personal-roboport-mk2-equipment'}
-    armor.grid.put{name='personal-roboport-mk2-equipment'}
+    armor.grid.put{name='exoskeleton-equipment'}
+    -- armor.grid.put{name='energy-shield-mk2-equipment'}
+    -- armor.grid.put{name='energy-shield-mk2-equipment'}
     armor.grid.put{name='personal-roboport-mk2-equipment'}
     armor.grid.put{name='personal-roboport-mk2-equipment'}
     armor.grid.put{name='personal-roboport-mk2-equipment'}
@@ -160,6 +157,8 @@ function giveMilitaryItems(player)
 
     player.insert {name = 'tank', count = 1}
     player.insert {name = 'uranium-cannon-shell', count = 50}
+
+    player.insert {name = 'radar', count = 20}
 end
 
 function giveDefenceItems(player)

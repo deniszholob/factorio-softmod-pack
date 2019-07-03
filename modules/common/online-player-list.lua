@@ -33,7 +33,8 @@ local Player_List = {
     OFFLINE_SYMBOL = '○',
     ADMIN_SYMBOL = '★',
     OWNER = 'DDDGamer',
-    BTN_INVENTORY_OWNER_ONLY = false
+    BTN_INVENTORY_OWNER_ONLY = false,
+    PROGRESS_BAR_HEIGHT = 4,
 }
 
 -- Event Functions --
@@ -261,7 +262,7 @@ function Player_List.add_player_to_list(container, player, target_player)
         }
     )
     entry_bar.style.color = color
-    entry_bar.style.height = 2
+    entry_bar.style.height = Player_List.PROGRESS_BAR_HEIGHT
 end
 
 -- Returns the playerlist config for specified player, creates default config if none exist
