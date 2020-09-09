@@ -139,7 +139,7 @@ function draw_gameinfo_frame(player)
         -- Window frame
         master_frame = player.gui.center.add {type = 'frame', direction = 'vertical', name = 'frame_gameinfo', caption="Info"}
         -- master_frame.style.scaleable = true
-        master_frame.style.height = 600
+        master_frame.style.height = 670
         master_frame.style.width = 650
         -- master_frame.style.left_padding = 10
         -- master_frame.style.right_padding = 10
@@ -187,6 +187,7 @@ function draw_gameinfo_frame(player)
             button_flow.add(
             {type = 'button', name = 'btn_gameinfo_close', caption = 'Close', tooltip = 'Hide this window', style="red_back_button"}
         )
+        close_button.style.top_margin = 8
     end
 end
 

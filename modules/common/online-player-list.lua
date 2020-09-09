@@ -66,18 +66,19 @@ function Player_List.on_gui_click(event)
     local player = game.players[event.player_index]
     local el_name = event.element.name
 
+    -- Window toggle
     if el_name == Player_List.MENU_BTN_NAME then
         GUI.toggle_element(mod_gui.get_frame_flow(player)[Player_List.MASTER_FRAME_NAME])
     end
+    -- Checkbox toggle to display only online players or not
     if (el_name == Player_List.CHECKBOX_OFFLINE_PLAYERS) then
         player_config = Player_List.getConfig(player)
         player_config.show_offline_players = not player_config.show_offline_players
         Player_List.draw_playerlist_frame()
     end
+    -- LMB will open the map view to the clicked player
     if (string.find(el_name, "lbl_player_") and
         event.button == defines.mouse_button_type.left) then
-        -- LMB will open the map to the selected player
-        game.print(string.sub(el_name, 12))
         local target_player = game.players[string.sub(el_name, 12)]
         player.zoom_to_world(target_player.position, 2)
     end
@@ -245,7 +246,9 @@ function Player_List.add_player_to_list(container, player, target_player)
         (not Player_List.BTN_INVENTORY_OWNER_ONLY and player.admin == true and not target_player.admin)
     ) then
         local inventoryIconName = Player_List.SPRITE_NAMES.inventory
-        if(player.get_main_inventory().is_empty()) then
+        if(target_player and
+           target_player.get_main_inventory() and -- So this one is nil sometimes
+           target_player.get_main_inventory().is_empty()) then
             inventoryIconName = Player_List.SPRITE_NAMES.inventory_empty
         end
         local btn_sprite = GUI.add_sprite_button(
@@ -283,7 +286,7 @@ function Player_List.add_player_to_list(container, player, target_player)
             name = 'bar_' .. target_player.name,
             -- style = 'achievement_progressbar',
             value = played_percentage,
-            tooltip = "Played " .. played_percentage * 100 .. "% of map time"
+            tooltip = {'player_list.player_playtime_tooltip', Math.round(played_percentage * 100, 2)}
         }
     )
     entry_bar.style.color = color
