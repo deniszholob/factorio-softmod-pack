@@ -39,7 +39,7 @@ Some notes to help the dev process.
 **Notes:**
 * Previous pack versions are saved on separate branches.
 * This pack is not finalized, there are still some modules under development that are not listed in the `control.lua`
-
+* A list of existing style can be found in `Factorio/data/core/prototypes/style.lua`
 
 ### Files
 Dev files will be removed from the release build, see the [github repository](https://github.com/deniszholob/factorio-softmod-pack) for all the files.

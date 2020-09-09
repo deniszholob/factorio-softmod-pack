@@ -37,6 +37,12 @@ Styles = {
         -- left_padding = 0,
         -- right_padding = 0,
         -- height = 24,
+        height = 38,
+    },
+    frm_menu_no_pad = {
+        padding = 0,
+        margin = 0,
+        height = 38,
     },
     clear_padding_margin = {
         padding = 0,

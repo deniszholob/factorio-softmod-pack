@@ -76,7 +76,7 @@ Event.register(defines.events.on_tick, on_tick)
 
 function update_time(player)
     local time_hms = Time.game_time_pased()
-    local formatted_time = string.format("%s:%s:%s", time_hms.h, time_hms.m, time_hms.s)
+    local formatted_time = string.format("%s:%02d:%02d", time_hms.h, time_hms.m, time_hms.s)
     local frame = mod_gui.get_button_flow(player)["frame_menu_gametime"]
     local label = frame["lbl_gametime"]
 

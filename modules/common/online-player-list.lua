@@ -23,9 +23,9 @@ local Player_List = {
     CHECKBOX_OFFLINE_PLAYERS = 'chbx_playerlist_players',
     SPRITE_NAMES = {
         menu = Sprites.character,
-        -- inventory = 'utility/grey_rail_signal_placement_indicator'
-        -- inventory = 'utility/item_editor_icon'
-        inventory = 'utility/slot_icon_armor'
+        inventory = Sprites.item_editor_icon,
+        inventory_empty = Sprites.slot_icon_armor
+        -- inventory_alt = Sprites.grey_rail_signal_placement_indicator,
     },
     -- Utf shapes https://www.w3schools.com/charsets/ref_utf_geometric.asp
     -- Utf symbols https://www.w3schools.com/charsets/ref_utf_symbols.asp
@@ -74,6 +74,17 @@ function Player_List.on_gui_click(event)
         player_config.show_offline_players = not player_config.show_offline_players
         Player_List.draw_playerlist_frame()
     end
+    if (string.find(el_name, "lbl_player_") and
+        event.button == defines.mouse_button_type.left) then
+        -- LMB will open the map to the selected player
+        game.print(string.sub(el_name, 12))
+        local target_player = game.players[string.sub(el_name, 12)]
+        player.zoom_to_world(target_player.position, 2)
+    end
+end
+
+function Player_List.getLblPlayerName(player)
+    return 'lbl_player_' .. player.name
 end
 
 -- Refresh the playerlist after 10 min
@@ -155,7 +166,7 @@ function Player_List.draw_playerlist_frame()
         flow_header.add(
             {
                 type = 'label',
-                caption = {'player_list.total_players', #game.players}
+                caption = {'player_list.total_players', #game.players, #game.connected_players}
             }
         )
 
@@ -182,12 +193,13 @@ end
 -- @tparam LuaPlayer player the one who is doing the opening (display the other player inventory for this player)
 -- @tparam LuaPlayer target_player who's inventory to open
 function Player_List.open_player_inventory(player, target_player)
-    if(player.opened == game.players[target_player.name]) then
-        game.print('Opened!')
-        player.opened = nil
-    elseif(not player.opened) then
-        player.opened = game.players[target_player.name]
-    end
+    player.opened = target_player
+    -- Tried to do a toggle, but cant close; for some reason opened is always nil even after setting
+    -- if(player.opened == game.players[target_player.name]) then
+    --     player.opened = nil
+    -- elseif(not player.opened) then
+    --     player.opened = game.players[target_player.name]
+    -- end
 end
 
 -- Add a player to the GUI list
@@ -232,24 +244,35 @@ function Player_List.add_player_to_list(container, player, target_player)
         (Player_List.BTN_INVENTORY_OWNER_ONLY and player.name == Player_List.OWNER and not target_player.admin) or
         (not Player_List.BTN_INVENTORY_OWNER_ONLY and player.admin == true and not target_player.admin)
     ) then
-        local btn_sprite = GUI.add_sprite_button(
-        flow,
-        {
-            type = 'sprite-button',
-            name = 'btn_open_inventory_'..target_player.name,
-            sprite = GUI.get_safe_sprite_name(player, Player_List.SPRITE_NAMES.inventory),
-            tooltip = 'Open ' .. target_player.name .. ' inventory'
-        },
-        -- On Click callback function
-        function(event)
-            Player_List.open_player_inventory(player, target_player)
+        local inventoryIconName = Player_List.SPRITE_NAMES.inventory
+        if(player.get_main_inventory().is_empty()) then
+            inventoryIconName = Player_List.SPRITE_NAMES.inventory_empty
         end
-    )
-    GUI.element_apply_style(btn_sprite, Styles.small_button)
+        local btn_sprite = GUI.add_sprite_button(
+            flow,
+            {
+                type = 'sprite-button',
+                name = 'btn_open_inventory_'..target_player.name,
+                sprite = GUI.get_safe_sprite_name(player, inventoryIconName),
+                tooltip = 'Open ' .. target_player.name .. ' inventory'
+            },
+            -- On Click callback function
+            function(event)
+                Player_List.open_player_inventory(player, target_player)
+            end
+        )
+        GUI.element_apply_style(btn_sprite, Styles.small_button)
     end
 
     -- Add in the entry to the player list
-    local entry = flow.add({type = 'label', name = target_player.name, caption = caption_str})
+    local entry = flow.add(
+        {
+            type = 'label',
+            name = Player_List.getLblPlayerName(target_player),
+            caption = caption_str,
+            tooltip= {'player_list.player_tooltip'}
+        }
+    )
     entry.style.font_color = color
     entry.style.font = 'default-bold'
 
@@ -258,7 +281,9 @@ function Player_List.add_player_to_list(container, player, target_player)
         {
             type = 'progressbar',
             name = 'bar_' .. target_player.name,
-            value = played_percentage
+            -- style = 'achievement_progressbar',
+            value = played_percentage,
+            tooltip = "Played " .. played_percentage * 100 .. "% of map time"
         }
     )
     entry_bar.style.color = color

@@ -29,6 +29,7 @@ Colors = {
 
     pink =        { r=255, g=0,   b=255 },
     lightpink =   { r=255, g=160, b=255 },
+    salmon =      { r=255, g=90, b=200 },
 
     darkred =     { r=160, g=0,   b=0   },
     red_sat =     { r=255, g=0,   b=25  },

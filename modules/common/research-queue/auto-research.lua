@@ -547,9 +547,7 @@ function Auto_Research.GUI_updateAllowedIngredientsList(flow, player, config)
         -- Hack a background with image frame since you cant set one on a button....
         local button_frame = ingredientflow.add({type = "frame"})
         GUI.element_apply_style(button_frame, Research_Queue_Styles.button_outer_frame)
-        if (allowed) then
-            button_frame.style = "image_frame"
-        end
+
 
         -- Make sprite button
         local sprite = GUI.get_safe_sprite_name(player, "item/" .. ingredientname)
