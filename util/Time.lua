@@ -6,7 +6,10 @@
 -- github: https://github.com/deniszholob/factorio-softmod-pack
 -- ======================================================= --
 
-Time = {}
+Time = {
+    GRIEFER_TIME = 30, -- minutes
+    GRIEFER_GAME_TIME = 8 -- hrs
+}
 
 -- Returns hours converted from game ticks
 -- @param t - Factorio game tick
@@ -49,6 +52,18 @@ end
 -- @return hms object
 function Time.game_time_pased()
     return Time.tick_to_time_hms(game.tick)
+end
+
+-- Potential griefers are new players mid/late game
+-- @param player LuaPLayer
+function Time.griefer_threshold(player)
+    if (not player.admin and
+        Time.tick_to_hour(game.time) < Time.GAME_TIME and
+        Time.tick_to_min(player.online_time) < Time.GRIEFER_TIME
+    ) then
+        return true
+    end
+    return false
 end
 
 return Time

@@ -158,24 +158,24 @@ function Sprite_List.fill_master_frame(container, player)
         counter = counter + 1
     end
     counter = 1
-    for i, sprite in pairs(icons_to_test) do
+    for i, spriteStr in pairs(icons_to_test) do
         local flow_name = 'flow' .. math.floor(counter / 10) + 1 -- x entries per "row"
         local sprite_flow = scroll_pane[flow_name]
         if not sprite_flow then
             sprite_flow = scroll_pane.add({type = 'flow', name = flow_name, direction = 'horizontal'})
         end
-        local btn_sprite = sprite_flow.add({type = 'sprite-button', sprite = GUI.get_safe_sprite_name(player, sprite), tooltip = sprite})
+        local btn_sprite = sprite_flow.add({type = 'sprite-button', sprite = GUI.get_safe_sprite_name(player, spriteStr), tooltip = spriteStr})
         GUI.element_apply_style(btn_sprite, Styles.small_button)
         counter = counter + 1
     end
 
     -- List all icons
-    for i, sprite in pairs(Sprites) do
+    for i, spriteStr in pairs(Sprites) do
         local sprite_h_flow = scroll_pane.add({type = 'flow', direction = 'horizontal'})
-        sprite_h_flow.add({type = 'sprite-button', sprite = GUI.get_safe_sprite_name(player, sprite)})
-        -- sprite_h_flow.add({type = 'textfield', text = sprite}) -- Sprite name
+        sprite_h_flow.add({type = 'sprite-button', sprite = GUI.get_safe_sprite_name(player, spriteStr)})
+        -- sprite_h_flow.add({type = 'textfield', text = spriteStr}) -- Sprite name
         sprite_h_flow.add({type = 'textfield', text = i}) -- Variable name
-        sprite_h_flow.add({type = 'sprite', sprite = GUI.get_safe_sprite_name(player, sprite)})
+        sprite_h_flow.add({type = 'sprite', sprite = GUI.get_safe_sprite_name(player, spriteStr)})
     end
 end
 

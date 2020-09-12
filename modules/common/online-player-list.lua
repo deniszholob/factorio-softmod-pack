@@ -33,7 +33,8 @@ local Player_List = {
     OFFLINE_SYMBOL = '○',
     ADMIN_SYMBOL = '★',
     OWNER = 'DDDGamer',
-    BTN_INVENTORY_OWNER_ONLY = false,
+    BTN_INVENTORY_OWNER_ONLY = true, -- Only owner can open inventory or all admins
+    BTN_INVENTORY_TAGET_ADMINS = true, -- Can only open reg players or target admins too
     PROGRESS_BAR_HEIGHT = 4,
 }
 
@@ -97,6 +98,21 @@ function Player_List.on_tick(event)
     end
 end
 
+-- When new player uses decon planner
+-- @param event on_player_deconstructed_area
+function Player_List.on_player_deconstructed_area(event)
+    local player = game.players[event.player_index]
+    Player_List.getConfig(player).decon = true
+end
+
+-- When new player mines something
+-- @param event on_player_mined_item
+function Player_List.on_player_mined_item(event)
+    local player = game.players[event.player_index]
+    Player_List.getConfig(player).mine = true
+end
+
+
 -- Event Registration --
 -- ======================================================= --
 Event.register(defines.events.on_gui_checked_state_changed, Player_List.on_gui_click)
@@ -104,6 +120,8 @@ Event.register(defines.events.on_gui_click, Player_List.on_gui_click)
 Event.register(defines.events.on_player_joined_game, Player_List.on_player_joined_game)
 Event.register(defines.events.on_player_left_game, Player_List.on_player_left_game)
 Event.register(defines.events.on_tick, Player_List.on_tick)
+Event.register(defines.events.on_player_deconstructed_area, Player_List.on_player_deconstructed_area)
+Event.register(defines.events.on_player_mined_item, Player_List.on_player_mined_item)
 
 -- Helper Functions --
 -- ======================================================= --
@@ -203,6 +221,22 @@ function Player_List.open_player_inventory(player, target_player)
     -- end
 end
 
+function Player_List.canDisplay(player, target_player)
+    if (
+        -- Only for owners
+        ((Player_List.BTN_INVENTORY_OWNER_ONLY and player.name == Player_List.OWNER) and
+         -- Reg players or both reg players and admins
+         (Player_List.BTN_INVENTORY_TAGET_ADMINS or not target_player.admin)) or
+        -- For all admins
+        ((not Player_List.BTN_INVENTORY_OWNER_ONLY and player.admin == true) and
+         -- Reg players or both reg players and admins
+         (Player_List.BTN_INVENTORY_TAGET_ADMINS or not target_player.admin))
+    ) then
+        return true
+    end
+    return false
+end
+
 -- Add a player to the GUI list
 -- @param player
 -- @param target_player
@@ -241,10 +275,7 @@ function Player_List.add_player_to_list(container, player, target_player)
     local flow = container.add({type = 'flow', direction = 'horizontal'})
 
     -- Add an inventory open button for those with privilages
-    if (
-        (Player_List.BTN_INVENTORY_OWNER_ONLY and player.name == Player_List.OWNER and not target_player.admin) or
-        (not Player_List.BTN_INVENTORY_OWNER_ONLY and player.admin == true and not target_player.admin)
-    ) then
+    if (Player_List.canDisplay(player, target_player)) then
         local inventoryIconName = Player_List.SPRITE_NAMES.inventory
         if(target_player and
            target_player.get_main_inventory() and -- So this one is nil sometimes
@@ -257,7 +288,7 @@ function Player_List.add_player_to_list(container, player, target_player)
                 type = 'sprite-button',
                 name = 'btn_open_inventory_'..target_player.name,
                 sprite = GUI.get_safe_sprite_name(player, inventoryIconName),
-                tooltip = 'Open ' .. target_player.name .. ' inventory'
+                tooltip = {'player_list.player_tooltip_inventory', target_player.name}
             },
             -- On Click callback function
             function(event)
@@ -279,6 +310,29 @@ function Player_List.add_player_to_list(container, player, target_player)
     entry.style.font_color = color
     entry.style.font = 'default-bold'
 
+    -- Griefer icons: mined/deconed flags
+    if (Player_List.canDisplay(player, target_player)) then
+        -- Add decon planner icon if player deconed something
+        if(Player_List.getConfig(target_player).decon) then
+            local sprite = flow.add({
+                type = 'sprite-button',
+                tooltip = {'player_list.player_tooltip_decon'},
+                sprite = GUI.get_safe_sprite_name(player, Sprites.deconstruction_planner)
+            })
+            GUI.element_apply_style(sprite, Styles.small_button)
+        end
+
+        -- Add axe icon if player mined something
+        if(Player_List.getConfig(target_player).mine) then
+            local sprite = flow.add({
+                type = 'sprite-button',
+                tooltip = {'player_list.player_tooltip_mine'},
+                sprite = GUI.get_safe_sprite_name(player, Sprites.steel_axe)
+            })
+            GUI.element_apply_style(sprite, Styles.small_button)
+        end
+    end
+
     local entry_bar =
         container.add(
         {
@@ -286,7 +340,7 @@ function Player_List.add_player_to_list(container, player, target_player)
             name = 'bar_' .. target_player.name,
             -- style = 'achievement_progressbar',
             value = played_percentage,
-            tooltip = {'player_list.player_playtime_tooltip', Math.round(played_percentage * 100, 2)}
+            tooltip = {'player_list.player_tooltip_playtime', Math.round(played_percentage * 100, 2)}
         }
     )
     entry_bar.style.color = color
@@ -302,7 +356,9 @@ function Player_List.getConfig(player)
 
     if (not global.playerlist_config[player.name]) then
         global.playerlist_config[player.name] = {
-            show_offline_players = false
+            show_offline_players = false,
+            mine = false,
+            decon = false
         }
     end
 

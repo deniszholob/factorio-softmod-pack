@@ -18,6 +18,10 @@ local Styles = require('util/Styles')
 
 -- Constants --
 -- ======================================================= --
+Game_Info = {
+    MASTER_BUTTON_NAME = 'btn_menu_game_info',
+    MASTER_FRAME_NAME = 'frame_game_info',
+}
 local SECTION_CONTENT = {
     {
         title = '',
@@ -34,7 +38,7 @@ local SECTION_CONTENT = {
         }
     },
     {
-        title = 'Train Guidelines',
+        title = "Train Guidelines",
         content = {
             '* Trains are [color=orange]RHD[/color] (Right Hand Drive)',
             '* Please do not make train roundabouts/loops, junctions/end point stations only',
@@ -44,7 +48,7 @@ local SECTION_CONTENT = {
         }
     },
     {
-        title = 'Station Naming Guidelines',
+        title = "Station Naming Guidelines",
         content = {
             '* L = Load, U = Unload, Q = Queue/Stacker (Exclude "[" and "]" for the following examples):',
             '* Resource Trains: [Location/Name]_[L/U]_[Resource-Name]',
@@ -67,8 +71,8 @@ function on_player_joined(event)
     draw_gameinfo_btn(player)
 
     -- Force a gui refresh in case there where updates
-    if player.gui.center['frame_gameinfo'] ~= nil then
-        player.gui.center['frame_gameinfo'].destroy()
+    if player.gui.center[Game_Info.MASTER_FRAME_NAME] ~= nil then
+        player.gui.center[Game_Info.MASTER_FRAME_NAME].destroy()
     end
 
     -- Show readme window (rules) when player (not admin) first joins, but not at later times
@@ -83,11 +87,11 @@ end
 -- @param event on_player_left_game
 function on_player_leave(event)
     local player = game.players[event.player_index]
-    if player.gui.center['frame_gameinfo'] ~= nil then
-        player.gui.center['frame_gameinfo'].destroy()
+    if player.gui.center[Game_Info.MASTER_FRAME_NAME] ~= nil then
+        player.gui.center[Game_Info.MASTER_FRAME_NAME].destroy()
     end
-    if mod_gui.get_button_flow(player)['btn_menu_gameinfo'] ~= nil then
-        mod_gui.get_button_flow(player)['btn_menu_gameinfo'].destroy()
+    if mod_gui.get_button_flow(player)[Game_Info.MASTER_BUTTON_NAME] ~= nil then
+        mod_gui.get_button_flow(player)[Game_Info.MASTER_BUTTON_NAME].destroy()
     end
 end
 
@@ -97,10 +101,10 @@ local function on_gui_click(event)
     local player = game.players[event.player_index]
     local el_name = event.element.name
 
-    if el_name == 'btn_menu_gameinfo' or el_name == 'btn_gameinfo_close' then
+    if el_name == Game_Info.MASTER_BUTTON_NAME or el_name == 'btn_gameinfo_close' then
         -- Call toggle if frame has been created
-        if(player.gui.center['frame_gameinfo'] ~= nil) then
-            GUI.toggle_element(player.gui.center['frame_gameinfo'])
+        if(player.gui.center[Game_Info.MASTER_FRAME_NAME] ~= nil) then
+            GUI.toggle_element(player.gui.center[Game_Info.MASTER_FRAME_NAME])
         else -- Call create if it hasnt
             draw_gameinfo_frame(player)
         end
@@ -118,14 +122,14 @@ Event.register(defines.events.on_player_left_game, on_player_leave)
 -- Create button for player if doesnt exist already
 -- @param player
 function draw_gameinfo_btn(player)
-    if mod_gui.get_button_flow(player)['btn_menu_gameinfo'] == nil then
+    if mod_gui.get_button_flow(player)[Game_Info.MASTER_BUTTON_NAME] == nil then
         local btn = mod_gui.get_button_flow(player).add(
             {
                 type = 'sprite-button',
-                name = 'btn_menu_gameinfo',
+                name = Game_Info.MASTER_BUTTON_NAME,
                 -- caption = 'Info',
                 sprite = 'utility/favourite_server_icon',
-                tooltip = 'Shows Server Info'
+                tooltip = {"Game_Info.menu_btn_tooltip"}
             }
         )
         GUI.element_apply_style(btn, Styles.btn_menu)
@@ -134,10 +138,15 @@ end
 
 -- Draws a pane on the left listing all of the players currentely on the server
 function draw_gameinfo_frame(player)
-    local master_frame = player.gui.center['frame_gameinfo']
+    local master_frame = player.gui.center[Game_Info.MASTER_FRAME_NAME]
     if(master_frame == nil) then
         -- Window frame
-        master_frame = player.gui.center.add {type = 'frame', direction = 'vertical', name = 'frame_gameinfo', caption="Info"}
+        master_frame = player.gui.center.add({
+            type = 'frame',
+            direction = 'vertical',
+            name = Game_Info.MASTER_FRAME_NAME,
+            caption = {'Game_Info.master_frame_caption'},
+        })
         -- master_frame.style.scaleable = true
         master_frame.style.height = 670
         master_frame.style.width = 650
@@ -183,10 +192,13 @@ function draw_gameinfo_frame(player)
         button_flow.style.horizontal_align = 'left'
 
         -- Close Button
-        local close_button =
-            button_flow.add(
-            {type = 'button', name = 'btn_gameinfo_close', caption = 'Close', tooltip = 'Hide this window', style="red_back_button"}
-        )
+        local close_button = button_flow.add({
+            type = 'button',
+            name = 'btn_gameinfo_close',
+            caption = {'Game_Info.master_frame_close_btn_caption'},
+            tooltip = {'Game_Info.master_frame_close_btn_tooltip'},
+            style="red_back_button"
+        })
         close_button.style.top_margin = 8
     end
 end

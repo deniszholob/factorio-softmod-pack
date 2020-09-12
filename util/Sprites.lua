@@ -247,7 +247,8 @@ Sprites = {
     crafting_machine_recipe_not_unlocked = 'utility/crafting_machine_recipe_not_unlocked',
     explosion_chart_visualization = 'utility/explosion_chart_visualization',
     -- Item
-    iron_axe = 'item/iron-axe',
+    -- iron_axe = 'item/iron-axe',
+    deconstruction_planner = 'item/deconstruction-planner',
     burner_mining_drill = 'item/burner-mining-drill',
     burner_inserter = 'item/burner-inserter',
     stone_furnace = 'item/stone-furnace',
@@ -334,6 +335,7 @@ Sprites = {
     spitter_spawner_corpse  = 'entity/spitter-spawner-corpse',
     --
     advanced_electronics = 'technology/advanced-electronics',
+    steel_axe = 'technology/steel-axe',
     --
 }
 

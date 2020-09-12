@@ -1,8 +1,7 @@
 -- Evolution Soft Module
 -- __Description__
--- Uses locale Evolution.cfg
--- @usage require('modules/common/Evolution')
--- @usage local ModuleName = require('modules/common/Evolution')
+-- Uses locale evolution.cfg
+-- @usage require('modules/common/evolution')
 -- ------------------------------------------------------- --
 -- @author Denis Zholob (DDDGamer)
 -- github: https://github.com/deniszholob/factorio-softmod-pack
@@ -142,6 +141,7 @@ function Evolution.fill_master_frame(container, player)
             type = 'progressbar',
             name = Evolution.EVOLUTION_PROGRESS_NAME,
             style = 'achievement_progressbar',
+            tooltip = {"Evolution.master_frame_caption"},
             value = 0.2
         }
     )
