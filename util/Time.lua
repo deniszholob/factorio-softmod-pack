@@ -7,8 +7,8 @@
 -- ======================================================= --
 
 Time = {
-    GRIEFER_TIME = 30, -- minutes
-    GRIEFER_GAME_TIME = 8 -- hrs
+    NEW_PLAYER_TIME = 30, -- minutes
+    NEW_PLAYER_GAME_TIME = 8 -- hrs
 }
 
 -- Returns hours converted from game ticks
@@ -56,10 +56,11 @@ end
 
 -- Potential griefers are new players mid/late game
 -- @param player LuaPLayer
-function Time.griefer_threshold(player)
-    if (not player.admin and
-        Time.tick_to_hour(game.time) < Time.GAME_TIME and
-        Time.tick_to_min(player.online_time) < Time.GRIEFER_TIME
+function Time.new_player_threshold(player)
+    if (
+        not player.admin and
+        Time.tick_to_hour(game.tick) < Time.NEW_PLAYER_GAME_TIME and
+        Time.tick_to_min(player.online_time) < Time.NEW_PLAYER_TIME
     ) then
         return true
     end

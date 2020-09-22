@@ -27,8 +27,9 @@ local SECTION_CONTENT = {
         title = '',
         content = {
             '* Gameplay: Vanilla with QOL Mods',
-            '* Chat with the [color=orange]`[/color] Key (Under the [color=orange]ESC[/color] Key)',
+            -- '* Gameplay: Handcrafting and Blueprints have been disabled',
             -- '* NOTE: Handcrafting is Disabled!',
+            '* Chat with the [color=orange]`[/color] Key (Under the [color=orange]ESC[/color] Key)',
             '* Join discord for discussion, voice chat and admin support:',
             'https://discord.gg/PkyzXzz',
             '* Check the Factorio Cheat Sheet for help:',
@@ -55,7 +56,6 @@ local SECTION_CONTENT = {
             '* Taxi Trains: #PAX_[Location]_[Resource-Name]_[ID]',
             '* Example Ore: "Mine_L_Iron-Ore_1"',
             '* Example PAX: "#PAX_Mine_Copper-Ore_3"',
-            '* Example MEF: "MEF_S_Steel"',
         }
     },
 }
@@ -104,7 +104,7 @@ local function on_gui_click(event)
     if el_name == Game_Info.MASTER_BUTTON_NAME or el_name == 'btn_gameinfo_close' then
         -- Call toggle if frame has been created
         if(player.gui.center[Game_Info.MASTER_FRAME_NAME] ~= nil) then
-            GUI.toggle_element(player.gui.center[Game_Info.MASTER_FRAME_NAME])
+            GUI.destroy_element(player.gui.center[Game_Info.MASTER_FRAME_NAME])
         else -- Call create if it hasnt
             draw_gameinfo_frame(player)
         end
@@ -180,6 +180,20 @@ function draw_gameinfo_frame(player)
         scrollable_content_frame.style.right_padding = 0
         scrollable_content_frame.style.top_padding = 10
         scrollable_content_frame.style.bottom_padding = 10
+
+        -- Flow
+        local mapInfoSection = scrollable_content_frame.add({type = 'flow', direction = 'horizontal'})
+        mapInfoSection.style.horizontally_stretchable = true
+        mapInfoSection.style.bottom_padding = 15
+
+        local text_box = mapInfoSection.add({
+            type = "label",
+            caption = "Map Seed"
+        })
+        local text_box = mapInfoSection.add({
+            type = "textfield",
+            text = player.surface.map_gen_settings.seed
+        })
 
         -- Insert content
         for i, section in pairs(SECTION_CONTENT) do

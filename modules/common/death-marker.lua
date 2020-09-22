@@ -101,7 +101,7 @@ function deathmarkers.playerDied(event)
 
     for index, cplayer in pairs(player.force.connected_players) do
         if cplayer.surface == surface then
-            cplayer.print({'death_marker.message', player.name, text})
+            cplayer.print({'death_marker.message', player.name, text, position.x, position.y})
         end
     end
 end

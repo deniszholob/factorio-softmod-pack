@@ -30,13 +30,6 @@ require('config')
 -- require('modules/vanilla/player-init')
 
 -- == Import Soft Mod Modules == --
-require('modules/common/spawn-marker')
-require('modules/common/death-marker')
-require('modules/common/autodeconstruct')
-require('modules/common/floating-health')
-require('modules/common/custom-tech')
--- require('modules/common/no-hand-crafting')
-
 require('modules/dddgamer/player-init')
 require('modules/dddgamer/spawn-area')
 require('modules/dddgamer/player-logging')
@@ -46,6 +39,15 @@ require('modules/common/online-player-list')
 require('modules/common/evolution')
 require('modules/common/game-time')
 require('modules/common/silo')
+
+require('modules/common/spawn-marker')
+require('modules/common/death-marker')
+require('modules/common/autodeconstruct')
+require('modules/common/floating-health')
+-- require('modules/common/no-blueprints')
+-- require('modules/common/no-hand-crafting')
+require('modules/common/custom-tech')
+
 
 -- require('modules/common/research-queue/auto-research')
 -- require('modules/common/tasks') -- Has desync problems

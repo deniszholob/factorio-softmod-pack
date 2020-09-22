@@ -47,7 +47,7 @@ function addNoHandcraftKitItems(player)
     -- Always get the Lvl 3 Assembler as it can craft every item in the game
     player.insert {name = 'assembling-machine-3', count = 1}
     -- Always include power pole as needed to transmit power
-    player.insert {name = 'small-electric-pole', count = 1}
+    player.insert {name = 'medium-electric-pole', count = 1}
 
     -- Power (solar or steam)
     if NO_HAND_CRAFT_DEFAULT_SETTINGS.useSteamInsteadOfSolar then
@@ -72,7 +72,7 @@ function disallowHandcrafting(player)
         game.permissions.get_group(NO_HAND_CRAFT_PERMISSION_GROUP) or
         game.permissions.create_group(NO_HAND_CRAFT_PERMISSION_GROUP)
 
-    -- Dissalow Hand Crafting
+    -- Dissalow Hand Crafting (https://lua-api.factorio.com/latest/defines.html)
     group.set_allows_action(defines.input_action['craft'], false)
     -- Add player to the group
     game.permissions.get_group(NO_HAND_CRAFT_PERMISSION_GROUP).add_player(player)

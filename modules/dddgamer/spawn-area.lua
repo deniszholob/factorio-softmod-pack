@@ -11,40 +11,50 @@
 -- ======================================================= --
 
 -- If enabled, places concrete/brick tiles at the spawn area to mark it
-local PLACE_TILES = true
-local PLACE_OBJECTS = true
+local Spawn_Area = {
+    PLACE_TILES = true,
+    PLACE_OBJECTS = true,
+    POWER_POLE_TYPE = "medium-electric-pole", -- "small-electric-pole", "medium-electric-pole", "big-electric-pole"
+    ADD_ROBOTS = true,
+    ROBOT_COUNT = 20,
+    ADD_TURRETS = true,
+    TURRET_AMMO_COUNT = 4, -- per turret
+    INCLUDE_CLIFF_EXPLOSIVES = true,
+    EXPLOSIVES_COUNT = 2, -- per chest
+}
 
 -- Event Functions --
 -- ======================================================= --
 
 -- Various action when new player joins in game
 -- @param event on_player_created event
-function on_player_created(event)
+function Spawn_Area.on_player_created(event)
     local player = game.players[event.player_index]
 
-    if (PLACE_TILES and not global.spawn_tiles_placed) then
-        place_tiles_in_spawn(player)
-        if(PLACE_OBJECTS) then
-            place_objects(player)
+    if (Spawn_Area.PLACE_TILES and not global.spawn_area_created) then
+        Spawn_Area.place_tiles_in_spawn(player)
+        if(Spawn_Area.PLACE_OBJECTS) then
+            Spawn_Area.place_objects(player)
         end
-        global.spawn_tiles_placed = true
+        global.spawn_area_created = true
     end
 end
 
 -- Event Registration --
 -- ======================================================= --
-Event.register(defines.events.on_player_created, on_player_created)
+Event.register(defines.events.on_player_created, Spawn_Area.on_player_created)
 
 -- Helper Functions --
 -- ======================================================= --
 
 -- Draws tiles around the spawned player if they havnt been already
 -- @param player LuaPlayer
-function place_tiles_in_spawn(player)
+function Spawn_Area.place_tiles_in_spawn(player)
     local spawn_position = player.force.get_spawn_position(player.surface)
-    local tile_concrete = 'refined-concrete'
-    local tile_concrete_paint = 'hazard-concrete-left'
+    local tile_refined_concrete = 'refined-concrete'
+    local tile_refined_concrete_paint = 'refined-hazard-concrete-left'
     local tile_brick = 'stone-path'
+    local tile_concrete = 'concrete'
 
     -- local inner_radius = 1
     -- local outer_radius = 3
@@ -61,6 +71,50 @@ function place_tiles_in_spawn(player)
     -- | -,+ | 0,- | +,+ | --
     -- |-----------------| --
 
+    -- Turret concrete
+    local t4 = {
+        {-1.5, -4.5},
+        {-2.5, -4.5},
+        {-1.5, -3.5},
+        {-2.5, -3.5},
+        --
+        {-3.5, -2.5},
+        {-4.5, -2.5},
+        {-3.5, -1.5},
+        {-4.5, -1.5},
+        --==--
+        {1.5, -4.5},
+        {2.5, -4.5},
+        {1.5, -3.5},
+        {2.5, -3.5},
+        --
+        {3.5, -2.5},
+        {4.5, -2.5},
+        {3.5, -1.5},
+        {4.5, -1.5},
+        --==--
+        {-1.5, 4.5},
+        {-2.5, 4.5},
+        {-1.5, 3.5},
+        {-2.5, 3.5},
+        --
+        {-3.5, 2.5},
+        {-4.5, 2.5},
+        {-3.5, 1.5},
+        {-4.5, 1.5},
+        --==--
+        {1.5, 4.5},
+        {2.5, 4.5},
+        {1.5, 3.5},
+        {2.5, 3.5},
+        --
+        {3.5, 2.5},
+        {4.5, 2.5},
+        {3.5, 1.5},
+        {4.5, 1.5},
+    }
+
+    -- Path refined
     local t1 = {
         {0, 4},
         {1, 4},
@@ -88,13 +142,19 @@ function place_tiles_in_spawn(player)
         {0, -3},
         {1, -3}
     }
+    -- Poles/lights hazard
     local t2 = {
-        {-2, 3},
-        {3, 3},
+        {-2.5, -2.5},
+        {2.5, -2.5},
+        {-2.5, 2.5},
+        {2.5, 2.5},
         -- === --
-        {-2, -2},
-        {3, -2}
+        {-3.5, -3.5},
+        {3.5, -3.5},
+        {-3.5, 3.5},
+        {3.5, 3.5},
     }
+    -- Background Brick
     local t3 = {
         {0, 5},
         {1, 5},
@@ -165,8 +225,8 @@ function place_tiles_in_spawn(player)
     -- Post tiles
     for i, value in ipairs(t2) do
         local tile = {
-            name = tile_concrete_paint,
-            position = {value[1] + OFFSET.x, value[2] + OFFSET.y}
+            name = tile_refined_concrete_paint,
+            position = {value[1], value[2]}
         }
         table.insert(marked_corners, tile)
     end
@@ -174,10 +234,19 @@ function place_tiles_in_spawn(player)
     -- Path tiles
     for i, value in ipairs(t1) do
         local tile = {
-            name = tile_concrete,
+            name = tile_refined_concrete,
             position = {value[1] + OFFSET.x, value[2] + OFFSET.y}
         }
         table.insert(marked_area_inner, tile)
+    end
+
+    -- Turret tiles
+    for i, value in ipairs(t4) do
+        local tile = {
+            name = tile_concrete,
+            position = {value[1], value[2]}
+        }
+        table.insert(marked_area_outer, tile)
     end
 
     -- Outer tiles are refined concrete
@@ -193,13 +262,13 @@ function place_tiles_in_spawn(player)
     --         elseif ((x < inner_radius * -1 or x > inner_radius) or (y < inner_radius * -1 or y > inner_radius)) then
     --             -- Outer "ring"
     --             tile = {
-    --                 name = tile_concrete_paint,
+    --                 name = tile_refined_concrete_paint,
     --                 position = {spawn_position.x + x, spawn_position.y + y}
     --             }
     --         else
     --             -- Inner tiles
     --             tile = {
-    --                 name = tile_concrete,
+    --                 name = tile_refined_concrete,
     --                 position = {spawn_position.x + x, spawn_position.y + y}
     --             }
     --         end
@@ -207,16 +276,16 @@ function place_tiles_in_spawn(player)
     --     end
     -- end
 
-    set_tiles_safe(player.surface, marked_area_outer)
-    set_tiles_safe(player.surface, marked_area_inner)
-    set_tiles_safe(player.surface, marked_corners)
+    Spawn_Area.set_tiles_safe(player.surface, marked_area_outer)
+    Spawn_Area.set_tiles_safe(player.surface, marked_area_inner)
+    Spawn_Area.set_tiles_safe(player.surface, marked_corners)
 end
 
 -- Sets tile area to a walkable surface (e.g. grass) first, then resets that to the tile passed in
 -- @param surface - LuaSurface to set tiles on
 -- @param tiles - array of LuaTile
-function set_tiles_safe(surface, tiles)
-    local grass = get_walkable_tile()
+function Spawn_Area.set_tiles_safe(surface, tiles)
+    local grass = Spawn_Area.get_walkable_tile()
     local grass_tiles = {}
     for k, tile in pairs(tiles) do
         grass_tiles[k] = {
@@ -229,7 +298,7 @@ function set_tiles_safe(surface, tiles)
 end
 
 -- @return the first available walkable tile name in the prototype list (e.g. grass)
-function get_walkable_tile()
+function Spawn_Area.get_walkable_tile()
     for name, tile in pairs(game.tile_prototypes) do
         if tile.collision_mask['player-layer'] == nil and not tile.items_to_place_this then
             return name
@@ -240,7 +309,7 @@ end
 
 -- Place lamps, and trash chests
 -- @param player LuaPlayer
-function place_objects(player)
+function Spawn_Area.place_objects(player)
 
     local t2_lamps = {
         {-3, -3},
@@ -266,19 +335,58 @@ function place_objects(player)
         {1, 1},
     }
 
-    --  place lamps on the hazard concrete created earlier
-    for i, value in ipairs(t2_lamps) do
-        player.surface.create_entity{
-            name='small-lamp',
-            position=value,
+    local obj_turrets = {
+        {2, 4},
+        {4, 2},
+        {-2, 4},
+        {-4, 2},
+        {2, -4},
+        {4, -2},
+        {-2, -4},
+        {-4, -2},
+    }
+
+    if(Spawn_Area.ADD_ROBOTS) then
+        local entity = player.surface.create_entity{
+            name='roboport',
+            position={7, -7},
+            force=game.forces.player
+        }
+        entity.insert{name = 'construction-robot', count = Spawn_Area.ROBOT_COUNT}
+        
+        local entity = player.surface.create_entity{
+            name='logistic-chest-storage',
+            position={5, -5},
             force=game.forces.player
         }
     end
 
+    if(Spawn_Area.ADD_TURRETS) then
+        for i, value in ipairs(obj_turrets) do
+            local entity = player.surface.create_entity{
+                name='gun-turret',
+                position=value,
+                force=game.forces.player
+            }
+            entity.insert{name = 'firearm-magazine', count = Spawn_Area.TURRET_AMMO_COUNT}
+        end
+    end
+
+    --  place lamps on the hazard concrete created earlier
+    for i, value in ipairs(t2_lamps) do
+        local entity = player.surface.create_entity{
+            name='small-lamp',
+            position=value,
+            force=game.forces.player
+        }
+        entity.destructible = false
+        entity.minable = false
+    end
+
     -- Place medium power poles next to lamps
     for i, value in ipairs(t2_poles) do
-        player.surface.create_entity{
-            name='medium-electric-pole',
+        local entity = player.surface.create_entity{
+            name=Spawn_Area.POWER_POLE_TYPE,
             position=value,
             force=game.forces.player
         }
@@ -286,10 +394,13 @@ function place_objects(player)
 
     -- Place trash chests next to poles
     for i, value in ipairs(t2_boxes) do
-        player.surface.create_entity{
+        local entity = player.surface.create_entity{
             name='wooden-chest',
             position=value,
             force=game.forces.player
         }
+        if(Spawn_Area.INCLUDE_CLIFF_EXPLOSIVES) then
+            entity.insert{name = 'cliff-explosives', count = Spawn_Area.EXPLOSIVES_COUNT}
+        end
     end
 end
