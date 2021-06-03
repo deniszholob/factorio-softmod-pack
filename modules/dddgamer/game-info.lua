@@ -27,8 +27,8 @@ local SECTION_CONTENT = {
         title = '',
         content = {
             '* Gameplay: Vanilla with QOL Mods',
+            -- '* Gameplay: Handcrafting is disabled',
             -- '* Gameplay: Handcrafting and Blueprints have been disabled',
-            -- '* NOTE: Handcrafting is Disabled!',
             '* Chat with the [color=orange]`[/color] Key (Under the [color=orange]ESC[/color] Key)',
             '* Join discord for discussion, voice chat and admin support:',
             'https://discord.gg/PkyzXzz',

@@ -52,8 +52,6 @@ end
 function Player_Logging.on_player_mined_entity(event)
     local player = game.players[event.player_index]
     local entity = event.entity
-    game.print(event.entity.name)
-    game.print(entity.name)
     if (
         Time.new_player_threshold(player) and
         not Player_Logging.entityFilter(entity)

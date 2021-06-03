@@ -140,13 +140,12 @@ function Evolution.fill_master_frame(container, player)
         {
             type = 'progressbar',
             name = Evolution.EVOLUTION_PROGRESS_NAME,
-            style = 'achievement_progressbar',
             tooltip = {"Evolution.master_frame_caption"},
             value = 0.2
         }
     )
     evo_progress_bar.style.width = 98
-    evo_progress_bar.style.height = 2
+    evo_progress_bar.style.height = 3
     evo_progress_bar.style.top_margin = 14
 
     GUI.element_apply_style(container, Styles.btn_menu)

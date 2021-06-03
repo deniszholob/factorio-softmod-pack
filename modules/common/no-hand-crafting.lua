@@ -19,7 +19,7 @@ local NO_HAND_CRAFT_DEFAULT_SETTINGS = {
     -- Gives steam engine instead of solar panel
     useSteamInsteadOfSolar = false,
     -- Adds an accumulator to be able to craft at night
-    addAccumulator = false
+    addAccumulator = true
 }
 
 -- Event Functions --
@@ -60,7 +60,7 @@ function addNoHandcraftKitItems(player)
 
     -- Accumulators
     if NO_HAND_CRAFT_DEFAULT_SETTINGS.addAccumulator then
-        player.insert {name = 'basic-accumulator', count = 1}
+        player.insert {name = 'accumulator', count = 1}
     end
 end
 

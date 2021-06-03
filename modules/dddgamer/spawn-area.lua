@@ -10,17 +10,53 @@
 -- Constants --
 -- ======================================================= --
 
--- If enabled, places concrete/brick tiles at the spawn area to mark it
-local Spawn_Area = {
-    PLACE_TILES = true,
-    PLACE_OBJECTS = true,
+local SpawnArea = {
+    DO_PLACE_TILES = true,
+    DO_PLACE_OBJECTS = true,
     POWER_POLE_TYPE = "medium-electric-pole", -- "small-electric-pole", "medium-electric-pole", "big-electric-pole"
-    ADD_ROBOTS = true,
-    ROBOT_COUNT = 20,
-    ADD_TURRETS = true,
-    TURRET_AMMO_COUNT = 4, -- per turret
-    INCLUDE_CLIFF_EXPLOSIVES = true,
-    EXPLOSIVES_COUNT = 2, -- per chest
+
+    INCLUDE_PLAYER_ITEMS = {
+        -- Solar Power
+        -- {name = 'medium-electric-pole', count = 1},
+        -- {name = 'accumulator', count = 1},
+        -- {name = 'solar-panel', count = 2},
+
+        -- Steam power
+        -- {name = 'small-electric-pole', count = 2},
+        -- {name = 'offshore-pump', count = 1},
+        -- {name = 'boiler', count = 1},
+        -- {name = 'steam-engine', count = 1},
+        -- {name = 'pipe-to-ground', count = 2},
+        -- {name = 'pipe', count = 1},
+
+        -- Misc
+        -- {name = 'radar', count = 1},
+        {name = 'repair-pack', count = 1},
+    },
+
+    DO_PLACE_TURRETS = true,
+    INCLUDE_TURRET_AMMO = {name = 'firearm-magazine', count = 4},
+
+    DO_PLACE_ROBOPORT = false,
+    INCLUDE_ROBOPORT_ITEMS = {
+        {name = 'construction-robot', count = 50},
+        {name = 'logistic-robot', count = 50},
+        {name = 'repair-pack', count = 1},
+    },
+
+    DO_PLACE_CHESTS = true,
+    INCLUDE_CHEST_ITEMS = {
+        {name = "cliff-explosives", count = 3},
+        -- {name = "logistic-chest-passive-provider", count = 10},
+        -- {name = "logistic-chest-active-provider", count = 1},
+        -- {name = "logistic-chest-requester", count = 1},
+        -- {name = "roboport", count = 2},
+        -- {name = "rail", count = 100},
+        -- {name = "locomotive", count = 2},
+        -- {name = "cargo-wagon", count = 1},
+        -- {name = "car", count = 1},
+        -- {name = 'radar', count = 1},
+    }
 }
 
 -- Event Functions --
@@ -28,28 +64,28 @@ local Spawn_Area = {
 
 -- Various action when new player joins in game
 -- @param event on_player_created event
-function Spawn_Area.on_player_created(event)
+function SpawnArea.on_player_created(event)
     local player = game.players[event.player_index]
 
-    if (Spawn_Area.PLACE_TILES and not global.spawn_area_created) then
-        Spawn_Area.place_tiles_in_spawn(player)
-        if(Spawn_Area.PLACE_OBJECTS) then
-            Spawn_Area.place_objects(player)
+    if (SpawnArea.DO_PLACE_TILES and not global.IS_SPAWN_AREA_CREATED) then
+        SpawnArea.placeTiles(player)
+        if(SpawnArea.DO_PLACE_OBJECTS) then
+            SpawnArea.placeObjects(player)
         end
-        global.spawn_area_created = true
+        global.IS_SPAWN_AREA_CREATED = true
     end
 end
 
 -- Event Registration --
 -- ======================================================= --
-Event.register(defines.events.on_player_created, Spawn_Area.on_player_created)
+Event.register(defines.events.on_player_created, SpawnArea.on_player_created)
 
 -- Helper Functions --
 -- ======================================================= --
 
 -- Draws tiles around the spawned player if they havnt been already
 -- @param player LuaPlayer
-function Spawn_Area.place_tiles_in_spawn(player)
+function SpawnArea.placeTiles(player)
     local spawn_position = player.force.get_spawn_position(player.surface)
     local tile_refined_concrete = 'refined-concrete'
     local tile_refined_concrete_paint = 'refined-hazard-concrete-left'
@@ -276,16 +312,16 @@ function Spawn_Area.place_tiles_in_spawn(player)
     --     end
     -- end
 
-    Spawn_Area.set_tiles_safe(player.surface, marked_area_outer)
-    Spawn_Area.set_tiles_safe(player.surface, marked_area_inner)
-    Spawn_Area.set_tiles_safe(player.surface, marked_corners)
+    SpawnArea.setTilesSafe(player.surface, marked_area_outer)
+    SpawnArea.setTilesSafe(player.surface, marked_area_inner)
+    SpawnArea.setTilesSafe(player.surface, marked_corners)
 end
 
 -- Sets tile area to a walkable surface (e.g. grass) first, then resets that to the tile passed in
 -- @param surface - LuaSurface to set tiles on
 -- @param tiles - array of LuaTile
-function Spawn_Area.set_tiles_safe(surface, tiles)
-    local grass = Spawn_Area.get_walkable_tile()
+function SpawnArea.setTilesSafe(surface, tiles)
+    local grass = SpawnArea.getWalkableTileName()
     local grass_tiles = {}
     for k, tile in pairs(tiles) do
         grass_tiles[k] = {
@@ -298,7 +334,7 @@ function Spawn_Area.set_tiles_safe(surface, tiles)
 end
 
 -- @return the first available walkable tile name in the prototype list (e.g. grass)
-function Spawn_Area.get_walkable_tile()
+function SpawnArea.getWalkableTileName()
     for name, tile in pairs(game.tile_prototypes) do
         if tile.collision_mask['player-layer'] == nil and not tile.items_to_place_this then
             return name
@@ -309,9 +345,28 @@ end
 
 -- Place lamps, and trash chests
 -- @param player LuaPlayer
-function Spawn_Area.place_objects(player)
+function SpawnArea.placeObjects(player)
+    SpawnArea.placeLamps(player)
+    SpawnArea.placePowerPoles(player)
+    SpawnArea.addBonusPlayerItems(player)
 
-    local t2_lamps = {
+    if(SpawnArea.DO_PLACE_CHESTS) then
+        SpawnArea.placeChests(player)
+    end
+
+    if(SpawnArea.DO_PLACE_TURRETS) then
+        SpawnArea.placeTurrets(player)
+    end
+
+    if(SpawnArea.DO_PLACE_ROBOPORT) then
+        SpawnArea.placeRoboport(player)
+        SpawnArea.placeLogisticStorage(player)
+    end
+end
+
+-- @param player LuaPlayer
+function SpawnArea.placeLamps(player)
+    local locations = {
         {-3, -3},
         {2, -3},
         -- === --
@@ -319,7 +374,20 @@ function Spawn_Area.place_objects(player)
         {2, 2},
     }
 
-    local t2_poles = {
+    for i, value in ipairs(locations) do
+        local entity = player.surface.create_entity({
+            name='small-lamp',
+            position=value,
+            force=game.forces.player
+        })
+        entity.destructible = false
+        entity.minable = false
+    end
+end
+
+-- @param player LuaPlayer
+function SpawnArea.placePowerPoles(player)
+    local locations = {
         {-4, -4},
         {3, -4},
         -- === --
@@ -327,15 +395,23 @@ function Spawn_Area.place_objects(player)
         {3, 3},
     }
 
-    local t2_boxes = {
-        {-2, -2},
-        {1, -2},
-        -- === --
-        {-2, 1},
-        {1, 1},
-    }
+    for i, value in ipairs(locations) do
+        local entity = player.surface.create_entity({
+            name=SpawnArea.POWER_POLE_TYPE,
+            position=value,
+            force=game.forces.player
+        })
+    end
+end
 
-    local obj_turrets = {
+-- @param player LuaPlayer
+function SpawnArea.addBonusPlayerItems(player)
+    SpawnArea.insertItemsIntoEntity(player, SpawnArea.INCLUDE_PLAYER_ITEMS)
+end
+
+-- @param player LuaPlayer
+function SpawnArea.placeTurrets(player)
+    local locations = {
         {2, 4},
         {4, 2},
         {-2, 4},
@@ -346,61 +422,61 @@ function Spawn_Area.place_objects(player)
         {-4, -2},
     }
 
-    if(Spawn_Area.ADD_ROBOTS) then
-        local entity = player.surface.create_entity{
-            name='roboport',
-            position={7, -7},
-            force=game.forces.player
-        }
-        entity.insert{name = 'construction-robot', count = Spawn_Area.ROBOT_COUNT}
-        
-        local entity = player.surface.create_entity{
-            name='logistic-chest-storage',
-            position={5, -5},
-            force=game.forces.player
-        }
-    end
-
-    if(Spawn_Area.ADD_TURRETS) then
-        for i, value in ipairs(obj_turrets) do
-            local entity = player.surface.create_entity{
-                name='gun-turret',
-                position=value,
-                force=game.forces.player
-            }
-            entity.insert{name = 'firearm-magazine', count = Spawn_Area.TURRET_AMMO_COUNT}
-        end
-    end
-
-    --  place lamps on the hazard concrete created earlier
-    for i, value in ipairs(t2_lamps) do
-        local entity = player.surface.create_entity{
-            name='small-lamp',
+    for i, value in ipairs(locations) do
+        local entity = player.surface.create_entity({
+            name='gun-turret',
             position=value,
             force=game.forces.player
-        }
-        entity.destructible = false
-        entity.minable = false
+        })
+        entity.insert(SpawnArea.INCLUDE_TURRET_AMMO)
     end
+end
 
-    -- Place medium power poles next to lamps
-    for i, value in ipairs(t2_poles) do
-        local entity = player.surface.create_entity{
-            name=Spawn_Area.POWER_POLE_TYPE,
-            position=value,
-            force=game.forces.player
-        }
-    end
+-- @param player LuaPlayer
+function SpawnArea.placeRoboport(player)
+    local entity = player.surface.create_entity({
+        name='roboport',
+        position={7, -7},
+        force=game.forces.player
+    })
+    SpawnArea.insertItemsIntoEntity(entity, SpawnArea.INCLUDE_ROBOPORT_ITEMS)
+end
 
-    -- Place trash chests next to poles
-    for i, value in ipairs(t2_boxes) do
-        local entity = player.surface.create_entity{
+-- @param player LuaPlayer
+function SpawnArea.placeLogisticStorage(player)
+    local entity = player.surface.create_entity({
+        name='logistic-chest-storage',
+        position={5, -5},
+        force=game.forces.player
+    })
+    SpawnArea.insertItemsIntoEntity(entity, SpawnArea.INCLUDE_CHEST_ITEMS)
+end
+
+-- @param player LuaPlayer
+function SpawnArea.placeChests(player)
+    local locations = {
+        {-2, -2},
+        {1, -2},
+        -- === --
+        {-2, 1},
+        {1, 1},
+    }
+
+    for i, value in ipairs(locations) do
+        local entity = player.surface.create_entity({
             name='wooden-chest',
             position=value,
             force=game.forces.player
-        }
-        if(Spawn_Area.INCLUDE_CLIFF_EXPLOSIVES) then
-            entity.insert{name = 'cliff-explosives', count = Spawn_Area.EXPLOSIVES_COUNT}
-        end
+        })
+        SpawnArea.insertItemsIntoEntity(entity, SpawnArea.INCLUDE_CHEST_ITEMS)
+    end
+end
+
+
+-- @param entity Valid entity to add items to (LuaPlayer, chest, roboport etc..)
+-- @param items List of {name = 'name', count = 0}
+function SpawnArea.insertItemsIntoEntity(entity, items)
+    for j, item in ipairs(items) do
+        entity.insert(item)
     end
 end
