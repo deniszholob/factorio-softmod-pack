@@ -25,7 +25,7 @@ If you found the pack or the source code useful, consider supporting me on Patre
 
 ### Add to an existing save
 * Download the softmod pack zipped file (`dddgamer-softmod-pack.zip`) from the
-[Latest Release]
+[Latest Release](https://github.com/deniszholob/factorio-softmod-pack/releases/latest)
 * Browse to the save file (.zip archive file)
   * Local saves are in C:/Users/*[your-username]*/AppData/Roaming/Factorio/saves/
 * Open your save game zip
@@ -35,6 +35,11 @@ If you found the pack or the source code useful, consider supporting me on Patre
 
 ## Dev
 Some notes to help the dev process.
+
+* Run the local build script to sync to factorio scenarios folder
+* See [build-readme](./.build-scripts/readme.md) for more info
+* See [common console commands](https://wiki.factorio.com/Console#Set_evolution_factor)
+* See [Useful Factorio commands for testing](.console-lua-commands.lua)
 
 **Notes:**
 * Previous pack versions are saved on separate branches.
@@ -46,14 +51,19 @@ Dev files will be removed from the release build, see the [github repository](ht
 
 ```
 .
-├── .build-scripts/      <- Scripts for github/travis builds
+├── .build-scripts/     <- Scripts for github/travis and local dev builds
+├── .screenshots/       <- Screenshots for github
 ├── locale/             <- Translation strings
 ├── modules/            <- The actual softmod modules
 ├── stdlib/             <- Factorio "standard library" classes, main one being the Event
 ├── util/               <- Contains some utility classes like colors, math, styles.
 ├── .code-templates.md  <- Some code snippets for development purposes.
+├── .editorconfig       <- Coding styles, see https://editorconfig.org/
+├── .gitignore          <- Ignore files from source control
+├── .travis.yml         <- Build pipeline config to create releases on github
 ├── config.lua          <- Just creates a config global for now.
 ├── control.lua         <- Entry file that loads all the other modules, configure what to load here.
+├── LICENCE             <- Repo licence file
 └── README.MD           <- This file
 
 ```

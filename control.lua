@@ -48,7 +48,7 @@ require('modules/common/floating-health')
 -- require('modules/common/no-hand-crafting')
 require('modules/common/custom-tech')
 
-
+-- === Can cause problems in multiplayer === ---
 -- require('modules/common/research-queue/auto-research')
 -- require('modules/common/tasks') -- Has desync problems
 
