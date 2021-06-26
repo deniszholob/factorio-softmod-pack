@@ -16,13 +16,13 @@
 local Custom_Tech = {
     -- Research to disable
     DISABLED_RESEARCH_LIST = {
-        'atomic-bomb',
+        -- 'atomic-bomb',
         'discharge-defense-equipment',
         -- 'logistic-system'
     },
     -- Recipies to disable
     DISABLED_RECIPE_LIST = {
-        'atomic-bomb',
+        -- 'atomic-bomb',
         'discharge-defense-equipment',
     },
     -- Tech to begin researched with
@@ -30,6 +30,10 @@ local Custom_Tech = {
         'toolbelt',
         'steel-axe',
         'optics',
+        'circuit-network',
+        'construction-robotics',
+        'logistic-robotics',
+        'logistic-system',
     },
     PRINT_DISABLED_TECH = false,
     ENABLE_RESEARCH_QUEUE = true,

@@ -7,6 +7,10 @@
 -- github: https://github.com/deniszholob/factorio-softmod-pack
 -- ======================================================= --
 
+-- Dependencies --
+-- ======================================================= --
+local Math = require("util/Math")
+
 -- Constants --
 -- ======================================================= --
 
@@ -15,48 +19,60 @@ local SpawnArea = {
     DO_PLACE_OBJECTS = true,
     POWER_POLE_TYPE = "medium-electric-pole", -- "small-electric-pole", "medium-electric-pole", "big-electric-pole"
 
+    DO_PLACE_POWER = true,
+    DO_PLACE_WALLS = true,
+
+    DO_PLACE_TURRETS = true,
+    INCLUDE_TURRET_AMMO = {name = 'firearm-magazine', count = 25},
+
+    DO_PLACE_ROBOPORT = true,
+    INCLUDE_ROBOPORT_ITEMS = {
+        {name = 'construction-robot', count = 300},
+        {name = 'logistic-robot', count = 50},
+        {name = 'repair-pack', count = 100},
+    },
+
     INCLUDE_PLAYER_ITEMS = {
         -- Solar Power
-        -- {name = 'medium-electric-pole', count = 1},
+        {name = 'medium-electric-pole', count = 1},
         -- {name = 'accumulator', count = 1},
         -- {name = 'solar-panel', count = 2},
 
         -- Steam power
-        -- {name = 'small-electric-pole', count = 2},
-        -- {name = 'offshore-pump', count = 1},
-        -- {name = 'boiler', count = 1},
-        -- {name = 'steam-engine', count = 1},
-        -- {name = 'pipe-to-ground', count = 2},
-        -- {name = 'pipe', count = 1},
+        {name = 'small-electric-pole', count = 2},
+        {name = 'offshore-pump', count = 1},
+        {name = 'boiler', count = 1},
+        {name = 'steam-engine', count = 2},
+        {name = 'pipe-to-ground', count = 2},
+        {name = 'pipe', count = 1},
 
         -- Misc
-        -- {name = 'radar', count = 1},
-        {name = 'repair-pack', count = 1},
-    },
-
-    DO_PLACE_TURRETS = true,
-    INCLUDE_TURRET_AMMO = {name = 'firearm-magazine', count = 4},
-
-    DO_PLACE_ROBOPORT = false,
-    INCLUDE_ROBOPORT_ITEMS = {
-        {name = 'construction-robot', count = 50},
-        {name = 'logistic-robot', count = 50},
-        {name = 'repair-pack', count = 1},
+        {name = 'big-electric-pole', count = 10},
+        {name = 'radar', count = 3},
+        {name = 'repair-pack', count = 10},
+        {name = 'gun-turret', count = 1},
+        {name = 'firearm-magazine', count = 10},
+        -- {name = 'stone-wall', count = 50},
+        -- {name = 'gate', count = 10},
     },
 
     DO_PLACE_CHESTS = true,
+    -- "wooden-chest", "iron-chest", "steel-chest",
+    -- "logistic-chest-passive-provider", "logistic-chest-storage", "logistic-chest-buffer", "logistic-chest-active-provider"
+    CHEST_TYPE = "logistic-chest-storage",
     INCLUDE_CHEST_ITEMS = {
-        {name = "cliff-explosives", count = 3},
-        -- {name = "logistic-chest-passive-provider", count = 10},
-        -- {name = "logistic-chest-active-provider", count = 1},
-        -- {name = "logistic-chest-requester", count = 1},
-        -- {name = "roboport", count = 2},
+        -- {name = "cliff-explosives", count = 3},
+        {name = "logistic-chest-passive-provider", count = 11},
+        {name = "logistic-chest-active-provider", count = 1},
+        {name = "logistic-chest-requester", count = 1},
+        {name = "logistic-chest-buffer", count = 1},
+        {name = "roboport", count = 2},
         -- {name = "rail", count = 100},
         -- {name = "locomotive", count = 2},
         -- {name = "cargo-wagon", count = 1},
         -- {name = "car", count = 1},
         -- {name = 'radar', count = 1},
-    }
+    },
 }
 
 -- Event Functions --
@@ -354,6 +370,16 @@ function SpawnArea.placeObjects(player)
         SpawnArea.placeChests(player)
     end
 
+    if(SpawnArea.DO_PLACE_POWER) then
+        SpawnArea.placeSolar(player)
+        SpawnArea.placeAccumulators(player)
+    end
+
+    if(SpawnArea.DO_PLACE_WALLS) then
+        SpawnArea.placeWalls(player)
+        SpawnArea.placeGates(player)
+    end
+
     if(SpawnArea.DO_PLACE_TURRETS) then
         SpawnArea.placeTurrets(player)
     end
@@ -365,13 +391,58 @@ function SpawnArea.placeObjects(player)
 end
 
 -- @param player LuaPlayer
+function SpawnArea.placeWalls(player)
+    local locations = {
+        -- NW
+        {pointStart = {x=-9.5, y=-9.5}, pointEnd = {x=-2.5, y=-9.5}},
+        {pointStart = {x=-9.5, y=-9.5}, pointEnd = {x=-9.5, y=-2.5}},
+        -- NE
+        {pointStart = {x=9.5, y=-9.5}, pointEnd = {x=2.5, y=-9.5}},
+        {pointStart = {x=9.5, y=-9.5}, pointEnd = {x=9.5, y=-2.5}},
+        -- SW
+        {pointStart = {x=-9.5, y=9.5}, pointEnd = {x=-9.5, y=2.5}},
+        {pointStart = {x=-9.5, y=9.5}, pointEnd = {x=-2.5, y=9.5}},
+        -- SE
+        {pointStart = {x=9.5, y=9.5}, pointEnd = {x=2.5, y=9.5}},
+        {pointStart = {x=9.5, y=9.5}, pointEnd = {x=9.5, y=2.5}},
+    }
+    for i, location in ipairs(locations) do
+        local locationPoints = Math.bresenhamLine(location.pointStart, location.pointEnd)
+        SpawnArea.placeEntities(player, 'stone-wall', locationPoints)
+    end
+end
+
+-- @param player LuaPlayer
+function SpawnArea.placeGates(player)
+    local locations = {
+        -- N
+        {pointStart = {x=-1.5, y=-9.5}, pointEnd = {x=1.5, y=-9.5}},
+        -- W
+        {pointStart = {x=-9.5, y=-1.5}, pointEnd = {x=-9.5, y=1.5}},
+        -- S
+        {pointStart = {x=-1.5, y=9.5}, pointEnd = {x=1.5, y=9.5}},
+        -- E
+        {pointStart = {x=9.5, y=-1.5}, pointEnd = {x=9.5, y=1.5}},
+    }
+    for i, location in ipairs(locations) do
+        local locationPoints = Math.bresenhamLine(location.pointStart, location.pointEnd)
+        local direction = defines.direction.east
+        if(i % 2 == 0) then
+            direction = defines.direction.north
+        end
+        SpawnArea.placeEntities(player, 'gate', locationPoints, nil, direction)
+    end
+end
+
+
+-- @param player LuaPlayer
 function SpawnArea.placeLamps(player)
     local locations = {
-        {-3, -3},
-        {2, -3},
+        {-2.5, -2.5},
+        {2.5, -2.5},
         -- === --
-        {-3, 2},
-        {2, 2},
+        {-2.5, 2.5},
+        {2.5, 2.5},
     }
 
     for i, value in ipairs(locations) do
@@ -388,25 +459,43 @@ end
 -- @param player LuaPlayer
 function SpawnArea.placePowerPoles(player)
     local locations = {
-        {-4, -4},
-        {3, -4},
+        {-3.5, -3.5},
+        {3.5, -3.5},
         -- === --
-        {-4, 3},
-        {3, 3},
+        {-3.5, 3.5},
+        {3.5, 3.5},
     }
-
-    for i, value in ipairs(locations) do
-        local entity = player.surface.create_entity({
-            name=SpawnArea.POWER_POLE_TYPE,
-            position=value,
-            force=game.forces.player
-        })
-    end
+    SpawnArea.placeEntities(player, SpawnArea.POWER_POLE_TYPE, locations)
 end
 
 -- @param player LuaPlayer
 function SpawnArea.addBonusPlayerItems(player)
     SpawnArea.insertItemsIntoEntity(player, SpawnArea.INCLUDE_PLAYER_ITEMS)
+end
+
+-- @param player LuaPlayer
+function SpawnArea.placeSolar(player)
+    local locations = {
+        {3.5, -6.5},
+        {-3.5, -6.5},
+        {-6.5, -3.5},
+        {-6.5, 3.5},
+        {-3.5, 6.5},
+        {3.5, 6.5},
+        {6.5, 3.5},
+        {6.5, -3.5},
+    }
+    SpawnArea.placeEntities(player, 'solar-panel', locations)
+end
+
+-- @param player LuaPlayer
+function SpawnArea.placeAccumulators(player)
+    local locations = {
+        {-6, -6},
+        {-6, 6},
+        {6, 6},
+    }
+    SpawnArea.placeEntities(player, 'accumulator', locations)
 end
 
 -- @param player LuaPlayer
@@ -421,55 +510,31 @@ function SpawnArea.placeTurrets(player)
         {-2, -4},
         {-4, -2},
     }
-
-    for i, value in ipairs(locations) do
-        local entity = player.surface.create_entity({
-            name='gun-turret',
-            position=value,
-            force=game.forces.player
-        })
-        entity.insert(SpawnArea.INCLUDE_TURRET_AMMO)
-    end
+    SpawnArea.placeEntities(player, 'gun-turret', locations, {SpawnArea.INCLUDE_TURRET_AMMO})
 end
 
 -- @param player LuaPlayer
 function SpawnArea.placeRoboport(player)
-    local entity = player.surface.create_entity({
-        name='roboport',
-        position={7, -7},
-        force=game.forces.player
-    })
-    SpawnArea.insertItemsIntoEntity(entity, SpawnArea.INCLUDE_ROBOPORT_ITEMS)
+    local locations = {{7,-7}}
+    SpawnArea.placeEntities(player, 'roboport', locations, SpawnArea.INCLUDE_ROBOPORT_ITEMS)
 end
 
 -- @param player LuaPlayer
 function SpawnArea.placeLogisticStorage(player)
-    local entity = player.surface.create_entity({
-        name='logistic-chest-storage',
-        position={5, -5},
-        force=game.forces.player
-    })
-    SpawnArea.insertItemsIntoEntity(entity, SpawnArea.INCLUDE_CHEST_ITEMS)
+    local locations = {{4.5, -4.5}}
+    SpawnArea.placeEntities(player, 'logistic-chest-storage', locations, SpawnArea.INCLUDE_CHEST_ITEMS)
 end
 
 -- @param player LuaPlayer
 function SpawnArea.placeChests(player)
     local locations = {
-        {-2, -2},
-        {1, -2},
+        {-1.5, -1.5},
+        {1.5, -1.5},
         -- === --
-        {-2, 1},
-        {1, 1},
+        {-1.5, 1.5},
+        {1.5, 1.5},
     }
-
-    for i, value in ipairs(locations) do
-        local entity = player.surface.create_entity({
-            name='wooden-chest',
-            position=value,
-            force=game.forces.player
-        })
-        SpawnArea.insertItemsIntoEntity(entity, SpawnArea.INCLUDE_CHEST_ITEMS)
-    end
+    SpawnArea.placeEntities(player, SpawnArea.CHEST_TYPE, locations, SpawnArea.INCLUDE_CHEST_ITEMS)
 end
 
 
@@ -478,5 +543,28 @@ end
 function SpawnArea.insertItemsIntoEntity(entity, items)
     for j, item in ipairs(items) do
         entity.insert(item)
+    end
+end
+
+
+-- @param entity Valid entity to add items to (LuaPlayer, chest, roboport etc..)
+-- @param entityName String
+-- @param locations List of {Number, Number}
+-- @param items List of {name = 'name', count = 0}
+function SpawnArea.placeEntities(player, entityName, locations, items, rotation)
+    local direction = defines.direction.north
+    if(rotation) then
+        direction = rotation
+    end
+    for i, location in ipairs(locations) do
+        local entity = player.surface.create_entity({
+            name=entityName,
+            position=location,
+            direction=direction,
+            force=game.forces.player
+        })
+        if(items) then
+            SpawnArea.insertItemsIntoEntity(entity, items)
+        end
     end
 end
