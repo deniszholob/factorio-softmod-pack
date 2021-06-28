@@ -1,0 +1,22 @@
+{
+    "editor.semanticHighlighting.enabled": true,
+    "Lua.diagnostics.globals": [
+        "game",
+        "script",
+        "remote",
+        "commands",
+        "settings",
+        "rcon",
+        "rendering",
+        "global",
+        "defines",
+        "serpent",
+        "log",
+        "localised_print",
+        "table_size",
+    ],
+    "vscode-lua-format.configPath": ".lua-format-config.yml",
+    "cSpell.words": [
+        "Factorio"
+    ]
+}

@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "koihik.vscode-lua-format",
+        "sumneko.lua",
+        "svizzini.factorio-lua-api-autocomplete",
+        "streetsidesoftware.code-spell-checker"
+    ]
+}
