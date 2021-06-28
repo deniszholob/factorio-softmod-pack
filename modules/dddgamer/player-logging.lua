@@ -80,7 +80,7 @@ end
 
 -- Returns true if not a basic item(trees, ores, drills, etc.)
 function Player_Logging.entityFilter(entity)
-    game.print('filter' .. entity.name)
+    -- game.print('filter' .. entity.name)
     return (
         string.contains(entity.name, 'tree') or
         string.contains(entity.name, 'rock') or
