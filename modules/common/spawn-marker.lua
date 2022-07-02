@@ -9,13 +9,13 @@
 -- Constants --
 -- ======================================================= --
 
-local SpawnMarker = {}
+SpawnMarker = {}
 
 -- Event Functions --
 -- ======================================================= --
 
--- Various action when new player joins in game
--- @param event on_player_created event
+--- Various action when new player joins in game
+--- @param event on_player_created event
 function SpawnMarker.on_player_created(event)
     local player = game.players[event.player_index]
     if (not global.spawn_marked_on_map) then
@@ -31,8 +31,8 @@ Event.register(defines.events.on_player_created, SpawnMarker.on_player_created)
 -- Helper Functions --
 -- ======================================================= --
 
--- Set spawn mark on map
--- @param player LuaPlayer
+--- Set spawn mark on map
+--- @param player LuaPlayer
 function SpawnMarker.set_map_spawn_marker(player)
     local spawn_position = player.force.get_spawn_position(player.surface)
     local map_tag = {

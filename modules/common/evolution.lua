@@ -47,24 +47,24 @@ Evolution = {
 
 -- Event Functions --
 -- ======================================================= --
--- When new player joins add a btn to their menu bar
--- Redraw this softmod's master frame (if desired)
--- @param event on_player_joined_game
+--- When new player joins add a btn to their menu bar
+--- Redraw this softmod's master frame (if desired)
+--- @param event defines.events.on_player_joined_game
 function Evolution.on_player_joined_game(event)
     local player = game.players[event.player_index]
     Evolution.draw_master_frame(player)
 end
 
--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
--- @param event on_player_left_game
+--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
+--- @param event defines.events.on_player_left_game
 function Evolution.on_player_left_game(event)
     local player = game.players[event.player_index]
     GUI.destroy_element(Evolution.get_master_frame(player))
 end
 
--- Refresh the game time each second
--- @param event on_tick
-function on_tick(event)
+--- Refresh the game time each second
+--- @param event defines.events.on_tick
+function Evolution.on_tick(event)
     local refresh_period = 1 -- (sec)
     if (Time.tick_to_sec(game.tick) % refresh_period == 0) then
         for i, player in pairs(game.connected_players) do
@@ -79,15 +79,15 @@ end
 -- ======================================================= --
 Event.register(defines.events.on_player_joined_game, Evolution.on_player_joined_game)
 Event.register(defines.events.on_player_left_game, Evolution.on_player_left_game)
-Event.register(defines.events.on_tick, on_tick)
+Event.register(defines.events.on_tick, Evolution.on_tick)
 
 -- GUI Functions --
 -- ======================================================= --
 
 
--- GUI Function
--- Creates the main/master frame where all the GUI content will go in
--- @tparam LuaPlayer player current player calling the function
+--- GUI Function
+--- Creates the main/master frame where all the GUI content will go in
+--- @param player LuaPlayer current player calling the function
 function Evolution.draw_master_frame(player)
     local master_frame = Evolution.get_master_frame(player)
 
@@ -108,9 +108,9 @@ function Evolution.draw_master_frame(player)
 end
 
 -- GUI Function
--- Fills frame with worst enemy icon and evolution percentage
--- @tparam LuaGuiElement container parent container to add GUI elements to
--- @tparam LuaPlayer player current player calling the function
+--- Fills frame with worst enemy icon and evolution percentage
+--- @param container LuaGuiElement parent container to add GUI elements to
+--- @param player LuaPlayer  player calling the function
 function Evolution.fill_master_frame(container, player)
     local h_flow = GUI.add_element( container,
         {
@@ -153,9 +153,9 @@ function Evolution.fill_master_frame(container, player)
     Evolution.update_evolution(player)
 end
 
--- GUI Function
--- Updates the enemy icon and evolution percentage, if its a new icon, send out alert
--- @tparam LuaPlayer player current player calling the function
+--- GUI Function
+--- Updates the enemy icon and evolution percentage, if its a new icon, send out alert
+--- @param player LuaPlayer current player calling the function
 function Evolution.update_evolution(player)
     local sprite_evolution = Evolution.get_master_frame(player)[Evolution.EVOLUTION_FLOW_NAME][Evolution.EVOLUTION_SPRITE_NAME]
     local lbl_evolution = Evolution.get_master_frame(player)[Evolution.EVOLUTION_FLOW_NAME][Evolution.EVOLUTION_LABEL_NAME]
@@ -174,8 +174,8 @@ end
 -- Logic Functions --
 -- ======================================================= --
 
--- Figures out some evolution stats and returns them (Sprite and evo %)
--- @tparam LuaPlayer player current player calling the function
+--- Figures out some evolution stats and returns them (Sprite and evo %)
+--- @param player LuaPlayer current player calling the function
 function Evolution.getEvolutionStats(player)
     local evolution_factor = game.forces["enemy"].evolution_factor;
     local spriteIdx = 0;
@@ -189,6 +189,7 @@ function Evolution.getEvolutionStats(player)
     end
 
     -- Figure out what evolution breakpoint we are at
+    local colorIdx = 1
     for evo, color in pairs(Evolution.EVOLUTION_COLORS) do
         if(evolution_factor < evo) then
             break

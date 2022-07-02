@@ -15,25 +15,27 @@ local GUI = require("stdlib/GUI")
 
 -- Constants --
 -- ======================================================= --
+local ResearchQueue = {}
 local MENU_BTN_NAME = 'btn_menu_auto-research'
 local MASTER_FRAME_NAME = 'frame_auto-research'
 
+-- queue
 -- Event Functions --
 -- ======================================================= --
 -- When new player joins add a btn to their button_flow
 -- Redraw this softmod's frame
 -- @param event on_player_joined_game
-function on_player_joined(event)
+function ResearchQueue.on_player_joined(event)
     local player = game.players[event.player_index]
-    local config = getConfig(player.force) -- triggers initialization of force config
-    startNextResearch(player.force, true)
-    draw_menu_btn(player)
+    local config = ResearchQueue.getConfig(player.force) -- triggers initialization of force config
+    ResearchQueue.startNextResearch(player.force, true)
+    ResearchQueue.draw_menu_btn(player)
     -- draw_master_frame(player) -- dont draw yet, when btn clicked instead
 end
 
 -- When a player leaves clean up their GUI in case this mod gets removed next time
 -- @param event on_player_left_game
-function on_player_left_game(event)
+function ResearchQueue.on_player_left_game(event)
     local player = game.players[event.player_index]
     GUI.destroy_element(mod_gui.get_button_flow(player)[MENU_BTN_NAME])
     GUI.destroy_element(mod_gui.get_frame_flow(player)[MASTER_FRAME_NAME])
@@ -41,7 +43,7 @@ end
 
 -- Toggle gameinfo is called if gui element is gameinfo button
 -- @param event on_gui_click
-local function on_gui_click(event)
+function ResearchQueue.on_gui_click(event)
     local player = game.players[event.player_index]
     local el_name = event.element.name
 
@@ -59,13 +61,13 @@ end
 
 --
 -- @param event on_force_created event
-function on_force_created(event)
-    getConfig(event.force) -- triggers initialization of force config
+function ResearchQueue.on_force_created(event)
+    ResearchQueue.getConfig(event.force) -- triggers initialization of force config
 end
 
-function on_research_finished(event)
+function ResearchQueue.on_research_finished(event)
     local force = event.research.force
-    local config = getConfig(force)
+    local config = ResearchQueue.getConfig(force)
     -- remove researched stuff from prioritized_techs and deprioritized_techs
     for i = #config.prioritized_techs, 1, -1 do
         local tech = force.technologies[config.prioritized_techs[i]]
@@ -93,28 +95,28 @@ function on_research_finished(event)
         end
     end
 
-    startNextResearch(event.research.force)
+    ResearchQueue.startNextResearch(event.research.force)
 end
 
 --
--- @param event on_player_created event
-function on_player_created(event)
+-- @param event on_gui_checked_state_changed event
+function ResearchQueue.on_gui_checked_state_changed(event)
 
 end
 
 --
--- @param event on_player_created event
-function on_player_created(event)
+-- @param event on_gui_text_changed event
+function ResearchQueue.on_gui_text_changed(event)
 
 end
 
 -- Event Registration --
 -- ======================================================= --
-Event.register(defines.events.on_force_created, on_force_created)
-Event.register(defines.events.on_research_finished, on_research_finished)
-Event.register(defines.events.on_gui_checked_state_changed, on_gui_checked_state_changed)
-Event.register(defines.events.on_gui_click, on_gui_click)
-Event.register(defines.events.on_gui_text_changed, on_gui_text_changed)
+Event.register(defines.events.on_force_created, ResearchQueue.on_force_created)
+Event.register(defines.events.on_research_finished, ResearchQueue.on_research_finished)
+Event.register(defines.events.on_gui_checked_state_changed, ResearchQueue.on_gui_checked_state_changed)
+Event.register(defines.events.on_gui_click, ResearchQueue.on_gui_click)
+Event.register(defines.events.on_gui_text_changed, ResearchQueue.on_gui_text_changed)
 
 
 
@@ -132,7 +134,7 @@ end)
 
 --
 -- @param player LuaPlayer
-function draw_menu_btn(player)
+function ResearchQueue.draw_menu_btn(player)
     if mod_gui.get_button_flow(player)[MENU_BTN_NAME] == nil then
         mod_gui.get_button_flow(player).add(
             {
@@ -162,7 +164,7 @@ end
 
 
 
-function getConfig(force, config_changed)
+function ResearchQueue.getConfig(force, config_changed)
     if not global.auto_research_config then
         global.auto_research_config = {}
 
@@ -178,16 +180,16 @@ function getConfig(force, config_changed)
             deprioritized_techs = {} -- "deprioritized" is "blacklisted". kept for backwards compatability (because i'm lazy and don't want migration code)
         }
         -- Enable Auto Research
-        setAutoResearch(force, true)
+        ResearchQueue.setAutoResearch(force, true)
 
         -- Disable queued only
-        setQueuedOnly(force, false)
+        ResearchQueue.setQueuedOnly(force, false)
 
         -- Allow switching research
-        setAllowSwitching(force, true)
+        ResearchQueue.setAllowSwitching(force, true)
 
         -- Print researched technology
-        setAnnounceCompletedResearch(force, true)
+        ResearchQueue.setAnnounceCompletedResearch(force, true)
     end
 
     -- set research strategy
@@ -227,55 +229,55 @@ function getConfig(force, config_changed)
     return global.auto_research_config[force.name]
 end
 
-function setAutoResearch(force, enabled)
+function ResearchQueue.setAutoResearch(force, enabled)
     if not force then
         return
     end
-    local config = getConfig(force)
+    local config = ResearchQueue.getConfig(force)
     config.enabled = enabled
 
     -- start new research
-    startNextResearch(force)
+    ResearchQueue.startNextResearch(force)
 end
 
-function setQueuedOnly(force, enabled)
+function ResearchQueue.setQueuedOnly(force, enabled)
     if not force then
         return
     end
-    getConfig(force).prioritized_only = enabled
+    ResearchQueue.getConfig(force).prioritized_only = enabled
 
     -- start new research
-    startNextResearch(force)
+    ResearchQueue.startNextResearch(force)
 end
 
-function setAllowSwitching(force, enabled)
+function ResearchQueue.setAllowSwitching(force, enabled)
     if not force then
         return
     end
-    getConfig(force).allow_switching = enabled
+    ResearchQueue.getConfig(force).allow_switching = enabled
 
     -- start new research
-    startNextResearch(force)
+    ResearchQueue.startNextResearch(force)
 end
 
-function setAnnounceCompletedResearch(force, enabled)
+function ResearchQueue.setAnnounceCompletedResearch(force, enabled)
     if not force then
         return
     end
-    getConfig(force).announce_completed = enabled
+    ResearchQueue.getConfig(force).announce_completed = enabled
 end
 
-function setDeprioritizeInfiniteTech(force, enabled)
+function ResearchQueue.setDeprioritizeInfiniteTech(force, enabled)
     if not force then
         return
     end
-    getConfig(force).deprioritize_infinite_tech = enabled
+    ResearchQueue.getConfig(force).deprioritize_infinite_tech = enabled
 
     -- start new research
-    startNextResearch(force)
+    ResearchQueue.startNextResearch(force)
 end
 
-function getPretechs(tech)
+function ResearchQueue.getPretechs(tech)
     local pretechs = {}
     pretechs[#pretechs + 1] = tech
     local index = 1
@@ -290,7 +292,7 @@ function getPretechs(tech)
     return pretechs
 end
 
-function canResearch(force, tech, config)
+function ResearchQueue.canResearch(force, tech, config)
     if not tech or tech.researched or not tech.enabled then
         return false
     end
@@ -312,8 +314,8 @@ function canResearch(force, tech, config)
     return true
 end
 
-function startNextResearch(force, override_spam_detection)
-    local config = getConfig(force)
+function ResearchQueue.startNextResearch(force, override_spam_detection)
+    local config = ResearchQueue.getConfig(force)
     if not config.enabled or (force.current_research and not config.allow_switching) or (not override_spam_detection and config.last_research_finish_tick == game.tick) then
         return
     end
@@ -355,10 +357,10 @@ function startNextResearch(force, override_spam_detection)
     for _, techname in pairs(config.prioritized_techs) do
         local tech = force.technologies[techname]
         if tech and not next_research then
-            local pretechs = getPretechs(tech)
+            local pretechs = ResearchQueue.getPretechs(tech)
             for _, pretech in pairs(pretechs) do
                 local effort = calcEffort(pretech)
-                if (not least_effort or effort < least_effort) and canResearch(force, pretech, config) then
+                if (not least_effort or effort < least_effort) and ResearchQueue.canResearch(force, pretech, config) then
                     next_research = pretech.name
                     least_effort = effort
                 end
@@ -371,7 +373,7 @@ function startNextResearch(force, override_spam_detection)
         for techname, tech in pairs(force.technologies) do
             if tech.enabled and not tech.researched then
                 local effort = calcEffort(tech)
-                if (not least_effort or effort < least_effort) and canResearch(force, tech, config) then
+                if (not least_effort or effort < least_effort) and ResearchQueue.canResearch(force, tech, config) then
                     next_research = techname
                     least_effort = effort
                 end
@@ -389,7 +391,7 @@ gui = {
             player.gui.top.auto_research_gui.destroy()
         else
             local force = player.force
-            local config = getConfig(force)
+            local config = ResearchQueue.getConfig(force)
             local frame = player.gui.top.add{
                 type = "frame",
                 name = "auto_research_gui",
@@ -532,18 +534,18 @@ gui = {
     onClick = function(event)
         local player = game.players[event.player_index]
         local force = player.force
-        local config = getConfig(force)
+        local config = ResearchQueue.getConfig(force)
         local name = event.element.name
         if name == "auto_research_enabled" then
-            setAutoResearch(force, event.element.state)
+            ResearchQueue.setAutoResearch(force, event.element.state)
         elseif name == "auto_research_queued_only" then
-            setQueuedOnly(force, event.element.state)
+            ResearchQueue.setQueuedOnly(force, event.element.state)
         elseif name == "auto_research_allow_switching" then
-            setAllowSwitching(force, event.element.state)
+            ResearchQueue.setAllowSwitching(force, event.element.state)
         elseif name == "auto_research_announce_completed" then
-            setAnnounceCompletedResearch(force, event.element.state)
+            ResearchQueue.setAnnounceCompletedResearch(force, event.element.state)
         elseif name == "auto_research_deprioritize_infinite_tech" then
-            setDeprioritizeInfiniteTech(force, event.element.state)
+            ResearchQueue.setDeprioritizeInfiniteTech(force, event.element.state)
         elseif name == "auto_research_search_text" then
             if event.button == defines.mouse_button_type.right then
                 player.gui.top.auto_research_gui.flow.searchflow.auto_research_search_text.text = ""
@@ -561,7 +563,7 @@ gui = {
             player.gui.top.auto_research_gui.flow.research_strategies_two.auto_research_research_expensive.state = (config.research_strategy == "expensive")
             player.gui.top.auto_research_gui.flow.research_strategies_two.auto_research_research_random.state = (config.research_strategy == "random")
             -- start new research
-            startNextResearch(force)
+            ResearchQueue.startNextResearch(force)
         else
             local prefix, name = string.match(name, "^auto_research_([^-]*)-(.*)$")
             if prefix == "allow_ingredient" then
@@ -570,7 +572,7 @@ gui = {
                 if player.gui.top.auto_research_gui.flow.searchoptionsflow.auto_research_ingredients_filter_search_results.state then
                     gui.updateSearchResult(player, player.gui.top.auto_research_gui.flow.searchflow.auto_research_search_text.text)
                 end
-                startNextResearch(force)
+                ResearchQueue.startNextResearch(force)
             elseif name and force.technologies[name] then
                 -- remove tech from prioritized list
                 for i = #config.prioritized_techs, 1, -1 do
@@ -599,7 +601,7 @@ gui = {
                 gui.updateSearchResult(player, player.gui.top.auto_research_gui.flow.searchflow.auto_research_search_text.text)
 
                 -- start new research
-                startNextResearch(force)
+                ResearchQueue.startNextResearch(force)
             end
         end
     end,
@@ -679,7 +681,7 @@ gui = {
             direction = "vertical"
         }
         local ingredients_filter = player.gui.top.auto_research_gui.flow.searchoptionsflow.auto_research_ingredients_filter_search_results.state
-        local config = getConfig(player.force)
+        local config = ResearchQueue.getConfig(player.force)
         local shown = 0
         text = string.lower(text)
         -- NOTICE: localised name matching does not work at present, pending unlikely changes to Factorio API

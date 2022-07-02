@@ -48,7 +48,7 @@ Tasks = {
             Tasks.MASTER_FRAME_NAME
         ]
     end,
-    -- stores tasks here, init with defaults.
+    -- Stores tasks here, init with defaults.
     DEFAULT_TASKS = {
         "Get Power",
         "Build simple belt production",
@@ -63,9 +63,9 @@ Tasks = {
 
 -- Event Functions --
 -- ======================================================= --
--- When new player joins add a btn to their menu bar
--- Redraw this softmod's master frame (if desired)
--- @param event on_player_joined_game
+--- When new player joins add a btn to their menu bar
+--- Redraw this softmod's master frame (if desired)
+--- @param event defines.events.on_player_joined_game
 function Tasks.on_player_joined_game(event)
     local player = game.players[event.player_index]
     Tasks.draw_menu_btn(player)
@@ -73,16 +73,16 @@ function Tasks.on_player_joined_game(event)
     -- Tasks.draw_master_frame(player) -- Will appear on load, comment out to load later on button click
 end
 
--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
--- @param event on_player_left_game
+--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
+--- @param event defines.events.on_player_left_game
 function Tasks.on_player_left_game(event)
     local player = game.players[event.player_index]
     GUI.destroy_element(Tasks.get_menu_button(player))
     GUI.destroy_element(Tasks.get_master_frame(player))
 end
 
--- Button Callback (On Click Event)
--- @param event factorio lua event (on_gui_click)
+--- Button Callback (On Click Event)
+--- @param event event factorio lua event (on_gui_click)
 function Tasks.on_gui_click_btn_menu(event)
     local player = game.players[event.player_index]
     local master_frame = Tasks.get_master_frame(player)
@@ -104,9 +104,9 @@ Event.register(defines.events.on_player_left_game, Tasks.on_player_left_game)
 -- GUI Functions --
 -- ======================================================= --
 
--- GUI Function
--- Draws a button in the menubar to toggle the GUI frame on and off
--- @tparam LuaPlayer player current player calling the function
+--- GUI Function
+--- Draws a button in the menubar to toggle the GUI frame on and off
+--- @param player LuaPlayer current player calling the function
 function Tasks.draw_menu_btn(player)
     local menubar_button = Tasks.get_menu_button(player)
     if menubar_button == nil then
@@ -127,9 +127,9 @@ function Tasks.draw_menu_btn(player)
     end
 end
 
--- GUI Function
--- Creates the main/master frame where all the GUI content will go in
--- @tparam LuaPlayer player current player calling the function
+--- GUI Function
+--- Creates the main/master frame where all the GUI content will go in
+--- @param player LuaPlayer current player calling the function
 function Tasks.draw_master_frame(player)
     local master_frame = Tasks.get_master_frame(player)
 
@@ -149,18 +149,9 @@ function Tasks.draw_master_frame(player)
     end
 end
 
--- GUI Function
--- Updates the task list for all players in game
-function Tasks.update_tasks_gui()
-    for _, player in pairs(game.connected_players) do
-        local master_frame = Tasks.get_master_frame(player)
-        Tasks.fill_master_frame(master_frame, player)
-    end
-end
-
--- GUI Function
--- @tparam LuaGuiElement container parent container to add GUI elements to
--- @tparam LuaPlayer player current player calling the function
+--- GUI Function
+--- @param container LuaGuiElement parent container to add GUI elements to
+--- @param player LuaPlayer current player calling the function
 function Tasks.fill_master_frame(container, player, edit_task)
     local config = Tasks.getConfig()
 
@@ -329,10 +320,20 @@ function Tasks.fill_master_frame(container, player, edit_task)
     end
 end
 
+
+--- GUI Function
+--- Updates the task list for all players in game
+function Tasks.update_tasks_gui()
+    for _, player in pairs(game.connected_players) do
+        local master_frame = Tasks.get_master_frame(player)
+        Tasks.fill_master_frame(master_frame, player)
+    end
+end
+
 -- Logic Functions --
 -- ======================================================= --
 
--- Returns the task config
+--- Returns the task config
 function Tasks.getConfig()
     if (not global.Tasks_config) then
         global.Tasks_config = {
@@ -345,7 +346,7 @@ function Tasks.getConfig()
 end
 
 
--- Adds some default tasks to the global task table
+--- Adds some default tasks to the global task table
 function Tasks.add_default_tasks(task_strings)
     -- Only want to add the default tasks if not initialized yet
     if (not global.Tasks_config) then
@@ -358,8 +359,8 @@ function Tasks.add_default_tasks(task_strings)
     end
 end
 
--- Creates, and adds a new blank task to the global task table, and returns it
--- @tparam LuaPlayer player
+--- Creates, and adds a new blank task to the global task table, and returns it
+--- @param player LuaPlayer
 function Tasks.add_new_task(player_name)
     local config = Tasks.getConfig()
     local task = {
@@ -375,8 +376,8 @@ function Tasks.add_new_task(player_name)
     return task
 end
 
--- Deletes the task from the global task table
--- @param task object
+--- Deletes the task from the global task table
+--- @param task table object
 function Tasks.delete_task(task, player_name)
     local config = Tasks.getConfig()
     table.remove(config.tasks, task.id)
@@ -384,18 +385,18 @@ function Tasks.delete_task(task, player_name)
     game.print('Task deleted by ' .. player_name .. ': "' .. task.text .. '"')
 end
 
--- Modifies the task text corresponding with the id passed in with the new text passed in
--- @param id task integer position in the table
--- @param text new text to replace the current task text with
+--- Modifies the task text corresponding with the id passed in with the new text passed in
+--- @param id number task integer position in the table
+--- @param text string new text to replace the current task text with
 function Tasks.edit_task(id, text, player_name)
     local config = Tasks.getConfig()
     config.tasks[id].text = text
     config.tasks[id].modified_by = player_name
 end
 
--- Moves the task to a new position in the global task table
--- @param cur_position current integer position of the task in the table
--- @param new_position new integer position of the task in the table
+--- Moves the task to a new position in the global task table
+--- @param cur_position integer current position of the task in the table
+--- @param new_position integer new position of the task in the table
 function Tasks.move_task(cur_position, new_position)
     local config = Tasks.getConfig()
     local task = table.remove(config.tasks, cur_position)
@@ -403,8 +404,8 @@ function Tasks.move_task(cur_position, new_position)
     Tasks.sync_task_ids(config.tasks)
 end
 
--- Makes sure that the task object's id is the same as the position in the table
--- @param task object table
+--- Makes sure that the task object's id is the same as the position in the table
+--- @param tasks table object table
 function Tasks.sync_task_ids(tasks)
     for k, v in pairs(tasks) do
         tasks[k].id = k

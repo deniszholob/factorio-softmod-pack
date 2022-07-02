@@ -16,7 +16,7 @@ local Sprites = require('util/Sprites')
 
 -- Constants --
 -- ======================================================= --
-Sprite_List = {
+SpriteList = {
     MENU_BTN_NAME = 'btn_menu_Sprite_List',
     MASTER_FRAME_NAME = 'frame_Sprite_List',
     MASTER_FRAME_LOCATION = GUI.MASTER_FRAME_LOCATIONS.left,
@@ -25,102 +25,102 @@ Sprite_List = {
         menu = 'utility/train_stop_placement_indicator'
     },
     get_menu_button = function(player)
-        return GUI.menu_bar_el(player)[Sprite_List.MENU_BTN_NAME]
+        return GUI.menu_bar_el(player)[SpriteList.MENU_BTN_NAME]
     end,
     get_master_frame = function(player)
-        return GUI.master_frame_location_el(player, Sprite_List.MASTER_FRAME_LOCATION)[Sprite_List.MASTER_FRAME_NAME]
+        return GUI.master_frame_location_el(player, SpriteList.MASTER_FRAME_LOCATION)[SpriteList.MASTER_FRAME_NAME]
     end
 }
 
 -- Event Functions --
 -- ======================================================= --
--- When new player joins add a btn to their menu bar
--- Redraw this softmod's master frame (if desired)
--- @param event on_player_joined_game
-function Sprite_List.on_player_joined_game(event)
+--- When new player joins add a btn to their menu bar
+--- Redraw this softmod's master frame (if desired)
+--- @param event defines.events.on_player_joined_game
+function SpriteList.on_player_joined_game(event)
     local player = game.players[event.player_index]
-    Sprite_List.draw_menu_btn(player)
+    SpriteList.draw_menu_btn(player)
     -- Sprite_List.draw_master_frame(player) -- Will appear on load, cooment out to load later on button click
 end
 
--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
--- @param event on_player_left_game
-function Sprite_List.on_player_left_game(event)
+--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
+--- @param event defines.events.on_player_left_game
+function SpriteList.on_player_left_game(event)
     local player = game.players[event.player_index]
-    GUI.destroy_element(Sprite_List.get_menu_button(player))
-    GUI.destroy_element(Sprite_List.get_master_frame(player))
+    GUI.destroy_element(SpriteList.get_menu_button(player))
+    GUI.destroy_element(SpriteList.get_master_frame(player))
 end
 
--- Button Callback (On Click Event)
--- @param event factorio lua event (on_gui_click)
-function Sprite_List.on_gui_click_btn_menu(event)
+--- Button Callback (On Click Event)
+--- @param event event factorio lua event (on_gui_click)
+function SpriteList.on_gui_click_btn_menu(event)
     local player = game.players[event.player_index]
-    local master_frame = Sprite_List.get_master_frame(player)
+    local master_frame = SpriteList.get_master_frame(player)
 
     if (master_frame ~= nil) then
         -- Call toggle if frame has been created
         GUI.toggle_element(master_frame)
     else
         -- Call create if it hasnt
-        Sprite_List.draw_master_frame(player)
+        SpriteList.draw_master_frame(player)
     end
 end
 
 -- Event Registration --
 -- ======================================================= --
-Event.register(defines.events.on_player_joined_game, Sprite_List.on_player_joined_game)
-Event.register(defines.events.on_player_left_game, Sprite_List.on_player_left_game)
+Event.register(defines.events.on_player_joined_game, SpriteList.on_player_joined_game)
+Event.register(defines.events.on_player_left_game, SpriteList.on_player_left_game)
 
 -- GUI Functions --
 -- ======================================================= --
 
 -- GUI Function
--- Draws a button in the menubar to toggle the GUI frame on and off
--- @tparam LuaPlayer player current player calling the function
-function Sprite_List.draw_menu_btn(player)
-    local menubar_button = Sprite_List.get_menu_button(player)
+--- Draws a button in the menubar to toggle the GUI frame on and off
+--- @param player LuaPlayer current player calling the function
+function SpriteList.draw_menu_btn(player)
+    local menubar_button = SpriteList.get_menu_button(player)
     if menubar_button == nil then
         GUI.add_sprite_button(
             GUI.menu_bar_el(player),
             {
                 type = 'sprite-button',
-                name = Sprite_List.MENU_BTN_NAME,
-                sprite = GUI.get_safe_sprite_name(player, Sprite_List.SPRITE_NAMES.menu),
+                name = SpriteList.MENU_BTN_NAME,
+                sprite = GUI.get_safe_sprite_name(player, SpriteList.SPRITE_NAMES.menu),
                 -- caption = 'Sprite_List.menu_btn_caption',
                 tooltip = 'List Of Sprites'
             },
             -- On Click callback function
-            Sprite_List.on_gui_click_btn_menu
+            SpriteList.on_gui_click_btn_menu
         )
     end
 end
 
--- GUI Function
--- Creates the main/master frame where all the GUI content will go in
--- @tparam LuaPlayer player current player calling the function
-function Sprite_List.draw_master_frame(player)
-    local master_frame = Sprite_List.get_master_frame(player)
+--- GUI Function
+--- Creates the main/master frame where all the GUI content will go in
+--- @param player LuaPlayer current player calling the function
+function SpriteList.draw_master_frame(player)
+    local master_frame = SpriteList.get_master_frame(player)
 
     if (master_frame == nil) then
         master_frame =
-            GUI.master_frame_location_el(player, Sprite_List.MASTER_FRAME_LOCATION).add(
+            GUI.master_frame_location_el(player, SpriteList.MASTER_FRAME_LOCATION).add(
             {
                 type = 'frame',
-                name = Sprite_List.MASTER_FRAME_NAME,
+                name = SpriteList.MASTER_FRAME_NAME,
                 direction = 'vertical',
                 caption = 'Sprite List'
             }
         )
         GUI.element_apply_style(master_frame, Styles.frm_window)
 
-        Sprite_List.fill_master_frame(master_frame, player)
+        SpriteList.fill_master_frame(master_frame, player)
     end
 end
 
--- GUI Function
--- @tparam LuaGuiElement container parent container to add GUI elements to
--- @tparam LuaPlayer player current player calling the function
-function Sprite_List.fill_master_frame(container, player)
+--- GUI Function
+--- @param container LuaGuiElement parent container to add GUI elements to
+--- @param player LuaPlayer current player calling the function
+function SpriteList.fill_master_frame(container, player)
     local scroll_pane =
         container.add(
         {

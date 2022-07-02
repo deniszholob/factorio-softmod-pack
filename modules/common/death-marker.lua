@@ -28,9 +28,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     @usage require('modules/common/deathmarker')
 
 --]]
-deathmarkers = {}
+DeathMarkers = {}
 
-function deathmarkers.init(event)
+function DeathMarkers.init(event)
     if not global.death_markers then
         global.death_markers = {
             counters = {},
@@ -39,7 +39,7 @@ function deathmarkers.init(event)
     end
 end
 
-function removeCorpseTag(entity)
+function DeathMarkers.removeCorpseTag(entity)
     local player = game.players[entity.character_corpse_player_index]
     if not player then
         return
@@ -63,7 +63,7 @@ function removeCorpseTag(entity)
     end
 end
 
-function deathmarkers.playerDied(event)
+function DeathMarkers.playerDied(event)
     local plidx = event.player_index
     local player = game.players[plidx]
     local position = player.position
@@ -106,20 +106,20 @@ function deathmarkers.playerDied(event)
     end
 end
 
-function deathmarkers.corpseExpired(event)
-    removeCorpseTag(event.corpse)
+function DeathMarkers.corpseExpired(event)
+    DeathMarkers.removeCorpseTag(event.corpse)
 end
 
-function deathmarkers.onMined(event)
+function DeathMarkers.onMined(event)
     if event.entity.valid and event.entity.name == 'character-corpse' then
-        removeCorpseTag(event.entity)
+        DeathMarkers.removeCorpseTag(event.entity)
     end
 end
 
 -- typically, this is part of a softmod pack, so let's just assume we got
 -- dropped into an existing save, and init on first player join/create
-Event.register(defines.events.on_player_joined_game, deathmarkers.init)
-Event.register(defines.events.on_player_created, deathmarkers.init)
-Event.register(defines.events.on_pre_player_died, deathmarkers.playerDied)
-Event.register(defines.events.on_character_corpse_expired, deathmarkers.corpseExpired)
-Event.register(defines.events.on_pre_player_mined_item, deathmarkers.onMined)
+Event.register(defines.events.on_player_joined_game, DeathMarkers.init)
+Event.register(defines.events.on_player_created, DeathMarkers.init)
+Event.register(defines.events.on_pre_player_died, DeathMarkers.playerDied)
+Event.register(defines.events.on_character_corpse_expired, DeathMarkers.corpseExpired)
+Event.register(defines.events.on_pre_player_mined_item, DeathMarkers.onMined)

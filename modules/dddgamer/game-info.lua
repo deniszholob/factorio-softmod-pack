@@ -18,115 +18,115 @@ local Styles = require('util/Styles')
 
 -- Constants --
 -- ======================================================= --
-Game_Info = {
+GameInfo = {
     MASTER_BUTTON_NAME = 'btn_menu_game_info',
     MASTER_FRAME_NAME = 'frame_game_info',
-}
-local SECTION_CONTENT = {
-    {
-        title = '',
-        content = {
-            '* Gameplay: Vanilla with QOL Mods',
-            -- '* Gameplay: Handcrafting is disabled',
-            -- '* Gameplay: Handcrafting and Blueprints have been disabled',
-            '* Chat with the [color=orange]`[/color] Key (Under the [color=orange]ESC[/color] Key)',
-            '* Join discord for discussion, voice chat and admin support:',
-            'https://discord.gg/PkyzXzz',
-            '* Check the Factorio Cheat Sheet for help:',
-            'https://factoriosheatsheet.com/',
-            '* The softmod/scenario code:',
-            'https://github.com/deniszholob/factorio-softmod-pack',
-        }
-    },
-    {
-        title = "Train Guidelines",
-        content = {
-            '* Trains are [color=orange]RHD[/color] (Right Hand Drive)',
-            '* Please do not make train roundabouts/loops, junctions/end point stations only',
-            '* General Train size is [color=orange]2-4-2[/color]',
-            '* Place junctions 2-4-2 width apart',
-            '* [color=orange]Color[/color] the trains/stations appropriately',
-        }
-    },
-    {
-        title = "Station Naming Guidelines",
-        content = {
-            '* L = Load, U = Unload, Q = Queue/Stacker (Exclude "[" and "]" for the following examples):',
-            '* Resource Trains: [Location/Name]_[L/U]_[Resource-Name]',
-            '* Taxi Trains: #PAX_[Location]_[Resource-Name]_[ID]',
-            '* Example Ore: "Mine_L_Iron-Ore_1"',
-            '* Example PAX: "#PAX_Mine_Copper-Ore_3"',
-        }
-    },
+    SECTION_CONTENT = {
+        {
+            title = '',
+            content = {
+                '* Gameplay: Vanilla with QOL Mods',
+                -- '* Gameplay: Handcrafting is disabled',
+                -- '* Gameplay: Handcrafting and Blueprints have been disabled',
+                '* Chat with the [color=orange]`[/color] Key (Under the [color=orange]ESC[/color] Key)',
+                '* Join discord for discussion, voice chat and admin support:',
+                'https://discord.gg/PkyzXzz',
+                '* Check the Factorio Cheat Sheet for help:',
+                'https://factoriosheatsheet.com/',
+                '* The softmod/scenario code:',
+                'https://github.com/deniszholob/factorio-softmod-pack',
+            }
+        },
+        {
+            title = "Train Guidelines",
+            content = {
+                '* Trains are [color=orange]RHD[/color] (Right Hand Drive)',
+                '* Please do not make train roundabouts/loops, junctions/end point stations only',
+                '* General Train size is [color=orange]2-4-2[/color]',
+                '* Place junctions 2-4-2 width apart',
+                '* [color=orange]Color[/color] the trains/stations appropriately',
+            }
+        },
+        {
+            title = "Station Naming Guidelines",
+            content = {
+                '* L = Load, U = Unload, Q = Queue/Stacker (Exclude "[" and "]" for the following examples):',
+                '* Resource Trains: [Location/Name]_[L/U]_[Resource-Name]',
+                '* Taxi Trains: #PAX_[Location]_[Resource-Name]_[ID]',
+                '* Example Ore: "Mine_L_Iron-Ore_1"',
+                '* Example PAX: "#PAX_Mine_Copper-Ore_3"',
+            }
+        },
+    }
 }
 
 -- Event Functions --
 -- ======================================================= --
 
--- When new player joins add the gameinfo btn to their GUI
--- Redraw the gameinfo frame to update with the new player
--- @param event on_player_joined_game
-function on_player_joined(event)
+--- When new player joins add the gameinfo btn to their GUI
+--- Redraw the gameinfo frame to update with the new player
+--- @param event defines.events.on_player_joined_game
+function GameInfo.on_player_joined(event)
     local player = game.players[event.player_index]
-    draw_gameinfo_btn(player)
+    GameInfo.draw_gameinfo_btn(player)
 
     -- Force a gui refresh in case there where updates
-    if player.gui.center[Game_Info.MASTER_FRAME_NAME] ~= nil then
-        player.gui.center[Game_Info.MASTER_FRAME_NAME].destroy()
+    if player.gui.center[GameInfo.MASTER_FRAME_NAME] ~= nil then
+        player.gui.center[GameInfo.MASTER_FRAME_NAME].destroy()
     end
 
     -- Show readme window (rules) when player (not admin) first joins, but not at later times
     if not player.admin and Time.tick_to_min(player.online_time) < 1 then
-        draw_gameinfo_frame(player)
+        GameInfo.draw_gameinfo_frame(player)
     end
 end
 
--- On Player Leave
--- Clean up the GUI in case this mod gets removed next time
--- Redraw the gameinfo frame to update
--- @param event on_player_left_game
-function on_player_leave(event)
+--- On Player Leave
+--- Clean up the GUI in case this mod gets removed next time
+--- Redraw the gameinfo frame to update
+--- @param event defines.events.on_player_left_game
+function GameInfo.on_player_leave(event)
     local player = game.players[event.player_index]
-    if player.gui.center[Game_Info.MASTER_FRAME_NAME] ~= nil then
-        player.gui.center[Game_Info.MASTER_FRAME_NAME].destroy()
+    if player.gui.center[GameInfo.MASTER_FRAME_NAME] ~= nil then
+        player.gui.center[GameInfo.MASTER_FRAME_NAME].destroy()
     end
-    if mod_gui.get_button_flow(player)[Game_Info.MASTER_BUTTON_NAME] ~= nil then
-        mod_gui.get_button_flow(player)[Game_Info.MASTER_BUTTON_NAME].destroy()
+    if mod_gui.get_button_flow(player)[GameInfo.MASTER_BUTTON_NAME] ~= nil then
+        mod_gui.get_button_flow(player)[GameInfo.MASTER_BUTTON_NAME].destroy()
     end
 end
 
--- Toggle gameinfo is called if gui element is gameinfo button
--- @param event on_gui_click
-local function on_gui_click(event)
+--- Toggle gameinfo is called if gui element is gameinfo button
+--- @param event defines.events.on_gui_click
+function GameInfo.on_gui_click(event)
     local player = game.players[event.player_index]
     local el_name = event.element.name
 
-    if el_name == Game_Info.MASTER_BUTTON_NAME or el_name == 'btn_gameinfo_close' then
+    if el_name == GameInfo.MASTER_BUTTON_NAME or el_name == 'btn_gameinfo_close' then
         -- Call toggle if frame has been created
-        if(player.gui.center[Game_Info.MASTER_FRAME_NAME] ~= nil) then
-            GUI.destroy_element(player.gui.center[Game_Info.MASTER_FRAME_NAME])
+        if(player.gui.center[GameInfo.MASTER_FRAME_NAME] ~= nil) then
+            GUI.destroy_element(player.gui.center[GameInfo.MASTER_FRAME_NAME])
         else -- Call create if it hasnt
-            draw_gameinfo_frame(player)
+            GameInfo.draw_gameinfo_frame(player)
         end
     end
 end
 
 -- Event Registration --
 -- ======================================================= --
-Event.register(defines.events.on_gui_click, on_gui_click)
-Event.register(defines.events.on_player_joined_game, on_player_joined)
-Event.register(defines.events.on_player_left_game, on_player_leave)
+Event.register(defines.events.on_gui_click, GameInfo.on_gui_click)
+Event.register(defines.events.on_player_joined_game, GameInfo.on_player_joined)
+Event.register(defines.events.on_player_left_game, GameInfo.on_player_leave)
 
 -- Helper Functions --
 -- ======================================================= --
--- Create button for player if doesnt exist already
--- @param player
-function draw_gameinfo_btn(player)
-    if mod_gui.get_button_flow(player)[Game_Info.MASTER_BUTTON_NAME] == nil then
+--- Create button for player if doesnt exist already
+--- @param player LuaPlayer
+function GameInfo.draw_gameinfo_btn(player)
+    if mod_gui.get_button_flow(player)[GameInfo.MASTER_BUTTON_NAME] == nil then
         local btn = mod_gui.get_button_flow(player).add(
             {
                 type = 'sprite-button',
-                name = Game_Info.MASTER_BUTTON_NAME,
+                name = GameInfo.MASTER_BUTTON_NAME,
                 -- caption = 'Info',
                 sprite = 'utility/favourite_server_icon',
                 tooltip = {"Game_Info.menu_btn_tooltip"}
@@ -136,15 +136,16 @@ function draw_gameinfo_btn(player)
     end
 end
 
--- Draws a pane on the left listing all of the players currentely on the server
-function draw_gameinfo_frame(player)
-    local master_frame = player.gui.center[Game_Info.MASTER_FRAME_NAME]
+--- Draws a pane on the left listing all of the players currentely on the server
+--- @param player LuaPlayer
+function GameInfo.draw_gameinfo_frame(player)
+    local master_frame = player.gui.center[GameInfo.MASTER_FRAME_NAME]
     if(master_frame == nil) then
         -- Window frame
         master_frame = player.gui.center.add({
             type = 'frame',
             direction = 'vertical',
-            name = Game_Info.MASTER_FRAME_NAME,
+            name = GameInfo.MASTER_FRAME_NAME,
             caption = {'Game_Info.master_frame_caption'},
         })
         -- master_frame.style.scaleable = true
@@ -196,8 +197,8 @@ function draw_gameinfo_frame(player)
         })
 
         -- Insert content
-        for i, section in pairs(SECTION_CONTENT) do
-            draw_section(scrollable_content_frame, section)
+        for i, section in pairs(GameInfo.SECTION_CONTENT) do
+            GameInfo.draw_section(scrollable_content_frame, section)
         end
 
         -- Flow
@@ -217,10 +218,10 @@ function draw_gameinfo_frame(player)
     end
 end
 
--- Draws a list of labels from content passed in
--- @param container - gui element to add to
--- @param content - array list of string to display
-function draw_static_content(container, content)
+--- Draws a list of labels from content passed in
+--- @param container table gui element to add to
+--- @param content any array list of string to display
+function GameInfo.draw_static_content(container, content)
     -- GUI.clear_element(container) -- Clear the current info before adding new
     for i, text in pairs(content) do
         -- Regular text
@@ -242,7 +243,10 @@ function draw_static_content(container, content)
     end
 end
 
-function draw_section(container, section_content_data)
+
+---@param container table
+---@param section_content_data table
+function GameInfo.draw_section(container, section_content_data)
     -- Flow
     local section = container.add({type = 'flow', direction = 'vertical'})
     section.style.horizontally_stretchable = true
@@ -261,5 +265,5 @@ function draw_section(container, section_content_data)
     end
 
     -- Section Contents
-    draw_static_content(section, section_content_data.content)
+    GameInfo.draw_static_content(section, section_content_data.content)
 end
