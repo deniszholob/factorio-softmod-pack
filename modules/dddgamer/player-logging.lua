@@ -16,33 +16,67 @@ require('stdlib/string')
 -- Constants --
 -- ======================================================= --
 PlayerLogging = {
-    LOG_FILE_NAME="player-log.log"
+    LOG_FILE_NAME = 'player-log.log',
+    LOG_FILE_INDEX = 0 -- change to 1 for SP/local testing, 0 for servers
 }
 
 --- On player join log player name
 --- @param event defines.events.on_player_joined_game
 function PlayerLogging.on_player_join(event)
     local player = game.players[event.player_index]
-    -- local time_str = os.date("%I:M:%S %p", os.time())
-    PlayerLogging.logInfo('<Player Joined>: (' .. #game.connected_players .. ') "'.. player.name .. '"')
-    -- Player_Logging.logInfo('Player Count: ' .. #game.connected_players)
+    -- local time_str = os.date('%I:M:%S %p', os.time())
+    -- local text = '(' .. #game.connected_players .. ') "'.. player.name .. '"'
+    -- local text = '"'.. player.name .. '"' .. ' (' .. #game.connected_players .. ')'
+    -- PlayerLogging.logInfo('Player Join', text)
+    PlayerLogging.logInfo('Player Join', '"' .. player.name .. '"')
+    PlayerLogging.logInfo('Player Count', #game.connected_players)
 end
 
 --- On player left log player name
 --- @param event defines.events.on_player_joined_game
 function PlayerLogging.on_player_leave(event)
     local player = game.players[event.player_index]
-    -- local time_str = os.date("%Y-%m-%d %I:M:%S %p", os.time())
-    PlayerLogging.logInfo('<Player Left>: (' .. #game.connected_players .. ') "' .. player.name .. '"')
-    -- Player_Logging.logInfo('Player Count: ' .. #game.connected_players)
+    -- local time_str = os.date('%Y-%m-%d %I:M:%S %p', os.time())
+    -- PlayerLogging.logInfo('Player Left', '(' .. #game.connected_players .. ') "' .. player.name .. '"')
+    PlayerLogging.logInfo('Player Left', '"' .. player.name .. '"')
+    PlayerLogging.logInfo('Player Count', #game.connected_players)
 end
 
 --- When new player uses decon planner log it
 --- @param event defines.events.on_player_deconstructed_area
 function PlayerLogging.on_player_deconstructed_area(event)
     local player = game.players[event.player_index]
+
+    -- Player is cancelling the decon planner
+    if (event.alt) then
+        return
+    end
+
+    local decon_points = {
+        left_top_x = math.floor(event.area.left_top.x),
+        left_top_y = math.floor(event.area.left_top.y),
+        right_bottom_x = math.ceil(event.area.right_bottom.x),
+        right_bottom_y = math.ceil(event.area.right_bottom.y),
+    }
+
+    local tiles_dx = decon_points.right_bottom_x - decon_points.left_top_x
+    local tiles_dy = decon_points.right_bottom_y - decon_points.left_top_y
+    local tiles_total = tiles_dx * tiles_dy
+    local chunks = tiles_total / 1024
+
+    local text_player = string.format('"%s"', player.name)
+    local text_tiles = string.format(' | tiles: %d', tiles_total)
+    local text_chunks = string.format(' | chunks: %d', chunks)
+    local text_selection = string.format(' | selection: (%d,%d) => (%d,%d)', decon_points.left_top_x, decon_points.left_top_y, decon_points.right_bottom_x, decon_points.right_bottom_y)
+    local text = text_player .. text_tiles .. text_chunks .. text_selection
+
     if (Time.new_player_threshold(player)) then
-        PlayerLogging.logWarn('<Player Deconed>: "' .. player.name .. '"')
+        if(chunks > 100) then 
+            game.print('WARNING! ' .. text_player .. ' deconed ' .. chunks .. ' chunks')
+        end
+        PlayerLogging.logWarn('Player Decon', text)
+    else
+        PlayerLogging.logWarn('Player Decon', text, true)
     end
 end
 
@@ -51,11 +85,18 @@ end
 function PlayerLogging.on_player_mined_entity(event)
     local player = game.players[event.player_index]
     local entity = event.entity
-    if (
-        Time.new_player_threshold(player) and
-        not PlayerLogging.entityFilter(entity)
-    ) then
-        PlayerLogging.logWarn('<Player Mined>: "' .. player.name .. '" ("' .. entity.name .. '")')
+
+    -- Simple entities we dont care about
+    if(PlayerLogging.entityFilter(entity)) then
+        return
+    end
+
+    local text = '"' .. player.name .. '" ("' .. entity.name .. '")'
+
+    if (Time.new_player_threshold(player)) then
+        PlayerLogging.logWarn('Player Decon', text, false)
+    else
+        PlayerLogging.logWarn('Player Decon', text, true)
     end
 end
 
@@ -65,16 +106,14 @@ function PlayerLogging.on_research_finished(event)
     local research_name = event.research.name
     local notification = {'Player_Logging.research', research_name}
     game.print(notification)
-    PlayerLogging.logInfo('<Research Complete>: "'.. research_name .. '"')
+    PlayerLogging.logInfo('Research Complete', '"'.. research_name .. '"')
 end
 
 --- Log chat
 --- @param event defines.events.on_console_chat
 function PlayerLogging.on_console_chat(event)
     local player = game.players[event.player_index]
-    local message = event.message
-    local text = player.name .. ": " .. message
-    PlayerLogging.logChat(text)
+    PlayerLogging.logChat(player.name, event.message)
 end
 
 --- @return boolean True if not a basic item(trees, ores, drills, etc.)
@@ -90,29 +129,31 @@ function PlayerLogging.entityFilter(entity)
     )
 end
 
+
 -- Log functions --
 -- ======================================================= --
 
-function PlayerLogging.logInfo(text)
-    local log_txt = "\n=== [INFO] " .. text
-    PlayerLogging.log(log_txt)
+function PlayerLogging.logInfo(name, text)
+    PlayerLogging.logEvent('INFO', name, text)
 end
-function PlayerLogging.logWarn(text)
-    local log_txt = "\n=== [WARN] " .. text
-    PlayerLogging.log(log_txt)
+function PlayerLogging.logWarn(name, text, skip_factorio_log)
+    PlayerLogging.logEvent('WARN', name, text, skip_factorio_log)
 end
-function PlayerLogging.logError(text)
-    local log_txt = "\n=== [Error] " .. text
-    PlayerLogging.log(log_txt)
+function PlayerLogging.logError(name, text)
+    PlayerLogging.logEvent('ERROR', name, text)
 end
-function PlayerLogging.logChat(text)
-    local log_txt = "\n=== [CHAT] " .. text
-    PlayerLogging.log(log_txt, true)
+function PlayerLogging.logChat(name, text)
+    PlayerLogging.logEvent('CHAT', name, text, true)
+end
+function PlayerLogging.logEvent(log_type, event_name, event_text, skip_factorio_log)
+    local time = Time.game_time_pased_string();
+    local log_txt = '\n=== ' .. time .. ' [' ..log_type.. '] ' .. '<' .. event_name .. '>: ' .. event_text
+    PlayerLogging.log(log_txt, skip_factorio_log)
 end
 function PlayerLogging.log(log_txt, skip_factorio_log)
     if(not skip_factorio_log) then log(log_txt) end
-    -- https://lua-api.factorio.com/0.15.23/LuaGameScript.html#LuaGameScript.write_file
-    game.write_file(PlayerLogging.LOG_FILE_NAME, log_txt, true, 0) -- change to 1 for SP/local testing
+    -- https://lua-api.factorio.com/latest/LuaGameScript.html#LuaGameScript.write_file
+    game.write_file(PlayerLogging.LOG_FILE_NAME, log_txt, true, PlayerLogging.LOG_FILE_INDEX)
 end
 
 Event.register(defines.events.on_player_joined_game, PlayerLogging.on_player_join)

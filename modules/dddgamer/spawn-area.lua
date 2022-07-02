@@ -23,53 +23,70 @@ SpawnArea = {
     DO_PLACE_WALLS = true,
 
     DO_PLACE_TURRETS = true,
-    INCLUDE_TURRET_AMMO = {name = 'firearm-magazine', count = 25},
+    INCLUDE_TURRET_AMMO = {name = 'firearm-magazine', count = 25}, -- 25
 
     DO_PLACE_ROBOPORT = true,
     INCLUDE_ROBOPORT_ITEMS = {
-        {name = 'construction-robot', count = 300},
-        {name = 'logistic-robot', count = 50},
-        {name = 'repair-pack', count = 100},
+        {name = 'construction-robot', count = 100}, -- 300
+        {name = 'logistic-robot', count = 50}, -- 50
+        {name = 'repair-pack', count = 100}, -- 100
     },
 
     INCLUDE_PLAYER_ITEMS = {
         -- Solar Power
-        {name = 'medium-electric-pole', count = 50},
-        {name = 'substation', count = 16},
-        {name = 'accumulator', count = 151},
-        {name = 'solar-panel', count = 180},
+        -- {name = 'medium-electric-pole', count = 50}, -- 50
+        -- {name = 'substation', count = 16}, -- 16
+        -- {name = 'accumulator', count = 151}, -- 151
+        -- {name = 'solar-panel', count = 180}, -- 180
 
         -- Steam power
-        {name = 'small-electric-pole', count = 50},
-        {name = 'offshore-pump', count = 20},
-        {name = 'boiler', count = 20},
-        {name = 'steam-engine', count = 40},
-        {name = 'pipe-to-ground', count = 4},
-        {name = 'pipe', count = 50},
-        {name = 'transport-belt', count = 200},
-        {name = 'underground-belt', count = 4},
-        {name = 'burner-inserter', count = 20},
-        {name = 'landfill', count = 20},
-        {name = 'electric-mining-drill', count = 20},
+        -- {name = 'small-electric-pole', count = 50}, -- 50
+        -- {name = 'offshore-pump', count = 2}, -- 20
+        -- {name = 'boiler', count = 2}, -- 20
+        -- {name = 'steam-engine', count = 4}, -- 40
+        -- {name = 'pipe-to-ground', count = 4}, -- 4
+        -- {name = 'pipe', count = 10}, -- 50
+        -- {name = 'transport-belt', count = 50}, -- 200
+        -- {name = 'underground-belt', count = 4}, -- 4
+        -- {name = 'burner-inserter', count = 2}, -- 20
+        -- {name = 'landfill', count = 20}, -- 20
+        -- {name = 'electric-mining-drill', count = 20}, -- 20
 
         -- Smelting
-        {name = 'small-electric-pole', count = 150},
-        {name = 'stone-furnace', count = 80},
-        {name = 'inserter', count = 100},
-        {name = 'transport-belt', count = 400},
-        {name = 'underground-belt', count = 50},
-        {name = 'splitter', count = 200},
+        -- {name = 'small-electric-pole', count = 150}, -- 150
+        -- {name = 'stone-furnace', count = 80}, -- 80
+        -- {name = 'inserter', count = 100}, -- 100
+        -- {name = 'transport-belt', count = 400}, -- 400
+        -- {name = 'underground-belt', count = 50}, -- 50
+        -- {name = 'splitter', count = 200}, -- 200
+
+        -- Bot MEF
+        -- {name = 'arithmetic-combinator', count = 41}, -- 41
+        -- {name = 'inserter', count = 36}, -- 36
+        -- {name = 'constant-combinator', count = 25}, -- 25
+        -- {name = 'small-lamp', count = 18}, -- 18
+        -- {name = "logistic-chest-requester", count = 18}, -- 18
+        -- {name = "logistic-chest-passive-provider", count = 18}, -- 18
+        -- {name = 'fast-inserter', count = 20}, -- 20
+        -- {name = 'assembling-machine-1', count = 16}, -- 16
+        -- {name = 'substation', count = 10}, -- 10
+        -- {name = 'decider-combinator', count = 7}, -- 7
+        -- {name = "roboport", count = 3}, -- 3
+        -- {name = "logistic-chest-buffer", count = 3}, -- 3
+        -- {name = "logistic-chest-active-provider", count = 2}, -- 2
+        -- {name = "medium-electric-pole", count = 2}, -- 2
+        -- {name = "logistic-chest-storage", count = 1}, -- 1
 
         -- Misc
-        {name = "logistic-chest-storage", count = 50},
-        {name = 'assembling-machine-1', count = 10},
-        {name = 'big-electric-pole', count = 50},
-        {name = 'radar', count = 3},
-        {name = 'repair-pack', count = 100},
-        {name = 'gun-turret', count = 10},
-        {name = 'firearm-magazine', count = 100},
-        -- {name = 'stone-wall', count = 50},
-        -- {name = 'gate', count = 10},
+        -- {name = "logistic-chest-storage", count = 50}, -- 50
+        -- {name = 'assembling-machine-1', count = 10}, -- 10
+        -- {name = 'big-electric-pole', count = 50}, -- 50
+        -- {name = 'radar', count = 3}, -- 3
+        -- {name = 'repair-pack', count = 100}, -- 100
+        -- {name = 'gun-turret', count = 10}, -- 10
+        -- {name = 'firearm-magazine', count = 100}, -- 100
+        -- {name = 'stone-wall', count = 50}, -- 50
+        -- {name = 'gate', count = 10}, -- 10
     },
 
     DO_PLACE_CHESTS = true,
@@ -77,20 +94,20 @@ SpawnArea = {
     -- "logistic-chest-passive-provider", "logistic-chest-storage", "logistic-chest-buffer", "logistic-chest-active-provider"
     CHEST_TYPE = "logistic-chest-storage",
     INCLUDE_CHEST_ITEMS = {
-        -- {name = "cliff-explosives", count = 3},
-        {name = "logistic-chest-storage", count = 5},
-        {name = "logistic-chest-passive-provider", count = 11},
-        {name = "logistic-chest-active-provider", count = 1},
-        {name = "logistic-chest-requester", count = 2},
-        {name = "logistic-chest-buffer", count = 5},
-        {name = "roboport", count = 20},
-        -- {name = "rail", count = 100},
-        -- {name = "locomotive", count = 2},
-        -- {name = "cargo-wagon", count = 1},
-        -- {name = "car", count = 1},
-        {name = 'radar', count = 4},
-        {name = 'stone-brick', count = 200},
-        {name = 'landfill', count = 20},
+        {name = "cliff-explosives", count = 5}, -- 3
+        {name = "logistic-chest-storage", count = 5}, -- 5
+        {name = "logistic-chest-passive-provider", count = 11}, -- 11
+        {name = "logistic-chest-active-provider", count = 1}, -- 1
+        {name = "logistic-chest-requester", count = 2}, -- 2
+        {name = "logistic-chest-buffer", count = 5}, -- 5
+        {name = "roboport", count = 2}, -- 20
+        -- {name = "rail", count = 100}, -- 100
+        -- {name = "locomotive", count = 2}, -- 2
+        -- {name = "cargo-wagon", count = 1}, -- 1
+        -- {name = "car", count = 1}, -- 1
+        {name = 'radar', count = 2}, -- 4
+        {name = 'stone-brick', count = 200}, -- 200
+        {name = 'landfill', count = 20}, -- 20
     },
 }
 

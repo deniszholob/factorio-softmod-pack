@@ -54,6 +54,13 @@ function Time.game_time_pased()
     return Time.tick_to_time_hms(game.tick)
 end
 
+-- Returns formatted time string in hhh:mm:ss format representing time passed in game
+-- @return hms string
+function Time.game_time_pased_string()
+    local tms = Time.game_time_pased()
+    return string.format('%03d:%02d:%02d', tms.h, tms.m, tms.s)
+end
+
 -- Potential griefers are new players mid/late game
 -- @param player LuaPLayer
 function Time.new_player_threshold(player)

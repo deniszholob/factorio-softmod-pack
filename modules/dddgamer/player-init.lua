@@ -20,7 +20,7 @@ PlayerInit = {
         IRON = 60,
         STEEL = 120
     },
-    REVEAL_AREA_RADIUS = 250,
+    REVEAL_AREA_RADIUS = 256, -- 256
 }
 
 
@@ -31,9 +31,8 @@ PlayerInit = {
 --- @param event defines.events.on_player_created event
 function PlayerInit.on_player_created(event)
     local player = game.players[event.player_index]
-    -- Player_Init.reveal_area(player)
+    PlayerInit.reveal_area(player)
     PlayerInit.addStartingItems(player)
-    -- addBasicItems(player)
     player.print({'msg-dddgamer-intro'})
 
     if (player.name == 'DDDGamer') then
@@ -90,8 +89,7 @@ end
 function PlayerInit.addStartingItems(player)
     -- Always start a new player with these
     player.insert {name = 'iron-plate', count = 10}
-    player.insert {name = 'pistol', count = 1}
-    player.insert {name = 'firearm-magazine', count = 10}
+    PlayerInit.addBasicItems(player)
 
     -- Give different items depending on game time
     -- Ex: No need for burner miners late game
@@ -105,11 +103,14 @@ end
 --- Reveal area around the player
 --- @param player LuaPlayer
 function PlayerInit.reveal_area(player)
+    local pX = player.position.x;
+    local pY = player.position.y;
+    local r = PlayerInit.REVEAL_AREA_RADIUS;
     player.force.chart(
         player.surface,
         {
-            {player.position.x - PlayerInit.REVEAL_AREA_RADIUS, player.position.y - PlayerInit.REVEAL_AREA_RADIUS},
-            {player.position.x + PlayerInit.REVEAL_AREA_RADIUS, player.position.y + PlayerInit.REVEAL_AREA_RADIUS}
+            {x = pX - r, y = pY - r},
+            {x = pX + r, y = pY + r}
         }
     )
 end

@@ -19,11 +19,20 @@ CustomTech = {
         -- 'atomic-bomb',
         'discharge-defense-equipment',
         -- 'logistic-system'
+        -- 'logistics-3'
     },
     -- Recipies to disable
     DISABLED_RECIPE_LIST = {
         -- 'atomic-bomb',
         'discharge-defense-equipment',
+        -- 'fast-transport-belt',
+        -- 'express-transport-belt',
+        -- 'underground-belt',
+        -- 'fast-underground-belt',
+        -- 'express-underground-belt',
+        -- 'splitter',
+        -- 'fast-splitter',
+        -- 'express-splitter'
     },
     -- Tech to begin researched with (ignored if "RESEARCH_ALL_TECH" is true)
     RESEARCH_TECH = {
@@ -36,7 +45,7 @@ CustomTech = {
         'logistic-system',
     },
     -- Turn off to only research "RESEARCH_TECH" list above
-    RESEARCH_ALL_TECH = true,
+    RESEARCH_ALL_TECH = false,
     PRINT_DISABLED_TECH = false,
     ENABLE_RESEARCH_QUEUE = true,
 }
