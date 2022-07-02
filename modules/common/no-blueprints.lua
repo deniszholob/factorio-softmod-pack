@@ -11,33 +11,34 @@
 
 -- Constants --
 -- ======================================================= --
-local No_Blueprints = {
+NoBlueprints = {
     PERMISSION_GROUP = 'no_blueprints'
 }
 
 -- Event Functions --
 -- ======================================================= --
 
--- Various action when new player joins in game
--- @param event on_player_created event
-function No_Blueprints.on_player_created(event)
+--- Various action when new player joins in game
+--- @param event defines.events.on_player_created event
+function NoBlueprints.on_player_created(event)
     local player = game.players[event.player_index]
-    No_Blueprints.dissalowBlueprints(player)
+    NoBlueprints.dissalowBlueprints(player)
     player.print({'No_Blueprints.info'})
 end
 
 -- Event Registration
 -- ================== --
-Event.register(defines.events.on_player_created, No_Blueprints.on_player_created)
+Event.register(defines.events.on_player_created, NoBlueprints.on_player_created)
 
 -- Helper Functions --
 -- ======================================================= --
 
-function No_Blueprints.dissalowBlueprints(player)
+--- @param player LuaPlayer
+function NoBlueprints.dissalowBlueprints(player)
     -- Get existing grouip or add one if doesnt exist
-    local group = 
-        game.permissions.get_group(No_Blueprints.PERMISSION_GROUP) or
-        game.permissions.create_group(No_Blueprints.PERMISSION_GROUP)
+    local group =
+        game.permissions.get_group(NoBlueprints.PERMISSION_GROUP) or
+        game.permissions.create_group(NoBlueprints.PERMISSION_GROUP)
     -- Dissalow Hand Crafting (https://lua-api.factorio.com/latest/defines.html)
     group.set_allows_action(defines.input_action['import_blueprint'], false)
     group.set_allows_action(defines.input_action['import_blueprint_string'], false)
@@ -45,5 +46,5 @@ function No_Blueprints.dissalowBlueprints(player)
     group.set_allows_action(defines.input_action['grab_blueprint_record'], false)
     group.set_allows_action(defines.input_action['open_blueprint_record'], false)
     -- Add player to the group
-    game.permissions.get_group(No_Blueprints.PERMISSION_GROUP).add_player(player)
+    game.permissions.get_group(NoBlueprints.PERMISSION_GROUP).add_player(player)
 end

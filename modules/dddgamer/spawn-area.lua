@@ -14,7 +14,7 @@ local Math = require("util/Math")
 -- Constants --
 -- ======================================================= --
 
-local SpawnArea = {
+SpawnArea = {
     DO_PLACE_TILES = true,
     DO_PLACE_OBJECTS = true,
     POWER_POLE_TYPE = "medium-electric-pole", -- "small-electric-pole", "medium-electric-pole", "big-electric-pole"
@@ -34,24 +34,40 @@ local SpawnArea = {
 
     INCLUDE_PLAYER_ITEMS = {
         -- Solar Power
-        {name = 'medium-electric-pole', count = 1},
-        -- {name = 'accumulator', count = 1},
-        -- {name = 'solar-panel', count = 2},
+        {name = 'medium-electric-pole', count = 50},
+        {name = 'substation', count = 16},
+        {name = 'accumulator', count = 151},
+        {name = 'solar-panel', count = 180},
 
         -- Steam power
-        {name = 'small-electric-pole', count = 2},
-        {name = 'offshore-pump', count = 1},
-        {name = 'boiler', count = 1},
-        {name = 'steam-engine', count = 2},
-        {name = 'pipe-to-ground', count = 2},
-        {name = 'pipe', count = 1},
+        {name = 'small-electric-pole', count = 50},
+        {name = 'offshore-pump', count = 20},
+        {name = 'boiler', count = 20},
+        {name = 'steam-engine', count = 40},
+        {name = 'pipe-to-ground', count = 4},
+        {name = 'pipe', count = 50},
+        {name = 'transport-belt', count = 200},
+        {name = 'underground-belt', count = 4},
+        {name = 'burner-inserter', count = 20},
+        {name = 'landfill', count = 20},
+        {name = 'electric-mining-drill', count = 20},
+
+        -- Smelting
+        {name = 'small-electric-pole', count = 150},
+        {name = 'stone-furnace', count = 80},
+        {name = 'inserter', count = 100},
+        {name = 'transport-belt', count = 400},
+        {name = 'underground-belt', count = 50},
+        {name = 'splitter', count = 200},
 
         -- Misc
-        {name = 'big-electric-pole', count = 10},
+        {name = "logistic-chest-storage", count = 50},
+        {name = 'assembling-machine-1', count = 10},
+        {name = 'big-electric-pole', count = 50},
         {name = 'radar', count = 3},
-        {name = 'repair-pack', count = 10},
-        {name = 'gun-turret', count = 1},
-        {name = 'firearm-magazine', count = 10},
+        {name = 'repair-pack', count = 100},
+        {name = 'gun-turret', count = 10},
+        {name = 'firearm-magazine', count = 100},
         -- {name = 'stone-wall', count = 50},
         -- {name = 'gate', count = 10},
     },
@@ -62,24 +78,27 @@ local SpawnArea = {
     CHEST_TYPE = "logistic-chest-storage",
     INCLUDE_CHEST_ITEMS = {
         -- {name = "cliff-explosives", count = 3},
+        {name = "logistic-chest-storage", count = 5},
         {name = "logistic-chest-passive-provider", count = 11},
         {name = "logistic-chest-active-provider", count = 1},
-        {name = "logistic-chest-requester", count = 1},
-        {name = "logistic-chest-buffer", count = 1},
-        {name = "roboport", count = 2},
+        {name = "logistic-chest-requester", count = 2},
+        {name = "logistic-chest-buffer", count = 5},
+        {name = "roboport", count = 20},
         -- {name = "rail", count = 100},
         -- {name = "locomotive", count = 2},
         -- {name = "cargo-wagon", count = 1},
         -- {name = "car", count = 1},
-        -- {name = 'radar', count = 1},
+        {name = 'radar', count = 4},
+        {name = 'stone-brick', count = 200},
+        {name = 'landfill', count = 20},
     },
 }
 
 -- Event Functions --
 -- ======================================================= --
 
--- Various action when new player joins in game
--- @param event on_player_created event
+--- Various action when new player joins in game
+--- @param event defines.events.on_player_created event
 function SpawnArea.on_player_created(event)
     local player = game.players[event.player_index]
 
@@ -99,8 +118,8 @@ Event.register(defines.events.on_player_created, SpawnArea.on_player_created)
 -- Helper Functions --
 -- ======================================================= --
 
--- Draws tiles around the spawned player if they havnt been already
--- @param player LuaPlayer
+--- Draws tiles around the spawned player if they havnt been already
+--- @param player LuaPlayer
 function SpawnArea.placeTiles(player)
     local spawn_position = player.force.get_spawn_position(player.surface)
     local tile_refined_concrete = 'refined-concrete'
@@ -333,9 +352,9 @@ function SpawnArea.placeTiles(player)
     SpawnArea.setTilesSafe(player.surface, marked_corners)
 end
 
--- Sets tile area to a walkable surface (e.g. grass) first, then resets that to the tile passed in
--- @param surface - LuaSurface to set tiles on
--- @param tiles - array of LuaTile
+--- Sets tile area to a walkable surface (e.g. grass) first, then resets that to the tile passed in
+--- @param surface LuaSurface to set tiles on
+--- @param tiles LuaTile[] array of LuaTile
 function SpawnArea.setTilesSafe(surface, tiles)
     local grass = SpawnArea.getWalkableTileName()
     local grass_tiles = {}
@@ -349,7 +368,7 @@ function SpawnArea.setTilesSafe(surface, tiles)
     surface.set_tiles(tiles)
 end
 
--- @return the first available walkable tile name in the prototype list (e.g. grass)
+--- @return string name the first available walkable tile name in the prototype list (e.g. grass)
 function SpawnArea.getWalkableTileName()
     for name, tile in pairs(game.tile_prototypes) do
         if tile.collision_mask['player-layer'] == nil and not tile.items_to_place_this then
@@ -359,8 +378,8 @@ function SpawnArea.getWalkableTileName()
     error('No walkable tile in prototype list')
 end
 
--- Place lamps, and trash chests
--- @param player LuaPlayer
+--- Place lamps, and trash chests
+--- @param player LuaPlayer
 function SpawnArea.placeObjects(player)
     SpawnArea.placeLamps(player)
     SpawnArea.placePowerPoles(player)
@@ -390,7 +409,7 @@ function SpawnArea.placeObjects(player)
     end
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeWalls(player)
     local locations = {
         -- NW
@@ -412,7 +431,7 @@ function SpawnArea.placeWalls(player)
     end
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeGates(player)
     local locations = {
         -- N
@@ -435,7 +454,7 @@ function SpawnArea.placeGates(player)
 end
 
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeLamps(player)
     local locations = {
         {-2.5, -2.5},
@@ -456,7 +475,7 @@ function SpawnArea.placeLamps(player)
     end
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placePowerPoles(player)
     local locations = {
         {-3.5, -3.5},
@@ -468,12 +487,12 @@ function SpawnArea.placePowerPoles(player)
     SpawnArea.placeEntities(player, SpawnArea.POWER_POLE_TYPE, locations)
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.addBonusPlayerItems(player)
     SpawnArea.insertItemsIntoEntity(player, SpawnArea.INCLUDE_PLAYER_ITEMS)
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeSolar(player)
     local locations = {
         {3.5, -6.5},
@@ -488,7 +507,7 @@ function SpawnArea.placeSolar(player)
     SpawnArea.placeEntities(player, 'solar-panel', locations)
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeAccumulators(player)
     local locations = {
         {-6, -6},
@@ -498,7 +517,7 @@ function SpawnArea.placeAccumulators(player)
     SpawnArea.placeEntities(player, 'accumulator', locations)
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeTurrets(player)
     local locations = {
         {2, 4},
@@ -513,19 +532,19 @@ function SpawnArea.placeTurrets(player)
     SpawnArea.placeEntities(player, 'gun-turret', locations, {SpawnArea.INCLUDE_TURRET_AMMO})
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeRoboport(player)
     local locations = {{7,-7}}
     SpawnArea.placeEntities(player, 'roboport', locations, SpawnArea.INCLUDE_ROBOPORT_ITEMS)
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeLogisticStorage(player)
     local locations = {{4.5, -4.5}}
     SpawnArea.placeEntities(player, 'logistic-chest-storage', locations, SpawnArea.INCLUDE_CHEST_ITEMS)
 end
 
--- @param player LuaPlayer
+--- @param player LuaPlayer
 function SpawnArea.placeChests(player)
     local locations = {
         {-1.5, -1.5},
@@ -538,19 +557,19 @@ function SpawnArea.placeChests(player)
 end
 
 
--- @param entity Valid entity to add items to (LuaPlayer, chest, roboport etc..)
--- @param items List of {name = 'name', count = 0}
+--- @param entity LuaEntity Valid entity to add items to (LuaPlayer, chest, roboport etc..)
+--- @param items table List of {name = 'name', count = 0}
 function SpawnArea.insertItemsIntoEntity(entity, items)
     for j, item in ipairs(items) do
         entity.insert(item)
     end
 end
 
-
--- @param entity Valid entity to add items to (LuaPlayer, chest, roboport etc..)
--- @param entityName String
--- @param locations List of {Number, Number}
--- @param items List of {name = 'name', count = 0}
+--- @param player LuaPlayer
+--- @param entityName string
+--- @param locations table List of {Number, Number}
+--- @param items table List of {name = 'name', count = 0}
+--- @param rotation any
 function SpawnArea.placeEntities(player, entityName, locations, items, rotation)
     local direction = defines.direction.north
     if(rotation) then

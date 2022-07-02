@@ -23,7 +23,7 @@ require('config')
 
 -- ============== Import Soft-Mod Modules ============== --
 -- ======================================================= --
--- require('modules/dev/for-testing')
+-- require('modules/dev/sandbox')
 
 -- == Import Vanilla Modules if needed == --
 -- require('modules/vanilla/silo')

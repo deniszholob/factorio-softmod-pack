@@ -18,6 +18,7 @@ local Colors = require("util/Colors")
 
 -- Constants --
 -- ======================================================= --
+local AutoInfiniteResearch = {}
 local MENU_BTN_NAME = 'btn_menu_auto-infinite-research'
 local MASTER_FRAME_NAME = 'frame_auto-infinite-research'
 
@@ -26,15 +27,15 @@ local MASTER_FRAME_NAME = 'frame_auto-infinite-research'
 -- When new player joins add a btn to their button_flow
 -- Redraw this softmod's frame
 -- @param event on_player_joined_game
-function on_player_joined(event)
+function AutoInfiniteResearch.on_player_joined(event)
     local player = game.players[event.player_index]
-    draw_menu_btn(player)
-    -- draw_master_frame(player) -- dont draw yet, when btn clicked instead
+    AutoInfiniteResearch.draw_menu_btn(player)
+    -- AutoInfiniteResearch.draw_master_frame(player) -- dont draw yet, when btn clicked instead
 end
 
 -- When a player leaves clean up their GUI in case this mod gets removed next time
 -- @param event on_player_left_game
-function on_player_left_game(event)
+function AutoInfiniteResearch.on_player_left_game(event)
     local player = game.players[event.player_index]
     GUI.destroy_element(mod_gui.get_button_flow(player)[MENU_BTN_NAME])
     GUI.destroy_element(mod_gui.get_frame_flow(player)[MASTER_FRAME_NAME])
@@ -75,8 +76,8 @@ end
 
 -- Event Registration --
 -- ======================================================= --
-Event.register(defines.events.on_player_joined_game, on_player_joined)
-Event.register(defines.events.on_player_left_game, on_player_left_game)
+Event.register(defines.events.on_player_joined_game, AutoInfiniteResearch.on_player_joined)
+Event.register(defines.events.on_player_left_game, AutoInfiniteResearch.on_player_left_game)
 -- Event.register(defines.events.on_research_finished, on_research_finished)
 
 -- Helper Functions --
@@ -84,7 +85,7 @@ Event.register(defines.events.on_player_left_game, on_player_left_game)
 
 --
 -- @tparam LuaPlayer player
-function draw_menu_btn(player)
+function AutoInfiniteResearch.draw_menu_btn(player)
     if mod_gui.get_button_flow(player)[MENU_BTN_NAME] == nil then
         mod_gui.get_button_flow(player).add(
             {
@@ -100,7 +101,7 @@ end
 
 --
 -- @tparam LuaPlayer player
-function draw_master_frame(player)
+function AutoInfiniteResearch.draw_master_frame(player)
 
     -- game.print(serpent.block(infinite_research_list))
 
@@ -114,7 +115,7 @@ function draw_master_frame(player)
     for _, tech in pairs(infinite_research_list) do
         master_frame.add(
             {
-                type = labe
+                type = label
             }
         )
     end
@@ -123,7 +124,7 @@ function draw_master_frame(player)
 end
 
 --
-function canResearch(force, tech, config)
+function AutoInfiniteResearch.canResearch(force, tech, config)
     if not tech or tech.researched or not tech.enabled then
         return false
     end
@@ -143,7 +144,7 @@ function canResearch(force, tech, config)
 end
 
 -- @treturn LuaTechnology[] infinite_research_list List of technologies that can be infinite with space science
-function get_infinite_research()
+function AutoInfiniteResearch.get_infinite_research()
     local infinite_research_list = {}
     for _, tech in pairs(player.force.technologies) do
         if tech.research_unit_count_formula then -- Infinite tech
@@ -159,7 +160,7 @@ function get_infinite_research()
 end
 
 --
-function get_config()
+function AutoInfiniteResearch.get_config()
     if not global.auto_infinite_research_config then
         global.auto_infinite_research_config = {}
     end

@@ -11,61 +11,67 @@
 
 -- Constants --
 -- ======================================================= --
+DevSandbox = {}
 
 -- Event Functions --
 -- ======================================================= --
--- Various action when new player joins in game
--- @param event on_player_created event
-function on_player_created(event)
+--- Various action when new player joins in game
+--- @param event defines.events.on_player_created event
+function DevSandbox.on_player_created(event)
     local player = game.players[event.player_index]
     player.print('Testing Script, player recieves a buncha items!')
 
-    unlockTech(player)
+    DevSandbox.unlockTech(player)
 
-    giveArmorMK2(player)
-    giveSolarPowerItems(player)
-    -- giveRoboItems(player)
-    -- giveMiningItems(player)
-    -- giveLogisticItems(player)
-    -- giveSpeedItems(player)
-    -- giveTrainItems(player)
-    -- giveTileItems(player)
-    giveMilitaryItems(player)
-    -- giveDefenceItems(player)
+    DevSandbox.giveArmorMK2(player)
+    DevSandbox.giveSolarPowerItems(player)
+    -- DevSandbox.giveRoboItems(player)
+    -- DevSandbox.giveMiningItems(player)
+    -- DevSandbox.giveLogisticItems(player)
+    -- DevSandbox.giveSpeedItems(player)
+    -- DevSandbox.giveTrainItems(player)
+    -- DevSandbox.giveTileItems(player)
+    DevSandbox.giveMilitaryItems(player)
+    -- DevSandbox.giveDefenceItems(player)
 end
+
 
 -- Event Registration --
 -- ======================================================= --
-Event.register(defines.events.on_player_created, on_player_created)
+Event.register(defines.events.on_player_created, DevSandbox.on_player_created)
 
 -- Helper Functions --
 -- ======================================================= --
 
-function unlockTech(player)
+--- @param player LuaPlayer
+function DevSandbox.unlockTech(player)
     player.force.research_all_technologies()
     -- player.force.technologies['steel-processing'].researched = true
 end
 
 
-function giveArmorMK2(player)
-    player.get_inventory(defines.inventory.character_armor).insert({name='power-armor-mk2', count=1})
-    armor = player.get_inventory(defines.inventory.character_armor).find_item_stack('power-armor-mk2')
-    armor.grid.put{name='fusion-reactor-equipment'}
-    armor.grid.put{name='fusion-reactor-equipment'}
-    armor.grid.put{name='battery-mk2-equipment'}
-    armor.grid.put{name='battery-mk2-equipment'}
-    armor.grid.put{name='exoskeleton-equipment'}
-    armor.grid.put{name='exoskeleton-equipment'}
-    armor.grid.put{name='exoskeleton-equipment'}
-    armor.grid.put{name='exoskeleton-equipment'}
-    armor.grid.put{name='exoskeleton-equipment'}
-    armor.grid.put{name='exoskeleton-equipment'}
+--- @param player LuaPlayer
+function DevSandbox.giveArmorMK2(player)
+    local pia = player.get_inventory(defines.inventory.character_armor)
+    pia.insert({name = 'power-armor-mk2', count = 1})
+    local armor = pia.find_item_stack('power-armor-mk2')
+
+    armor.grid.put {name = 'fusion-reactor-equipment'}
+    armor.grid.put {name = 'fusion-reactor-equipment'}
+    armor.grid.put {name = 'battery-mk2-equipment'}
+    armor.grid.put {name = 'battery-mk2-equipment'}
+    armor.grid.put {name = 'exoskeleton-equipment'}
+    armor.grid.put {name = 'exoskeleton-equipment'}
+    armor.grid.put {name = 'exoskeleton-equipment'}
+    armor.grid.put {name = 'exoskeleton-equipment'}
+    armor.grid.put {name = 'exoskeleton-equipment'}
+    armor.grid.put {name = 'exoskeleton-equipment'}
     -- armor.grid.put{name='energy-shield-mk2-equipment'}
     -- armor.grid.put{name='energy-shield-mk2-equipment'}
-    armor.grid.put{name='personal-roboport-mk2-equipment'}
-    armor.grid.put{name='personal-roboport-mk2-equipment'}
-    armor.grid.put{name='personal-roboport-mk2-equipment'}
-    armor.grid.put{name='personal-roboport-mk2-equipment'}
+    armor.grid.put {name = 'personal-roboport-mk2-equipment'}
+    armor.grid.put {name = 'personal-roboport-mk2-equipment'}
+    armor.grid.put {name = 'personal-roboport-mk2-equipment'}
+    armor.grid.put {name = 'personal-roboport-mk2-equipment'}
 
     player.insert {name = 'fusion-reactor-equipment', count = 2}
     player.insert {name = 'personal-roboport-mk2-equipment', count = 5}
@@ -77,7 +83,9 @@ function giveArmorMK2(player)
     player.insert {name = 'blueprint', count = 1}
 end
 
-function giveRoboItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveRoboItems(player)
     player.insert {name = 'construction-robot', count = 400}
     player.insert {name = 'logistic-robot', count = 200}
     player.insert {name = 'logistic-chest-storage', count = 100}
@@ -87,7 +95,9 @@ function giveRoboItems(player)
     player.insert {name = 'logistic-chest-active-provider', count = 100}
 end
 
-function giveSolarPowerItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveSolarPowerItems(player)
     local COUNT = 1
     local SOLAR_BP_ITEMS = {
         SOLAR_PANELS = 180 * COUNT,
@@ -104,12 +114,16 @@ function giveSolarPowerItems(player)
     player.insert {name = 'substation', count = SOLAR_BP_ITEMS.SUBSTATIONS}
 end
 
-function giveMiningItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveMiningItems(player)
     player.insert {name = 'electric-mining-drill', count = 50}
     player.insert {name = 'medium-electric-pole', count = 50}
 end
 
-function giveLogisticItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveLogisticItems(player)
     player.insert {name = 'stack-inserter', count = 50}
     player.insert {name = 'express-loader', count = 50}
     player.insert {name = 'express-underground-belt', count = 50}
@@ -117,13 +131,17 @@ function giveLogisticItems(player)
     player.insert {name = 'express-transport-belt', count = 400}
 end
 
-function giveSpeedItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveSpeedItems(player)
     player.insert {name = 'speed-module-3', count = 300}
     player.insert {name = 'productivity-module-3', count = 300}
     player.insert {name = 'beacon', count = 50}
 end
 
-function giveTrainItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveTrainItems(player)
     player.insert {name = 'locomotive', count = 20}
     player.insert {name = 'cargo-wagon', count = 20}
     player.insert {name = 'fluid-wagon', count = 10}
@@ -133,7 +151,9 @@ function giveTrainItems(player)
     player.insert {name = 'chain-signal', count = 50}
 end
 
-function giveTileItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveTileItems(player)
     player.insert {name = 'stone-brick', count = 200}
     player.insert {name = 'concrete', count = 200}
     player.insert {name = 'hazard-concrete', count = 100}
@@ -141,7 +161,9 @@ function giveTileItems(player)
     player.insert {name = 'refined-hazard-concrete', count = 100}
 end
 
-function giveMilitaryItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveMilitaryItems(player)
     player.insert {name = 'submachine-gun', count = 1}
     player.insert {name = 'uranium-rounds-magazine', count = 100}
 
@@ -161,7 +183,9 @@ function giveMilitaryItems(player)
     player.insert {name = 'radar', count = 20}
 end
 
-function giveDefenceItems(player)
+
+--- @param player LuaPlayer
+function DevSandbox.giveDefenceItems(player)
     player.insert {name = 'stone-wall', count = 100}
     player.insert {name = 'gate', count = 50}
 
@@ -169,3 +193,4 @@ function giveDefenceItems(player)
     player.insert {name = 'laser-turret', count = 50}
     player.insert {name = 'flamethrower-turret', count = 50}
 end
+

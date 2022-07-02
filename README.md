@@ -1,4 +1,4 @@
-# DDDGamer's Factorio v0.16 Softmod Collection (Scenario) [![Build Status](https://travis-ci.org/deniszholob/factorio-softmod-pack.svg?branch=master)](https://travis-ci.org/deniszholob/factorio-softmod-pack)
+# DDDGamer's Factorio v1.1 Softmod Collection (Scenario) [![Build Status](https://travis-ci.org/deniszholob/factorio-softmod-pack.svg?branch=master)](https://travis-ci.org/deniszholob/factorio-softmod-pack)
 
 Contains QOL code to help out in the game such as automatic deconstruction of miners, death markers, tasks, player list, etc...
 
@@ -83,7 +83,7 @@ Dev files will be removed from the release build, see the [github repository](ht
 
 ## Screenshots
 ![Game Start with softmod pack](.screenshots/dddgamer-softmod.jpg)
+![Game Info](.screenshots/dddgamer-softmod_game-info.jpg)
+![Player List](.screenshots/dddgamer-softmod_player-list.png)
 ![Auto Research](.screenshots/dddgamer-softmod_auto-research.png)
 ![Task List](.screenshots/dddgamer-softmod_task-list.png)
-![Game Info](.screenshots/dddgamer-softmod_game-info.jpg)
-![Player List](.screenshots/dddgamer-softmod_player-list.jpg)

@@ -33,25 +33,25 @@ __MODULE_NAME__ = {
 
 -- Event Functions --
 -- ======================================================= --
--- When new player joins add a btn to their menu bar
--- Redraw this softmod's master frame (if desired)
--- @param event on_player_joined_game
+--- When new player joins add a btn to their menu bar
+--- Redraw this softmod's master frame (if desired)
+--- @param event defines.events.on_player_joined_game
 function __MODULE_NAME__.on_player_joined_game(event)
     local player = game.players[event.player_index]
     __MODULE_NAME__.draw_menu_btn(player)
     -- __MODULE_NAME__.draw_master_frame(player) -- Will appear on load, cooment out to load later on button click
 end
 
--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
--- @param event on_player_left_game
+--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
+--- @param event defines.events.on_player_left_game
 function __MODULE_NAME__.on_player_left_game(event)
     local player = game.players[event.player_index]
     GUI.destroy_element(__MODULE_NAME__.get_menu_button(player))
     GUI.destroy_element(__MODULE_NAME__.get_master_frame(player))
 end
 
--- Button Callback (On Click Event)
--- @param event factorio lua event (on_gui_click)
+--- Button Callback (On Click Event)
+--- @param event event factorio lua event (on_gui_click)
 function __MODULE_NAME__.on_gui_click_btn_menu(event)
     local player = game.players[event.player_index]
     local master_frame = __MODULE_NAME__.get_master_frame(player)
@@ -73,9 +73,9 @@ Event.register(defines.events.on_player_left_game, __MODULE_NAME__.on_player_lef
 -- GUI Functions --
 -- ======================================================= --
 
--- GUI Function
--- Draws a button in the menubar to toggle the GUI frame on and off
--- @tparam LuaPlayer player current player calling the function
+--- GUI Function
+--- Draws a button in the menubar to toggle the GUI frame on and off
+--- @param player LuaPlayer current player calling the function
 function __MODULE_NAME__.draw_menu_btn(player)
     local menubar_button = __MODULE_NAME__.get_menu_button(player)
     if menubar_button == nil then
@@ -94,9 +94,9 @@ function __MODULE_NAME__.draw_menu_btn(player)
     end
 end
 
--- GUI Function
--- Creates the main/master frame where all the GUI content will go in
--- @tparam LuaPlayer player current player calling the function
+--- GUI Function
+--- Creates the main/master frame where all the GUI content will go in
+--- @param player LuaPlayer current player calling the function
 function __MODULE_NAME__.draw_master_frame(player)
     local master_frame = __MODULE_NAME__.get_master_frame(player)
 
@@ -116,9 +116,9 @@ function __MODULE_NAME__.draw_master_frame(player)
     end
 end
 
--- GUI Function
--- @tparam LuaGuiElement container parent container to add GUI elements to
--- @tparam LuaPlayer player current player calling the function
+--- GUI Function
+--- @param container LuaGuiElement parent container to add GUI elements to
+--- @param player LuaPlayer current player calling the function
 function __MODULE_NAME__.fill_master_frame(container, player)
     -- Your code here...
     local lbl_test =

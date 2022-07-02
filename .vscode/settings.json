@@ -18,5 +18,8 @@
     "vscode-lua-format.configPath": ".lua-format-config.yml",
     "cSpell.words": [
         "Factorio"
+    ],
+    "Lua.diagnostics.disable": [
+        "undefined-doc-name"
     ]
 }

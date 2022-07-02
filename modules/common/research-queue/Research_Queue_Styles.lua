@@ -13,7 +13,7 @@ local Colors = require('util/Colors')
 -- Constants --
 -- ======================================================= --
 
-Research_Queue_Styles = {
+ResearchQueueStyles = {
     auto_research_header_label = {
         font_color = {r = .91764705882352941176, g = .85098039215686274509, b = .67450980392156862745},
         font = 'default-large-semibold',
@@ -86,4 +86,4 @@ Research_Queue_Styles = {
     }
 }
 
-return Research_Queue_Styles
+return ResearchQueueStyles

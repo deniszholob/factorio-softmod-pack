@@ -13,11 +13,11 @@
 -- ======================================================= --
 local GUI = require("stdlib/GUI")
 local Styles = require("util/Styles")
-local Research_Queue_Styles = require('modules/common/research-queue/Research_Queue_Styles')
+local ResearchQueueStyles = require('modules/common/research-queue/ResearchQueueStyles')
 
 -- Constants --
 -- ======================================================= --
-Auto_Research = {
+AutoResearch = {
     MENU_BTN_NAME = "btn_menu_Auto_Research",
     MASTER_FRAME_NAME = "frame_Auto_Research",
     MASTER_FRAME_LOCATION = GUI.MASTER_FRAME_LOCATIONS.left,
@@ -40,11 +40,11 @@ Auto_Research = {
         remove = '✖',
     },
     get_menu_button = function(player)
-        return GUI.menu_bar_el(player)[Auto_Research.MENU_BTN_NAME]
+        return GUI.menu_bar_el(player)[AutoResearch.MENU_BTN_NAME]
     end,
     get_master_frame = function(player)
-        return GUI.master_frame_location_el(player, Auto_Research.MASTER_FRAME_LOCATION)[
-            Auto_Research.MASTER_FRAME_NAME
+        return GUI.master_frame_location_el(player, AutoResearch.MASTER_FRAME_LOCATION)[
+            AutoResearch.MASTER_FRAME_NAME
         ]
     end,
     default_queued_techs = {
@@ -64,45 +64,44 @@ Auto_Research = {
 -- Event Functions --
 -- ======================================================= --
 
--- When new player joins add a btn to their menu bar
--- Redraw this softmod's master frame (if desired)
--- @param event on_player_joined_game
-function Auto_Research.on_player_joined_game(event)
+--- When new player joins add a btn to their menu bar
+--- Redraw this softmod's master frame (if desired)
+--- @param event defines.events.on_player_joined_game
+function AutoResearch.on_player_joined_game(event)
     local player = game.players[event.player_index]
-    Auto_Research.disableDefaultGameQueue(player.force)
-    Auto_Research.setDefaultConfig(player.force)
-    Auto_Research.draw_menu_btn(player)
+    AutoResearch.disableDefaultGameQueue(player.force)
+    AutoResearch.setDefaultConfig(player.force)
+    AutoResearch.draw_menu_btn(player)
     -- Auto_Research.draw_master_frame(player) -- Will appear on load, cooment out to load later on button click
 end
 
--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
--- @param event on_player_left_game
-function Auto_Research.on_player_left_game(event)
+--- When a player leaves clean up their GUI in case this mod gets removed or changed next time
+--- @param event defines.events.on_player_left_game
+function AutoResearch.on_player_left_game(event)
     local player = game.players[event.player_index]
-    GUI.destroy_element(Auto_Research.get_menu_button(player))
-    GUI.destroy_element(Auto_Research.get_master_frame(player))
+    GUI.destroy_element(AutoResearch.get_menu_button(player))
+    GUI.destroy_element(AutoResearch.get_master_frame(player))
 end
 
--- Button Callback (On Click Event)
--- @param event factorio lua event (on_gui_click)
-function Auto_Research.on_gui_click_btn_menu(event)
+--- Button Callback (On Click Event)
+--- @param event event factorio lua event (on_gui_click)
+function AutoResearch.on_gui_click_btn_menu(event)
     local player = game.players[event.player_index]
-    local master_frame = Auto_Research.get_master_frame(player)
+    local master_frame = AutoResearch.get_master_frame(player)
 
     if (master_frame ~= nil) then
         -- Call toggle if frame has been created
         GUI.toggle_element(master_frame)
     else
         -- Call create if it hasnt
-        Auto_Research.draw_master_frame(player)
+        AutoResearch.draw_master_frame(player)
     end
 end
 
---
--- @param event factorio lua event
-function Auto_Research.on_research_finished(event)
+--- @param event defines.events.on_research_finished
+function AutoResearch.on_research_finished(event)
     local force = event.research.force
-    local config = Auto_Research.getConfig(force)
+    local config = AutoResearch.getConfig(force)
     -- remove researched stuff from prioritized_techs and deprioritized_techs
     for i = #config.prioritized_techs, 1, -1 do
         local tech = force.technologies[config.prioritized_techs[i]]
@@ -130,53 +129,53 @@ function Auto_Research.on_research_finished(event)
         end
     end
 
-    Auto_Research.startNextResearch(event.research.force)
+    AutoResearch.startNextResearch(event.research.force)
 end
 
--- TODO: Convert to GUI registration instead of here?
--- @param event factorio lua event
-function Auto_Research.GUI_onClick(event)
+--- TODO: Convert to GUI registration instead of here?
+--- @param event event factorio lua event
+function AutoResearch.GUI_onClick(event)
     local player = game.players[event.player_index]
     local force = player.force
-    local config = Auto_Research.getConfig(force)
+    local config = AutoResearch.getConfig(force)
     local name = event.element.name
     if name == "auto_research_enabled" then
-        Auto_Research.setAutoResearch(force, event.element.state)
+        AutoResearch.setAutoResearch(force, event.element.state)
     elseif name == "auto_research_queued_only" then
-        Auto_Research.setQueuedOnly(force, event.element.state)
+        AutoResearch.setQueuedOnly(force, event.element.state)
     elseif name == "auto_research_allow_switching" then
-        Auto_Research.setAllowSwitching(force, event.element.state)
+        AutoResearch.setAllowSwitching(force, event.element.state)
     elseif name == "auto_research_announce_completed" then
-        Auto_Research.setAnnounceCompletedResearch(force, event.element.state)
+        AutoResearch.setAnnounceCompletedResearch(force, event.element.state)
     elseif name == "auto_research_deprioritize_infinite_tech" then
-        Auto_Research.setDeprioritizeInfiniteTech(force, event.element.state)
+        AutoResearch.setDeprioritizeInfiniteTech(force, event.element.state)
     elseif name == "auto_research_search_text" then
         if event.button == defines.mouse_button_type.right then
-            Auto_Research.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text = ""
-            Auto_Research.GUI_updateSearchResult(player, Auto_Research.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text)
+            AutoResearch.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text = ""
+            AutoResearch.GUI_updateSearchResult(player, AutoResearch.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text)
         end
     elseif name == "auto_research_ingredients_filter_search_results" then
         config.filter_search_results = event.element.state
-        Auto_Research.GUI_updateSearchResult(player, Auto_Research.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text)
+        AutoResearch.GUI_updateSearchResult(player, AutoResearch.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text)
     elseif string.find(name, "auto_research_research") then
         config.research_strategy = string.match(name, "^auto_research_research_(.*)$")
-        Auto_Research.get_master_frame(player).split_flow.frameflow_left.research_strategies_one.auto_research_research_fast.state = (config.research_strategy == "fast")
-        Auto_Research.get_master_frame(player).split_flow.frameflow_left.research_strategies_one.auto_research_research_cheap.state = (config.research_strategy == "cheap")
-        Auto_Research.get_master_frame(player).split_flow.frameflow_left.research_strategies_one.auto_research_research_balanced.state = (config.research_strategy == "balanced")
-        Auto_Research.get_master_frame(player).split_flow.frameflow_left.research_strategies_two.auto_research_research_slow.state = (config.research_strategy == "slow")
-        Auto_Research.get_master_frame(player).split_flow.frameflow_left.research_strategies_two.auto_research_research_expensive.state = (config.research_strategy == "expensive")
-        Auto_Research.get_master_frame(player).split_flow.frameflow_left.research_strategies_two.auto_research_research_random.state = (config.research_strategy == "random")
+        AutoResearch.get_master_frame(player).split_flow.frameflow_left.research_strategies_one.auto_research_research_fast.state = (config.research_strategy == "fast")
+        AutoResearch.get_master_frame(player).split_flow.frameflow_left.research_strategies_one.auto_research_research_cheap.state = (config.research_strategy == "cheap")
+        AutoResearch.get_master_frame(player).split_flow.frameflow_left.research_strategies_one.auto_research_research_balanced.state = (config.research_strategy == "balanced")
+        AutoResearch.get_master_frame(player).split_flow.frameflow_left.research_strategies_two.auto_research_research_slow.state = (config.research_strategy == "slow")
+        AutoResearch.get_master_frame(player).split_flow.frameflow_left.research_strategies_two.auto_research_research_expensive.state = (config.research_strategy == "expensive")
+        AutoResearch.get_master_frame(player).split_flow.frameflow_left.research_strategies_two.auto_research_research_random.state = (config.research_strategy == "random")
         -- start new research
-        Auto_Research.startNextResearch(force)
+        AutoResearch.startNextResearch(force)
     else
         local prefix, name = string.match(name, "^auto_research_([^-]*)-(.*)$")
         if prefix == "allow_ingredient" then
             config.allowed_ingredients[name] = not config.allowed_ingredients[name]
-            Auto_Research.GUI_updateAllowedIngredientsList(Auto_Research.get_master_frame(player).split_flow.frameflow_left.allowed_ingredients, player, config)
-            if Auto_Research.get_master_frame(player).split_flow.frameflow_right.searchoptionsflow.auto_research_ingredients_filter_search_results.state then
-                Auto_Research.GUI_updateSearchResult(player, Auto_Research.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text)
+            AutoResearch.GUI_updateAllowedIngredientsList(AutoResearch.get_master_frame(player).split_flow.frameflow_left.allowed_ingredients, player, config)
+            if AutoResearch.get_master_frame(player).split_flow.frameflow_right.searchoptionsflow.auto_research_ingredients_filter_search_results.state then
+                AutoResearch.GUI_updateSearchResult(player, AutoResearch.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text)
             end
-            Auto_Research.startNextResearch(force)
+            AutoResearch.startNextResearch(force)
         elseif name and force.technologies[name] then
             -- remove tech from prioritized list
             for i = #config.prioritized_techs, 1, -1 do
@@ -200,12 +199,12 @@ function Auto_Research.GUI_onClick(event)
                 -- add tech to list of deprioritized techs
                 table.insert(config.deprioritized_techs, name)
             end
-            Auto_Research.GUI_updateTechnologyList(Auto_Research.get_master_frame(player).split_flow.frameflow_right.prioritized, config.prioritized_techs, player, true)
-            Auto_Research.GUI_updateTechnologyList(Auto_Research.get_master_frame(player).split_flow.frameflow_right.deprioritized, config.deprioritized_techs, player)
-            Auto_Research.GUI_updateSearchResult(player, Auto_Research.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text)
+            AutoResearch.GUI_updateTechnologyList(AutoResearch.get_master_frame(player).split_flow.frameflow_right.prioritized, config.prioritized_techs, player, true)
+            AutoResearch.GUI_updateTechnologyList(AutoResearch.get_master_frame(player).split_flow.frameflow_right.deprioritized, config.deprioritized_techs, player)
+            AutoResearch.GUI_updateSearchResult(player, AutoResearch.get_master_frame(player).split_flow.frameflow_right.searchflow.auto_research_search_text.text)
 
             -- start new research
-            Auto_Research.startNextResearch(force)
+            AutoResearch.startNextResearch(force)
         end
     end
 end
@@ -213,73 +212,73 @@ end
 -- Event Registration --
 -- ======================================================= --
 -- Event.register(defines.events.on_force_created, Auto_Research.on_player_joined_game)
-Event.register(defines.events.on_player_joined_game, Auto_Research.on_player_joined_game)
-Event.register(defines.events.on_player_left_game, Auto_Research.on_player_left_game)
-Event.register(defines.events.on_research_finished, Auto_Research.on_research_finished)
-Event.register(defines.events.on_gui_checked_state_changed, Auto_Research.GUI_onClick)
-Event.register(defines.events.on_gui_click, Auto_Research.GUI_onClick)
+Event.register(defines.events.on_player_joined_game, AutoResearch.on_player_joined_game)
+Event.register(defines.events.on_player_left_game, AutoResearch.on_player_left_game)
+Event.register(defines.events.on_research_finished, AutoResearch.on_research_finished)
+Event.register(defines.events.on_gui_checked_state_changed, AutoResearch.GUI_onClick)
+Event.register(defines.events.on_gui_click, AutoResearch.GUI_onClick)
 Event.register(defines.events.on_gui_text_changed, function(event)
     if event.element.name ~= "auto_research_search_text" then
         return
     end
-    Auto_Research.GUI_updateSearchResult(game.players[event.player_index], event.element.text)
+    AutoResearch.GUI_updateSearchResult(game.players[event.player_index], event.element.text)
 end)
 
 -- GUI Functions --
 -- ======================================================= --
 
--- GUI Function
--- Draws a button in the menubar to toggle the GUI frame on and off
--- @tparam LuaPlayer player current player calling the function
-function Auto_Research.draw_menu_btn(player)
-    local menubar_button = Auto_Research.get_menu_button(player)
+--- GUI Function
+--- Draws a button in the menubar to toggle the GUI frame on and off
+--- @param player LuaPlayer current player calling the function
+function AutoResearch.draw_menu_btn(player)
+    local menubar_button = AutoResearch.get_menu_button(player)
     if menubar_button == nil then
         GUI.add_sprite_button(
             GUI.menu_bar_el(player),
             {
                 type = "sprite-button",
-                name = Auto_Research.MENU_BTN_NAME,
-                sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.menu),
+                name = AutoResearch.MENU_BTN_NAME,
+                sprite = GUI.get_safe_sprite_name(player, AutoResearch.SPRITE_NAMES.menu),
                 -- caption = 'Auto_Research.menu_btn_caption',
                 tooltip = {"auto_research_gui.menu_btn_tooltip"}
             },
             function(event)
                 -- On Click callback function
-                Auto_Research.on_gui_click_btn_menu(event)
+                AutoResearch.on_gui_click_btn_menu(event)
             end
         )
     end
 end
 
--- GUI Function
--- Creates the main/master frame where all the GUI content will go in
--- @tparam LuaPlayer player current player calling the function
-function Auto_Research.draw_master_frame(player)
-    local master_frame = Auto_Research.get_master_frame(player)
+--- GUI Function
+--- Creates the main/master frame where all the GUI content will go in
+--- @param player LuaPlayer current player calling the function
+function AutoResearch.draw_master_frame(player)
+    local master_frame = AutoResearch.get_master_frame(player)
 
     if (master_frame == nil) then
         master_frame =
-            GUI.master_frame_location_el(player, Auto_Research.MASTER_FRAME_LOCATION).add(
+            GUI.master_frame_location_el(player, AutoResearch.MASTER_FRAME_LOCATION).add(
             {
                 type = "frame",
-                name = Auto_Research.MASTER_FRAME_NAME,
+                name = AutoResearch.MASTER_FRAME_NAME,
                 direction = "vertical",
                 caption = {"auto_research_gui.title"}
             }
         )
         GUI.element_apply_style(master_frame, Styles.frm_window)
 
-        Auto_Research.fill_master_frame(master_frame, player)
+        AutoResearch.fill_master_frame(master_frame, player)
     end
 end
 
--- GUI Function
--- @tparam LuaGuiElement container parent container to add GUI elements to
--- @tparam LuaPlayer player current player calling the function
-function Auto_Research.fill_master_frame(container, player)
+--- GUI Function
+--- @param container LuaGuiElement parent container to add GUI elements to
+--- @param player LuaPlayer current player calling the function
+function AutoResearch.fill_master_frame(container, player)
     local master_frame = container
     local force = player.force
-    local config = Auto_Research.getConfig(force)
+    local config = AutoResearch.getConfig(force)
 
     local split_flow =
         master_frame.add {
@@ -348,7 +347,7 @@ function Auto_Research.fill_master_frame(container, player)
         type = "label",
         caption = {"auto_research_gui.research_strategy"}
     }
-    GUI.element_apply_style(lbl_research_strategy, Research_Queue_Styles.auto_research_header_label)
+    GUI.element_apply_style(lbl_research_strategy, ResearchQueueStyles.auto_research_header_label)
 
     local research_strategies_one =
         frameflow_left.add {
@@ -426,7 +425,7 @@ function Auto_Research.fill_master_frame(container, player)
         type = "label",
         caption = {"auto_research_gui.allowed_ingredients_label"}
     }
-    GUI.element_apply_style(lbl_allowed_ingredients, Research_Queue_Styles.auto_research_header_label)
+    GUI.element_apply_style(lbl_allowed_ingredients, ResearchQueueStyles.auto_research_header_label)
 
     local allowed_ingredients =
         frameflow_left.add {
@@ -436,7 +435,7 @@ function Auto_Research.fill_master_frame(container, player)
     }
     -- GUI.element_apply_style(allowed_ingredients, Research_Queue_Styles.auto_research_list_flow)
 
-    Auto_Research.GUI_updateAllowedIngredientsList(allowed_ingredients, player, config)
+    AutoResearch.GUI_updateAllowedIngredientsList(allowed_ingredients, player, config)
 
 
     -- === Right Panel === --
@@ -454,7 +453,7 @@ function Auto_Research.fill_master_frame(container, player)
         type = "label",
         caption = {"auto_research_gui.search_label"}
     }
-    GUI.element_apply_style(lbl_searchflow, Research_Queue_Styles.auto_research_header_label)
+    GUI.element_apply_style(lbl_searchflow, ResearchQueueStyles.auto_research_header_label)
     searchflow.add {
         type = "textfield",
         name = "auto_research_search_text",
@@ -481,9 +480,9 @@ function Auto_Research.fill_master_frame(container, player)
         horizontal_scroll_policy = "never",
         vertical_scroll_policy = "auto"
     }
-    GUI.element_apply_style(search, Research_Queue_Styles.scroll_pane)
+    GUI.element_apply_style(search, ResearchQueueStyles.scroll_pane)
     -- draw search result list
-    Auto_Research.GUI_updateSearchResult(player, "")
+    AutoResearch.GUI_updateSearchResult(player, "")
 
     -- Queued/Prioritized techs
     local lbl_queued_techs =
@@ -491,7 +490,7 @@ function Auto_Research.fill_master_frame(container, player)
         type = "label",
         caption = {"auto_research_gui.prioritized_label"}
     }
-    GUI.element_apply_style(lbl_queued_techs, Research_Queue_Styles.auto_research_header_label)
+    GUI.element_apply_style(lbl_queued_techs, ResearchQueueStyles.auto_research_header_label)
     local prioritized =
         frameflow_right.add {
         type = "scroll-pane",
@@ -499,9 +498,9 @@ function Auto_Research.fill_master_frame(container, player)
         horizontal_scroll_policy = "never",
         vertical_scroll_policy = "auto"
     }
-    GUI.element_apply_style(prioritized, Research_Queue_Styles.scroll_pane)
+    GUI.element_apply_style(prioritized, ResearchQueueStyles.scroll_pane)
     -- Draw prioritized tech list
-    Auto_Research.GUI_updateTechnologyList(prioritized, config.prioritized_techs, player, true)
+    AutoResearch.GUI_updateTechnologyList(prioritized, config.prioritized_techs, player, true)
 
     -- Blacklisted/Deprioritized techs
     local lbl_blacklisted_techs =
@@ -509,7 +508,7 @@ function Auto_Research.fill_master_frame(container, player)
         type = "label",
         caption = {"auto_research_gui.deprioritized_label"}
     }
-    GUI.element_apply_style(lbl_blacklisted_techs, Research_Queue_Styles.auto_research_header_label)
+    GUI.element_apply_style(lbl_blacklisted_techs, ResearchQueueStyles.auto_research_header_label)
     local deprioritized =
         frameflow_right.add {
         type = "scroll-pane",
@@ -517,14 +516,17 @@ function Auto_Research.fill_master_frame(container, player)
         horizontal_scroll_policy = "never",
         vertical_scroll_policy = "auto"
     }
-    GUI.element_apply_style(deprioritized, Research_Queue_Styles.scroll_pane)
+    GUI.element_apply_style(deprioritized, ResearchQueueStyles.scroll_pane)
     -- Draw deprioritized tech list
-    Auto_Research.GUI_updateTechnologyList(deprioritized, config.deprioritized_techs, player)
+    AutoResearch.GUI_updateTechnologyList(deprioritized, config.deprioritized_techs, player)
 
 end
 
--- GUI Function
-function Auto_Research.GUI_updateAllowedIngredientsList(flow, player, config)
+--- GUI Function
+--- @param flow LuaGuiElement
+--- @param player LuaPlayer
+--- @param config table
+function AutoResearch.GUI_updateAllowedIngredientsList(flow, player, config)
     local counter = 1
     while flow["flow" .. counter] do
         flow["flow" .. counter].destroy()
@@ -546,7 +548,7 @@ function Auto_Research.GUI_updateAllowedIngredientsList(flow, player, config)
 
         -- Hack a background with image frame since you cant set one on a button....
         local button_frame = ingredientflow.add({type = "frame"})
-        GUI.element_apply_style(button_frame, Research_Queue_Styles.button_outer_frame)
+        GUI.element_apply_style(button_frame, ResearchQueueStyles.button_outer_frame)
 
 
         -- Make sprite button
@@ -562,14 +564,18 @@ function Auto_Research.GUI_updateAllowedIngredientsList(flow, player, config)
         )
         GUI.element_apply_style(
             button,
-            Research_Queue_Styles["auto_research_sprite_button_toggle" .. (allowed and "_pressed" or "")]
+            ResearchQueueStyles["auto_research_sprite_button_toggle" .. (allowed and "_pressed" or "")]
         )
         counter = counter + 1
     end
 end
 
--- GUI Function
-function Auto_Research.GUI_updateTechnologyList(scrollpane, technologies, player, show_queue_buttons)
+--- GUI Function
+--- @param scrollpane LuaGuiElement
+--- @param technologies string|table
+--- @param player LuaPlayer
+--- @param show_queue_buttons boolean
+function AutoResearch.GUI_updateTechnologyList(scrollpane, technologies, player, show_queue_buttons)
     if scrollpane.flow then
         scrollpane.flow.destroy()
     end
@@ -595,48 +601,48 @@ function Auto_Research.GUI_updateTechnologyList(scrollpane, technologies, player
                         entryflow.add {
                         type = "sprite-button",
                         name = "auto_research_queue_top-" .. techname,
-                        caption = Auto_Research.TEXT_SYMBOLS.up,
+                        caption = AutoResearch.TEXT_SYMBOLS.up,
                         -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.up),
                         tooltip = 'Move to beginning of Queue'
                     }
-                    GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                    GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite_button)
                     GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_blue)
                     temp_var_for_el_style =
                         entryflow.add {
                         type = "sprite-button",
                         name = "auto_research_queue_bottom-" .. techname,
-                        caption = Auto_Research.TEXT_SYMBOLS.down,
+                        caption = AutoResearch.TEXT_SYMBOLS.down,
                         -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.down),
                         tooltip = 'Move to end of Queue'
                     }
-                    GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                    GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite_button)
                     GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_blue)
                 end
                 temp_var_for_el_style =
                     entryflow.add {
                     type = "sprite-button",
                     name = "auto_research_delete-" .. techname,
-                    caption = Auto_Research.TEXT_SYMBOLS.remove,
+                    caption = AutoResearch.TEXT_SYMBOLS.remove,
                     -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.remove),
                     tooltip = 'Remove'
                 }
-                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite_button)
                 GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_red)
 
                 -- Tech icon
-                local sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.tech_prefix .. techname)
+                local sprite = GUI.get_safe_sprite_name(player, AutoResearch.SPRITE_NAMES.tech_prefix .. techname)
                 temp_var_for_el_style = entryflow.add {type = "sprite", sprite = sprite}
-                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite)
+                GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite)
 
                 -- Research text name
                 temp_var_for_el_style = entryflow.add {type = "label", caption = tech.localised_name}
-                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_tech_label)
+                GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_tech_label)
 
                 -- Research science req (pots)
                 for _, ingredient in pairs(tech.research_unit_ingredients) do
-                    local sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.item_prefix .. ingredient.name)
+                    local sprite = GUI.get_safe_sprite_name(player, AutoResearch.SPRITE_NAMES.item_prefix .. ingredient.name)
                     temp_var_for_el_style = entryflow.add {type = "sprite", sprite = sprite}
-                    GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite)
+                    GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite)
                 end
             end
         end
@@ -646,12 +652,14 @@ function Auto_Research.GUI_updateTechnologyList(scrollpane, technologies, player
     end
 end
 
---GUI Function
-function Auto_Research.GUI_updateSearchResult(player, text)
+--- GUI Function
+--- @param player LuaPlayer
+--- @param text string
+function AutoResearch.GUI_updateSearchResult(player, text)
     --  used to store element to be able to set custom style
     local temp_var_for_el_style
 
-    local scrollpane = Auto_Research.get_master_frame(player).split_flow.frameflow_right.search
+    local scrollpane = AutoResearch.get_master_frame(player).split_flow.frameflow_right.search
     if scrollpane.flow then
         scrollpane.flow.destroy()
     end
@@ -664,9 +672,9 @@ function Auto_Research.GUI_updateSearchResult(player, text)
     -- GUI.element_apply_style(flow, Research_Queue_Styles.auto_research_list_flow)
 
     local ingredients_filter =
-    Auto_Research.get_master_frame(player).split_flow.frameflow_right.searchoptionsflow.auto_research_ingredients_filter_search_results.state
+    AutoResearch.get_master_frame(player).split_flow.frameflow_right.searchoptionsflow.auto_research_ingredients_filter_search_results.state
     ingredients_filter = (ingredients_filter == nil or ingredients_filter)
-    local config = Auto_Research.getConfig(player.force)
+    local config = AutoResearch.getConfig(player.force)
     local shown = 0
     text = string.lower(text)
     -- NOTICE: localised name matching does not work at present, pending unlikely changes to Factorio API
@@ -766,47 +774,47 @@ function Auto_Research.GUI_updateSearchResult(player, text)
                     entryflow.add {
                     type = "sprite-button",
                     name = "auto_research_queue_top-" .. name,
-                    caption = Auto_Research.TEXT_SYMBOLS.up,
+                    caption = AutoResearch.TEXT_SYMBOLS.up,
                     -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.up),
                     tooltip = 'Move to beginning of Queue'
                 }
-                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite_button)
                 GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_blue)
                 temp_var_for_el_style =
                     entryflow.add {
                     type = "sprite-button",
                     name = "auto_research_queue_bottom-" .. name,
-                    caption = Auto_Research.TEXT_SYMBOLS.down,
+                    caption = AutoResearch.TEXT_SYMBOLS.down,
                     -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.down),
                     tooltip = 'Move to end of Queue'
                 }
-                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite_button)
                 GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_blue)
                 temp_var_for_el_style =
                     entryflow.add {
                     type = "sprite-button",
                     name = "auto_research_blacklist-" .. name,
-                    caption = Auto_Research.TEXT_SYMBOLS.blacklist,
+                    caption = AutoResearch.TEXT_SYMBOLS.blacklist,
                     -- sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.blacklist),
                     tooltip = 'Blacklist'
                 }
-                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite_button)
+                GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite_button)
                 GUI.element_apply_style(temp_var_for_el_style, Styles.txt_clr_red)
 
                 -- Tech icon
-                local sprite = GUI.get_safe_sprite_name(player, Auto_Research.SPRITE_NAMES.tech_prefix .. name)
+                local sprite = GUI.get_safe_sprite_name(player, AutoResearch.SPRITE_NAMES.tech_prefix .. name)
                 temp_var_for_el_style = entryflow.add {type = "sprite", sprite = sprite}
-                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite)
+                GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite)
 
                 -- Research text name
                 temp_var_for_el_style = entryflow.add {type = "label", name = name, caption = tech.localised_name}
-                GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_tech_label)
+                GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_tech_label)
 
                 -- Research science req (pots)
                 for _, ingredient in pairs(tech.research_unit_ingredients) do
                     local sprite = GUI.get_safe_sprite_name(player, "item/" .. ingredient.name)
                     temp_var_for_el_style = entryflow.add({type = "sprite", sprite = sprite})
-                    GUI.element_apply_style(temp_var_for_el_style, Research_Queue_Styles.auto_research_sprite)
+                    GUI.element_apply_style(temp_var_for_el_style, ResearchQueueStyles.auto_research_sprite)
                 end
             end
         end
@@ -816,14 +824,13 @@ end
 -- Logic Functions --
 -- ======================================================= --
 
---
--- @tparam LuaForce force
-function Auto_Research.setDefaultConfig(force)
-    local config = Auto_Research.getConfig(force)
+--- @param force LuaForce
+function AutoResearch.setDefaultConfig(force)
+    local config = AutoResearch.getConfig(force)
     if(not config.initialized) then
-        local queued_tech = Auto_Research.default_queued_techs
-        local blacklisted_tech = Auto_Research.default_blacklisted_techs
-        local allowed_research_ingredients = Auto_Research.default_allowed_research_ingredients
+        local queued_tech = AutoResearch.default_queued_techs
+        local blacklisted_tech = AutoResearch.default_blacklisted_techs
+        local allowed_research_ingredients = AutoResearch.default_allowed_research_ingredients
 
         -- set any default queued techs
         for i, tech in pairs(queued_tech) do
@@ -851,10 +858,10 @@ function Auto_Research.setDefaultConfig(force)
     end
 end
 
---
--- @tparam LuaForce force
--- @tparam boolean config_changed
-function Auto_Research.getConfig(force, config_changed)
+
+--- @param force LuaForce
+--- @param config_changed boolean
+function AutoResearch.getConfig(force, config_changed)
     if not global.auto_research_config then
         global.auto_research_config = {}
 
@@ -871,19 +878,19 @@ function Auto_Research.getConfig(force, config_changed)
             filter_search_results = true,
         }
         -- Enable Auto Research
-        Auto_Research.setAutoResearch(force, true)
+        AutoResearch.setAutoResearch(force, true)
 
         -- Disable queued only
-        Auto_Research.setQueuedOnly(force, true)
+        AutoResearch.setQueuedOnly(force, true)
 
         -- Allow switching research
-        Auto_Research.setAllowSwitching(force, true)
+        AutoResearch.setAllowSwitching(force, true)
 
         -- Print researched technology
-        Auto_Research.setAnnounceCompletedResearch(force, true)
+        AutoResearch.setAnnounceCompletedResearch(force, true)
 
         -- Focus on finite research
-        Auto_Research.setDeprioritizeInfiniteTech(force, true)
+        AutoResearch.setDeprioritizeInfiniteTech(force, true)
     end
 
     -- set research strategy
@@ -923,55 +930,67 @@ function Auto_Research.getConfig(force, config_changed)
     return global.auto_research_config[force.name]
 end
 
-function Auto_Research.setAutoResearch(force, enabled)
+--- @param force LuaForce
+--- @param enabled boolean
+function AutoResearch.setAutoResearch(force, enabled)
     if not force then
         return
     end
-    local config = Auto_Research.getConfig(force)
+    local config = AutoResearch.getConfig(force)
     config.enabled = enabled
 
     -- start new research
-    Auto_Research.startNextResearch(force)
+    AutoResearch.startNextResearch(force)
 end
 
-function Auto_Research.setQueuedOnly(force, enabled)
+--- @param force LuaForce
+--- @param enabled boolean
+function AutoResearch.setQueuedOnly(force, enabled)
     if not force then
         return
     end
-    Auto_Research.getConfig(force).prioritized_only = enabled
+    AutoResearch.getConfig(force).prioritized_only = enabled
 
     -- start new research
-    Auto_Research.startNextResearch(force)
+    AutoResearch.startNextResearch(force)
 end
 
-function Auto_Research.setAllowSwitching(force, enabled)
+--- @param force LuaForce
+--- @param enabled boolean
+function AutoResearch.setAllowSwitching(force, enabled)
     if not force then
         return
     end
-    Auto_Research.getConfig(force).allow_switching = enabled
+    AutoResearch.getConfig(force).allow_switching = enabled
 
     -- start new research
-    Auto_Research.startNextResearch(force)
+    AutoResearch.startNextResearch(force)
 end
 
-function Auto_Research.setAnnounceCompletedResearch(force, enabled)
+--- @param force LuaForce
+--- @param enabled boolean
+function AutoResearch.setAnnounceCompletedResearch(force, enabled)
     if not force then
         return
     end
-    Auto_Research.getConfig(force).announce_completed = enabled
+    AutoResearch.getConfig(force).announce_completed = enabled
 end
 
-function Auto_Research.setDeprioritizeInfiniteTech(force, enabled)
+--- @param force LuaForce
+--- @param enabled boolean
+function AutoResearch.setDeprioritizeInfiniteTech(force, enabled)
     if not force then
         return
     end
-    Auto_Research.getConfig(force).deprioritize_infinite_tech = enabled
+    AutoResearch.getConfig(force).deprioritize_infinite_tech = enabled
 
     -- start new research
-    Auto_Research.startNextResearch(force)
+    AutoResearch.startNextResearch(force)
 end
 
-function Auto_Research.getPretechs(tech)
+--- @param tech any
+--- @return table
+function AutoResearch.getPretechs(tech)
     local pretechs = {}
     pretechs[#pretechs + 1] = tech
     local index = 1
@@ -986,7 +1005,11 @@ function Auto_Research.getPretechs(tech)
     return pretechs
 end
 
-function Auto_Research.canResearch(force, tech, config)
+--- @param force LuaForce
+--- @param tech table
+--- @param config table
+--- @return boolean
+function AutoResearch.canResearch(force, tech, config)
     if not tech or tech.researched or not tech.enabled then
         return false
     end
@@ -1008,8 +1031,10 @@ function Auto_Research.canResearch(force, tech, config)
     return true
 end
 
-function Auto_Research.startNextResearch(force, override_spam_detection)
-    local config = Auto_Research.getConfig(force)
+--- @param force LuaForce
+--- @param override_spam_detection boolean
+function AutoResearch.startNextResearch(force, override_spam_detection)
+    local config = AutoResearch.getConfig(force)
     if not config.enabled or (force.current_research and not config.allow_switching) or (not override_spam_detection and config.last_research_finish_tick == game.tick) then
         return
     end
@@ -1051,10 +1076,10 @@ function Auto_Research.startNextResearch(force, override_spam_detection)
     for _, techname in pairs(config.prioritized_techs) do
         local tech = force.technologies[techname]
         if tech and not next_research then
-            local pretechs = Auto_Research.getPretechs(tech)
+            local pretechs = AutoResearch.getPretechs(tech)
             for _, pretech in pairs(pretechs) do
                 local effort = calcEffort(pretech)
-                if (not least_effort or effort < least_effort) and Auto_Research.canResearch(force, pretech, config) then
+                if (not least_effort or effort < least_effort) and AutoResearch.canResearch(force, pretech, config) then
                     next_research = pretech.name
                     least_effort = effort
                 end
@@ -1067,7 +1092,7 @@ function Auto_Research.startNextResearch(force, override_spam_detection)
         for techname, tech in pairs(force.technologies) do
             if tech.enabled and not tech.researched then
                 local effort = calcEffort(tech)
-                if (not least_effort or effort < least_effort) and Auto_Research.canResearch(force, tech, config) then
+                if (not least_effort or effort < least_effort) and AutoResearch.canResearch(force, tech, config) then
                     next_research = techname
                     least_effort = effort
                 end
@@ -1088,7 +1113,8 @@ function Auto_Research.startNextResearch(force, override_spam_detection)
 end
 
 
--- Disable the default recearch qeue that ships with the game and use ours instead
-function Auto_Research.disableDefaultGameQueue(force)
+-- Disable the default recearch queue that ships with the game and use ours instead
+--- @param force LuaForce
+function AutoResearch.disableDefaultGameQueue(force)
     force.research_queue_enabled = false;
 end
