@@ -1,5 +1,18 @@
 {
+    "files.exclude": {
+        "**/.github": true,
+        "**/screenshots/": true,
+        "**/.editorconfig": true,
+        "**/.gitignore": true,
+        "**/.lua-format-config.yml": true,
+        "**/FUNDING.yml": true,
+        "**/LICENSE": true
+    },
+    "editor.renderWhitespace": "all",
+    "editor.rulers": [80],
+    "explorer.sortOrderLexicographicOptions": "lower", // Case sensitive file ordering in tree
     "editor.semanticHighlighting.enabled": true,
+    "workbench.iconTheme": "material-icon-theme",
     "Lua.diagnostics.globals": [
         "game",
         "script",
@@ -13,13 +26,9 @@
         "serpent",
         "log",
         "localised_print",
-        "table_size",
+        "table_size"
     ],
     "vscode-lua-format.configPath": ".lua-format-config.yml",
-    "cSpell.words": [
-        "Factorio"
-    ],
-    "Lua.diagnostics.disable": [
-        "undefined-doc-name"
-    ]
+    "cSpell.words": ["Factorio"],
+    "Lua.diagnostics.disable": ["undefined-doc-name"]
 }

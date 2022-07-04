@@ -3,6 +3,8 @@
         "koihik.vscode-lua-format",
         "sumneko.lua",
         "svizzini.factorio-lua-api-autocomplete",
-        "streetsidesoftware.code-spell-checker"
+        "streetsidesoftware.code-spell-checker",
+        "pkief.material-icon-theme",
+        "adrianwilczynski.toggle-hidden"
     ]
 }

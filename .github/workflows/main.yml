@@ -1,0 +1,58 @@
+# CI/CD for Github Actions
+# @author Denis Zholob (deniszholob.com)
+# ====================================== #
+
+name: Package and Release
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the main branch
+  push:
+    branches: [main]
+  # pull_request:
+  #   branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set RELEASE_VERSION env var
+        shell: bash
+        run: |
+          echo "RELEASE_VERSION=`$(date +'%Y-%m-%d')`" >> $GITHUB_ENV
+
+      - name: Zip Release
+        uses: papeloto/action-zip@v1
+        with:
+          files: src/
+          dest: dist/dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
+
+      - name: Archive Package
+        uses: actions/upload-artifact@v2
+        with:
+          name: dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
+          path: dist/dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
+
+      # ====================================================================== #
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          name: dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
+          tag: Release-${{env.RELEASE_VERSION}}
+          body: |
+            DDDGamer's Softmod Pack.
+
+            * **Expand the _Assets_ below.**
+            * Download the `dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip` file.
+            * See [installation instructions](https://github.com/deniszholob/factorio-softmod-pack#readme)
+          artifacts: |
+            ./dist/dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
+          artifactErrorsFailBuild: true
+          draft: false # true to create a draft (unpublished) release, false to create a published one. Default: false

@@ -35,6 +35,8 @@ GameInfo = {
                 'https://factoriosheatsheet.com/',
                 '* The softmod/scenario code:',
                 'https://github.com/deniszholob/factorio-softmod-pack',
+                '* Support on kofi:',
+                'https://ko-fi.com/deniszholob',
             }
         },
         {
