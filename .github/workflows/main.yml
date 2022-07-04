@@ -27,17 +27,17 @@ jobs:
         run: |
           echo "RELEASE_VERSION=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
+      - name: Archive Package
+        uses: actions/upload-artifact@v2
+        with:
+          path: src/
+          name: dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
+
       - name: Zip Release
         uses: papeloto/action-zip@v1
         with:
           files: src/
           dest: dist/dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
-
-      - name: Archive Package
-        uses: actions/upload-artifact@v2
-        with:
-          name: dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
-          path: dist/dddgamer-softmod-pack-${{env.RELEASE_VERSION}}.zip
 
       # ====================================================================== #
       - name: Create Release
