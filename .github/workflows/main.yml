@@ -25,7 +25,7 @@ jobs:
       - name: Set RELEASE_VERSION env var
         shell: bash
         run: |
-          echo "RELEASE_VERSION=`$(date +'%Y-%m-%d')`" >> $GITHUB_ENV
+          echo "RELEASE_VERSION=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
 
       - name: Zip Release
         uses: papeloto/action-zip@v1
